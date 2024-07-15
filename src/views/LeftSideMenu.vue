@@ -9,14 +9,14 @@
     active-text-color="#a33238"
     unique-opened="true"  
     router="true"
+    style="border :1px solid #fff5eb;"
 >
 
-    <el-menu-item style="margin-bottom: 50px;" index="0">
-        <el-icon ><location /></el-icon>
-        <span>KATarJa Logo</span>
-    </el-menu-item>
     
-    <el-sub-menu index="/pages/personal" >
+    <RouterLink :to="{ name:'home-link'}" style="all: unset;"><el-icon style="width: 30px; margin: 55px 20px;"><img src="/Kajarta_LOGO_02.svg"></el-icon></RouterLink>
+        
+    
+    <el-sub-menu index="/pages/personal" style="margin-top: 50px;" >
         <template #title>
             <RouterLink :to="{ name:'personal-link'}" style="all: unset;"><el-icon><font-awesome-icon icon="user" style="color: #a33238;" /></el-icon></RouterLink>
                 <span><RouterLink :to="{ name:'personal-link'}" style="all: unset;"><b>個人專區</b></RouterLink></span>

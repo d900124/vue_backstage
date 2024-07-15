@@ -1,7 +1,7 @@
 <template>
     <div class="common-layout">
         <el-container style="height: 100%;">
-        <el-aside style="width: auto; box-shadow: 10px 0px 15px #ececec;"><LeftSideMenu></LeftSideMenu></el-aside>
+        <el-aside style=" width: auto; box-shadow: 10px 0px 15px #ececec;"><LeftSideMenu></LeftSideMenu></el-aside>
         <el-main >
             <dev class="container">
                 <RouterView></RouterView>
