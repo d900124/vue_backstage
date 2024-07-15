@@ -1,9 +1,15 @@
 <template>
-  <Indax></Indax>
+    <el-button type="primary">主要按鈕</el-button>
+    <RouterView></RouterView>
+
 </template>
 
-<style scoped></style>
+<style scoped>
+</style>
 
 <script setup>
-import Indax from "./components/Indax.vue";
+import { ref } from 'vue'
+import { RouterLink } from 'vue-router'
+
+
 </script>
