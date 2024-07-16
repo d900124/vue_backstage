@@ -1,19 +1,26 @@
 <template>
-        <h3>團隊管理</h3>
+    <h3>團隊管理</h3>
+    <div class="container text-center">
+        <div class="row">
         <!-- 車輛調整簽核 -->
-        <InfoTable></InfoTable>
+        <CarAdjustTable></CarAdjustTable>
+        
         <!-- 假單簽核 -->
 
         <!-- 員工總覽 -->
 
         <!-- 考核評比 -->
+
+        </div>
+    </div>
 </template>
     
 <script setup >
-    import InfoTable from '@/components/InfoTable.vue';
+    import CarAdjustTable from '@/components/CarAdjustTable.vue';
     
 </script>
     
 <style>
+
     
 </style>
