@@ -12,8 +12,6 @@
             </div>
             <div class="col-1"></div>
 
-
-
             <div class="col-1"></div>
             <div class="col-10">
 <!-- 彈出式複雜搜尋 -->
@@ -77,12 +75,71 @@
 
 
 <!-- 下方詳細資料區 -->
+            <div v-if="openZon" style="height: 50px;"></div>
+            <div v-if="openZon" class="col-1"></div>
+            <div v-if="openZon" class="col-5" style="padding: 0px 0px;"></div>
+            <div v-if="openZon" class="col-5" style="padding: 0px 0px;">
+                <h5 class="table-title" >簽核編號 {{singleItem.id}} --單筆詳細資料</h5>
+            </div>
+            <div class="col-1"></div>
+            <div v-if="openZon" class="col-1" ></div>
+            <div v-if="openZon" class="col-10" style="height: 300px; background-color:rgb(245, 250, 250)  ;">
 
-        <div v-if="openZon">
-            <div class="col-1"></div>
-            <div class="col-10" style="height: 300px;"></div>
-            <div class="col-1"></div>
-        </div>
+                <div class="table-responsive" style="padding:20px ; ">
+                <table class="table" style="width: 1000px; ">
+                    <thead style="border-bottom: 2px solid #a33238;">
+                    <tr>
+                    <th scope="col" class="table-th" >簽核編號</th> 
+                    <th scope="col" class="table-th" >車輛編號</th>
+                    <th scope="col" class="table-th" >品牌型號</th>
+                    <th scope="col" class="table-th" >品牌型號</th>
+                    <th scope="col" class="table-th" >簽核需求</th>
+                    <th scope="col" class="table-th" >原始價錢</th>
+                    <th scope="col" class="table-th" >改後價錢</th>
+                    </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                        <tr >
+                        <th scope="row" class="table-td">{{singleItem.id}}</th>
+                        <td class="table-td">{{singleItem.carId}}</td>
+                        <td class="table-td"></td>
+                        <td class="table-td"></td>
+                        <td class="table-td">{{singleItem.approvalTypeName}}</td>
+                        <td class="table-td"></td>
+                        <td class="table-td">{{singleItem.floatingAmount}}</td>
+                        </tr>
+                        
+                    </tbody>
+                    <div style="height: 20px;"></div>
+                    <thead style="border-bottom: 2px solid #a33238;" >
+                        <tr>
+                        <th scope="col" class="table-th" >建立者編號</th>
+                        <th scope="col" class="table-th" >建立者</th>
+                        <th scope="col" class="table-th" >主管編號</th>
+                        <th scope="col" class="table-th" >主管姓名</th>
+                        <th scope="col" class="table-th" >建立時間</th>
+                        <th scope="col" class="table-th" >修改時間</th>
+                        <th scope="col" class="table-th" >簽核狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-group-divider">
+                        <tr >
+                            <th scope="row" class="table-td"></th>
+                            <td class="table-td">{{singleItem.employeeName}}</td>
+                        <td class="table-td"></td>
+                        <td class="table-td">{{singleItem.teamLeaderName}}</td>
+                        <td class="table-td">{{singleItem.createTimeString}}</td>
+                        <td class="table-td">{{singleItem.updateTimeString}}</td>
+                        <td class="table-td">{{singleItem.approvalStatusName}}</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+                </div>
+
+            </div>
+            <div v-if="openZon" class="col-1"></div>
+            
 </template>
     
 <script setup >
@@ -101,10 +158,11 @@ const pages = ref(0) //分頁總數
 const rows = ref(4) //分頁資料顯示筆數
 
 //下方詳細資料開啟用
-const openZon = ref(true)
+const openZon = ref(false)
 
 //產品顯示products元件用的參數
 const items = ref([]);
+const singleItem= ref([])
 
 onMounted(function () {
     callFindByHQL();
@@ -120,6 +178,10 @@ function itemClick(itemId){
     console.log(itemId)
     axiosapi.get("/carAdjust/"+itemId).then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
         console.log("responce",responce.data);
+        singleItem.value = responce.data.data;
+        console.log("singleItem.value.id",singleItem.value.id);
+        openZon.value = true
+
     }).catch(function (error) {
         console.log("error",error);
         Swal.fire({
@@ -204,7 +266,7 @@ div.col-10{
     display: flex;
 }
 th,tr,td{
-    background-color: #fff5eb;
+    background-color: unset;
     width: 100px;
 }
 .table-part{
