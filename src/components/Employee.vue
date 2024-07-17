@@ -1,0 +1,244 @@
+<template>
+    <div class="col-1"></div>
+
+    <!-- 簡易搜尋欄位 -->
+    <div class="col-5" style="padding: 0px 0px;"></div>
+
+    <!-- 標題區域 -->
+    <div class="col-5" style="padding: 0px 0px;">
+        <h3 class="table-title">員工總覽</h3>
+    </div>
+
+    <div class="col-1"></div>
+    <div class="col-1"></div>
+    <div class="col-10">
+        <!-- 彈出式複雜搜尋 -->
+        <div class="extra-menu"></div>
+
+        <!-- 員工列表 -->
+        <div class="table-part">
+            <table class="table">
+                <thead style="border-bottom: 2px solid #a33238;">
+                    <tr>
+                        <th scope="col" class="table-th">員工編號</th>
+                        <th scope="col" class="table-th">職等</th>
+                        <th scope="col" class="table-th">姓名</th>
+                        <th scope="col" class="table-th">電話</th>
+                        <th scope="col" class="table-th">Email</th>
+                        <th scope="col" class="table-th">直屬主管</th>
+                        <th scope="col" class="table-th">分店</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    <tr v-for="employee in employees" :key="employee.id" @click="employeeClick(employee.id)">
+                        <th scope="row" class="table-td">{{ employee.id }}</th>
+                        <td class="table-td">{{ employee.accountTypeName }}</td>
+                        <td class="table-td">{{ employee.name }}</td>
+                        <td class="table-td">{{ employee.phone }}</td>
+                        <td class="table-td">{{ employee.email }}</td>
+                        <td class="table-td">{{ employee.teamLeader }}</td>
+                        <td class="table-td">{{ employee.branchName }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-1"></div>
+    <div class="col-1"></div>
+    <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
+    
+
+    <!-- 左下新增按鈕 -->
+    <div class="btm-div" style="display: flex;" @click="openModal('insert')">
+            <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;"/>
+            <el-button type='' link class="text-btm" style="color: #a33238;">新增員工</el-button>
+            </div>
+        </div>
+        <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
+
+    <!-- 右下分頁控制區 -->
+    
+        <el-pagination style="margin: 10px 0px;" hide-on-single-page=true layout="total,prev, pager, next"
+            :total="total.value" :page-size="rows.value" v-model:current="current"
+            @current-change="callQuery"></el-pagination>
+    </div>
+    <div class="col-1"></div>
+
+    <!-- 下方詳細資料區 -->
+    <div v-if="openZon" style="height: 50px;"></div>
+            <div v-if="openZon" class="col-1"></div>
+            <div v-if="openZon" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="closeInfo">
+                <el-divider content-position="center">
+                    <button type="button" class="btn-close" aria-label="Close" ></button>
+                    <h5 class="table-title" >員工編號 {{singleEmployee.id}} --單筆詳細資料</h5>
+                </el-divider>
+            </div>
+            <div class="col-1"></div>
+            <div v-if="openZon" class="col-1" ></div>
+            <div v-if="openZon" class="col-10" style="height: 300px; background-color:rgb(245, 250, 250)  ;">
+
+                <div class="table-responsive" style="padding:20px ; ">
+                <table class="table" style="width: 1000px; ">
+                    <thead style="border-bottom: 2px solid #a33238;">
+                    <tr>
+                        <th scope="col" class="table-th">員工編號</th>
+                        <th scope="col" class="table-th">職等</th>
+                        <th scope="col" class="table-th">姓名</th>
+                        <th scope="col" class="table-th">電話</th>
+                        <th scope="col" class="table-th">Email</th>
+                        <th scope="col" class="table-th">性別</th>
+                        <th scope="col" class="table-th">入職日</th>
+                        <th scope="col" class="table-th">直屬主管</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    <tr v-if="singleEmployee">
+                        <td class="table-td">{{ singleEmployee.id }}</td>
+                        <td class="table-td">{{ singleEmployee.accountType }}</td>
+                        <td class="table-td">{{ singleEmployee.name }}</td>
+                        <td class="table-td">{{ singleEmployee.phone }}</td>
+                        <td class="table-td">{{ singleEmployee.email }}</td>
+                        <td class="table-td">{{ singleEmployee.sex }}</td>
+                        <td class="table-td">{{ singleEmployee.startDate }}</td>
+                        <td class="table-td">{{ singleEmployee.teamLeader }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div v-if="openZon" class="col-1"></div>
+</template>
+
+<script setup>
+import { onMounted, ref } from 'vue';
+import axiosapi from '@/plugins/axios.js';
+import Swal from 'sweetalert2';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const total = ref(0);
+const current = ref(1);
+const pages = ref(0);
+const rows = ref(4);
+
+const openZon = ref(false); // 初始值改為false，避免一開始就顯示單筆詳細資料
+
+const employees = ref([]);
+const singleEmployee = ref(null); // 初始值改為null，表示單個員工未定義
+
+onMounted(() => {
+    callQuery();
+});
+
+function openModal() {
+    console.log("openModal");
+}
+
+// 單筆查詢
+function employeeClick(employeeId) {
+    console.log(employeeId);
+    axiosapi.get("/employee/info/" + employeeId)
+        .then(function (response) {
+            console.log("response", response.data);
+            singleEmployee.value = response.data.data;
+            openZon.value = true;
+        }).catch(function (error) {
+            console.log("error", error);
+            Swal.fire({
+                text: "查詢錯誤" + error.message,
+                icon: "error"
+            });
+        });
+}
+
+// 多條件多筆查詢
+function callQuery() {
+    console.log("callQuery - 當前頁碼:", current.value);
+
+    let request = {
+        "sex": null,
+        "accountType": null,
+        "account": null,
+        "name": null,
+        "phone": null,
+        "email": null,
+        "branch": null,
+        "teamLeaderId": null,
+        "page": current.value - 1,
+        "size": rows.value,
+        "sort": "id",
+        "dir": true
+    };
+
+    axiosapi.post("/employee/query", request)
+        .then(function (response) {
+            console.log("API response:", response.data);
+            employees.value = response.data.data.content;
+            total.value = response.data.totalElement;
+            pages.value = response.data.totalPage;
+        }).catch(function (error) {
+            console.log("error", error);
+            Swal.fire({
+                text: "查詢錯誤" + error.message,
+                icon: "error"
+            });
+        });
+}
+</script>
+
+<style scoped>
+.btm-div:hover {
+    text-decoration: underline 2px solid #a33238;
+}
+
+.text-btm {
+    font-size: 1.2em;
+    font-weight: 900;
+}
+
+.table-td {
+    font-size: 0.8em;
+}
+
+.table-th {
+    color: #a33238;
+}
+
+div.col-10 {
+    padding: 0px 0px;
+    background-color: #fff5eb;
+    justify-content: center;
+    display: flex;
+}
+
+th,
+tr,
+td {
+    background-color: #fff5eb;
+    width: 100px;
+}
+
+.table-part {
+    width: 95%;
+    padding: 20px;
+}
+
+.table {
+    width: 95%;
+    margin: auto;
+    padding: 10px 10px;
+}
+
+.extra-menu {
+    width: 5%;
+    background-color: #a33238;
+}
+
+.table-title {
+    float: right;
+    color: #a33238;
+    font-weight: 900;
+    margin: 10px 0px;
+}
+</style>
