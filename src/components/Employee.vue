@@ -46,42 +46,41 @@
     <div class="col-1"></div>
     <div class="col-1"></div>
     <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
-    
 
-    <!-- 左下新增按鈕 -->
-    <div class="btm-div" style="display: flex;" @click="openModal('insert')">
-            <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;"/>
+
+        <!-- 左下新增按鈕 -->
+        <div class="btm-div" style="display: flex;" @click="openModal('insert')">
+            <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;" />
             <el-button type='' link class="text-btm" style="color: #a33238;">新增員工</el-button>
-            </div>
         </div>
-        <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
+    </div>
+    <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
 
-    <!-- 右下分頁控制區 -->
-    
+        <!-- 右下分頁控制區 -->
+
         <el-pagination style="margin: 10px 0px;" hide-on-single-page=true layout="total,prev, pager, next"
-            :total="total.value" :page-size="rows.value" v-model:current="current"
-            @current-change="callQuery"></el-pagination>
+            :total="total" :page-size="rows" v-model:current-page="current" @change="callQuery"></el-pagination>
+
     </div>
     <div class="col-1"></div>
 
     <!-- 下方詳細資料區 -->
     <div v-if="openZon" style="height: 50px;"></div>
-            <div v-if="openZon" class="col-1"></div>
-            <div v-if="openZon" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="closeInfo">
-                <el-divider content-position="center">
-                    <button type="button" class="btn-close" aria-label="Close" ></button>
-                    <h5 class="table-title" >員工編號 {{singleEmployee.id}} --單筆詳細資料</h5>
-                </el-divider>
-            </div>
-            <div class="col-1"></div>
-            <div v-if="openZon" class="col-1" ></div>
-            <div v-if="openZon" class="col-10" style="height: 300px; background-color:rgb(245, 250, 250)  ;">
+    <div v-if="openZon" class="col-1"></div>
+    <div v-if="openZon" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="closeInfo">
+        <el-divider content-position="center">
+            <button type="button" class="btn-close" aria-label="Close"></button>
+            <h5 class="table-title">員工編號 {{ singleEmployee.id }} --單筆詳細資料</h5>
+        </el-divider>
+    </div>
+    <div class="col-1"></div>
+    <div v-if="openZon" class="col-1"></div>
+    <div v-if="openZon" class="col-10" style="height: 300px; background-color:rgb(245, 250, 250)  ;">
 
-                <div class="table-responsive" style="padding:20px ; ">
-                <table class="table" style="width: 1000px; ">
-                    <thead style="border-bottom: 2px solid #a33238;">
+        <div class="table-responsive" style="padding:20px ; ">
+            <table class="table" style="width: 1000px; ">
+                <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
-                        <th scope="col" class="table-th">員工編號</th>
                         <th scope="col" class="table-th">職等</th>
                         <th scope="col" class="table-th">姓名</th>
                         <th scope="col" class="table-th">電話</th>
@@ -89,11 +88,11 @@
                         <th scope="col" class="table-th">性別</th>
                         <th scope="col" class="table-th">入職日</th>
                         <th scope="col" class="table-th">直屬主管</th>
+                        <th scope="col" class="table-th">分店</th>
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
-                    <tr v-if="singleEmployee">
-                        <td class="table-td">{{ singleEmployee.id }}</td>
+                    <tr  v-if="!isModify">
                         <td class="table-td">{{ singleEmployee.accountType }}</td>
                         <td class="table-td">{{ singleEmployee.name }}</td>
                         <td class="table-td">{{ singleEmployee.phone }}</td>
@@ -101,12 +100,39 @@
                         <td class="table-td">{{ singleEmployee.sex }}</td>
                         <td class="table-td">{{ singleEmployee.startDate }}</td>
                         <td class="table-td">{{ singleEmployee.teamLeader }}</td>
+                        <td class="table-td">{{ singleEmployee.branchName }}</td>
+                    </tr>
+                    <tr  v-if="isModify">
+                        <td class="table-td">{{ singleEmployee.accountType }}</td>
+                        <td class="table-td">{{ singleEmployee.name }}</td>
+                        <td class="table-td">{{ singleEmployee.phone }}</td>
+                        <td class="table-td">{{ singleEmployee.email }}</td>
+                        <td class="table-td">{{ singleEmployee.sex }}</td>
+                        <td class="table-td">{{ singleEmployee.startDate }}</td>
+                        <td class="table-td">{{ singleEmployee.teamLeader }}</td>
+                        <td class="table-td">{{ singleEmployee.branchName }}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
     <div v-if="openZon" class="col-1"></div>
+            <div v-if="openZon" class="col-1"></div>
+            <div v-if="openZon" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
+    <div v-if="openZon" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
+                <el-switch
+                    v-model="isModify"
+                    inline-prompt
+                    class="value5"
+                    size="large"
+                    active-text="&nbsp;&nbsp;開啟修改&nbsp;&nbsp;"
+                    inactive-text="&nbsp;&nbsp;資料鎖定&nbsp;&nbsp;"   
+                    style="--el-switch-on-color: #a33238; -webkit-margin-start: 18px ;"
+                    @click = "openDoModify"
+                    />
+            </div>
+            <div v-if="openZon" class="col-1"></div>
+    
 </template>
 
 <script setup>
@@ -127,6 +153,12 @@ const openZon = ref(false); // 初始值改為false，避免一開始就顯示�
 const employees = ref([]);
 const singleEmployee = ref(null); // 初始值改為null，表示單個員工未定義
 
+//開啟修改用
+const isModify = ref(false)
+
+//確認修改彈出視窗用
+const dialogVisible = ref(false)
+
 onMounted(() => {
     callQuery();
 });
@@ -143,6 +175,7 @@ function employeeClick(employeeId) {
             console.log("response", response.data);
             singleEmployee.value = response.data.data;
             openZon.value = true;
+            isModify.value = false;
         }).catch(function (error) {
             console.log("error", error);
             Swal.fire({
@@ -185,9 +218,78 @@ function callQuery() {
             });
         });
 }
+
+//開啟確認修改視窗
+function openDoModify() {
+    if (isModify.value == false) {
+        console.log("isModify.value", isModify.value);
+        console.log("修改單號 ID", singleEmployee.value.id);
+        isModify.value = true;
+        dialogVisible.value = true;
+    }
+}
+
+//修改簽核
+function doModify() {
+    Swal.fire({
+        text: "執行中......",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+    });
+
+    let request = {
+        "id": singleEmployee.value.id,
+        "accountType": singleEmployee.value.accountType,
+        "name": singleEmployee.value.name,
+        "phone": singleEmployee.value.phone,
+        "email": singleEmployee.value.email,
+        "sex": singleEmployee.value.sex,
+        "startDate": singleEmployee.value.startDate,
+        "teamLeaderId": singleEmployee.value.teamLeader,
+        "branch": singleEmployee.value.branch
+    }
+
+    axiosapi.put(`/modify/${singleEmployee.value.id}`, request).then(function (response) {
+        console.log("response", response);
+        if (response.data.success) {
+            Swal.fire({
+                icon: "success",
+                text: response.data.message,
+                showConfirmButton: false,
+            }).then(function (result) {
+                callQuery();
+                itemClick(singleEmployee.value.id);
+                openZon.value = true;
+
+            });
+        } else {
+            Swal.fire({
+                icon: "warning",
+                text: response.data.message,
+            });
+        }
+    }).catch(function (error) {
+        console.log("error", error);
+        Swal.fire({
+            icon: "error",
+            text: "修改錯誤：" + error.message,
+        });
+    });
+    setTimeout(function () {
+        Swal.close();  //視窗關閉 
+    }, 1000);
+    dialogVisible.value = false;
+    isModify.value = false;
+}
+
 </script>
 
 <style scoped>
+.btn-close {
+    margin: 10px;
+}
+
+
 .btm-div:hover {
     text-decoration: underline 2px solid #a33238;
 }
@@ -215,7 +317,7 @@ div.col-10 {
 th,
 tr,
 td {
-    background-color: #fff5eb;
+    background-color: unset;
     width: 100px;
 }
 
@@ -233,10 +335,17 @@ td {
 .extra-menu {
     width: 5%;
     background-color: #a33238;
+
 }
 
 .table-title {
     float: right;
+    color: #a33238;
+    font-weight: 900;
+    margin: 10px 0px;
+}
+
+.msg-title {
     color: #a33238;
     font-weight: 900;
     margin: 10px 0px;
