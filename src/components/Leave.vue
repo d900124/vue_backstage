@@ -73,17 +73,126 @@
             </div>
         <div class="col-1"></div>
 
+<!-- 新增區塊 / 抬頭-->
+            <div v-if="openCreat" style="height: 50px;"></div>
+            <div v-if="openCreat" class="col-1"></div>
+            <div v-if="openCreat" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openCreat=false">
+                <el-divider content-position="center">
+                    <button type="button" class="btn-close" aria-label="Close" ></button>
+                    <h5 class="table-title" >新增簽核</h5>
+                </el-divider>
+            </div>
+            <div v-if="openCreat" class="col-1"></div>
 
-<!-- 下方詳細資料區 -->
+<!-- 新增區塊 / 資料區-->
+            <div v-if="openCreat" class="col-1" ></div>
+            <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
+
+                <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
+                <el-form-item label="申請員工 :&nbsp;">
+                    <p style="margin: 0;" >串接登入員工</p>
+                </el-form-item>
+
+                <el-divider border-style="dashed" style="margin: 0;"/>
+                <el-form-item label="簽核主管 :&nbsp;">
+                    <el-select
+                        v-model="creatTeamleaderIDValue"
+                        placeholder="Select"
+                        size="small"
+                        >
+                        <el-option
+                            v-for="Option in creatTeamleaderIDOptions"
+                            :key="Option.value"
+                            :label="Option.label"
+                            :value="Option.value"
+                        />
+                    </el-select>
+                </el-form-item>
+                <el-divider border-style="dashed" style="margin: 0;"/>
+
+                <el-form-item label="修改車輛 :&nbsp;">
+                <el-input-number
+                    v-model="creatCarIDValue"
+                    :min="1"
+                    :max="10"
+                    size="small"
+                    controls-position="right"
+                />
+                </el-form-item>
+                <el-divider border-style="dashed" style="margin: 0;"/>
+
+                <el-form-item label="改後價格 :&nbsp;">
+                <el-input-number
+                    v-model="creatFloatingAmountValue"
+                    :min="1000"
+                    :max="100000000000000000"
+                    size="small"
+                    controls-position="right"
+                />
+                </el-form-item>
+
+                </el-form>
+            </div>
+
+            <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
+
+                <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
+                <el-form-item label="&nbsp;">
+                    <p style="margin: 0;" >&nbsp;</p>
+                </el-form-item>
+                <el-divider border-style="dashed" style="margin: 0;"/>
+
+                <el-form-item label="&nbsp;">
+                    <p style="margin: 0;" >&nbsp;</p>
+                </el-form-item>
+                <el-divider border-style="dashed" style="margin: 0;"/>
+
+                <el-form-item label="簽核狀態 :&nbsp;">
+                    <p style="margin: 0;" >尚未簽核</p>
+                </el-form-item>
+                <el-divider border-style="dashed" style="margin: 0;"/>
+
+                <el-form-item label="簽核需求 :&nbsp;">
+                    <el-select
+                        v-model="creatApprovalTypeValue"
+                        placeholder="Select"
+                        size="small"
+                        >
+                        <el-option
+                            v-for="Option in creatApprovalTypeOptions"
+                            :key="Option.value"
+                            :label="Option.label"
+                            :value="Option.value"
+                        />
+                    </el-select>
+                </el-form-item>
+
+                </el-form>
+                </div>
+            <div v-if="openCreat" class="col-1"></div>
+
+
+<!-- 新增區塊 / 確認按鈕-->
+            <div v-if="openCreat" class="col-1"></div>
+            <div v-if="openCreat" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
+            <div v-if="openCreat" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
+                <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click = "openDoModify" >&nbsp確認新增&nbsp</el-button>
+            </div>
+            <div v-if="openCreat" class="col-1"></div>
+
+
+<!-- 下方詳細資料區 / 抬頭-->
             <div v-if="openZon" style="height: 50px;"></div>
             <div v-if="openZon" class="col-1"></div>
-            <div v-if="openZon" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="closeInfo">
+            <div v-if="openZon" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openZon=false">
                 <el-divider content-position="center">
                     <button type="button" class="btn-close" aria-label="Close" ></button>
                     <h5 class="table-title" >簽核編號 {{singleItem.id}} --單筆詳細資料</h5>
                 </el-divider>
             </div>
-            <div class="col-1"></div>
+            <div v-if="openZon"class="col-1"></div>
+
+<!-- 下方詳細資料區 / 資料區-->
             <div v-if="openZon" class="col-1" ></div>
             <div v-if="openZon" class="col-10" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
 
@@ -174,6 +283,8 @@
 
             </div>
             <div v-if="openZon" class="col-1"></div>
+
+<!-- 下方詳細資料區 / 修改按鈕-->
             <div v-if="openZon" class="col-1"></div>
             <div v-if="openZon" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
             <div v-if="openZon" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
@@ -227,6 +338,9 @@ const rows = ref(4) //分頁資料顯示筆數
 //下方詳細資料開啟用
 const openZon = ref(false)
 
+//下方新增資料開啟用
+const openCreat = ref(false)
+
 //產品顯示products元件用的參數
 const items = ref([]);
 const singleItem= ref([])
@@ -251,6 +365,40 @@ const approvalTypeOptions = [
 const dialogVisible = ref(false)
 
 
+//新增用所有資料
+const creatCarIDValue = ref("1")
+const creatEmployeeIDValue = ref("1")
+const creatTeamleaderIDValue = ref("5")
+const creatApprovalStatusValue = ref("0")
+const creatApprovalTypeValue = ref("1")
+const creatFloatingAmountValue = ref("1000000")
+
+const creatApprovalTypeOptions=[
+    {
+        value: '1',
+        label: '降價',
+    },
+    {
+        value: '2',
+        label: '漲價',
+    },
+    {
+        value: '3',
+        label: '下架',
+    }
+]
+const creatTeamleaderIDOptions=[
+    {
+        value: '5',
+        label: '主管名 - emp5',
+    }
+]
+
+
+
+
+
+
 
 onMounted(function () {
     callFindByHQL();
@@ -260,13 +408,8 @@ onMounted(function () {
 //單筆新增
 function openModal(){
 console.log("openModal");
+openCreat.value=true;
 }
-
-//關閉詳情
-function closeInfo() {
-    openZon.value = false
-}
-
 
 
 //單筆查詢
@@ -460,5 +603,11 @@ th,tr,td{
     color: #a33238;
     font-weight: 900;
     margin: 10px 0px;
+}
+
+.creat-title{
+    color: black;
+    font-weight: 900;
+    margin: 20px 20px;
 }
 </style>
