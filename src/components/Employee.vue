@@ -92,7 +92,7 @@
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
-                    <tr  v-if="!isModify">
+                    <tr v-if="!isModify">
                         <td class="table-td">{{ singleEmployee.accountType }}</td>
                         <td class="table-td">{{ singleEmployee.name }}</td>
                         <td class="table-td">{{ singleEmployee.phone }}</td>
@@ -102,37 +102,68 @@
                         <td class="table-td">{{ singleEmployee.teamLeader }}</td>
                         <td class="table-td">{{ singleEmployee.branchName }}</td>
                     </tr>
-                    <tr  v-if="isModify">
-                        <td class="table-td">{{ singleEmployee.accountType }}</td>
-                        <td class="table-td">{{ singleEmployee.name }}</td>
-                        <td class="table-td">{{ singleEmployee.phone }}</td>
-                        <td class="table-td">{{ singleEmployee.email }}</td>
-                        <td class="table-td">{{ singleEmployee.sex }}</td>
-                        <td class="table-td">{{ singleEmployee.startDate }}</td>
-                        <td class="table-td">{{ singleEmployee.teamLeader }}</td>
-                        <td class="table-td">{{ singleEmployee.branchName }}</td>
+                    <tr v-if="isModify">
+                        <td class="table-td">
+                            <el-input v-model="singleEmployee.accountType" placeholder="職等"></el-input>
+                        </td>
+                        <td class="table-td">
+                            <el-input v-model="singleEmployee.name" placeholder="姓名"></el-input>
+                        </td>
+                        <td class="table-td">
+                            <el-input v-model="singleEmployee.phone" placeholder="電話"></el-input>
+                        </td>
+                        <td class="table-td">
+                            <el-input v-model="singleEmployee.email" placeholder="Email"></el-input>
+                        </td>
+                        <td class="table-td">
+                            <el-select v-model="singleEmployee.sex" placeholder="請選擇性別">
+                                <el-option label="M" value="M"></el-option>
+                                <el-option label="F" value="F"></el-option>
+                            </el-select>
+                        </td>
+                        <td class="table-td">
+                            <el-date-picker v-model="singleEmployee.startDate" type="date" placeholder="入職日"
+                                style="width: 100%;"></el-date-picker>
+                        </td>
+                        <td class="table-td">
+                            <el-input v-model="singleEmployee.teamLeader" placeholder="直屬主管"></el-input>
+                        </td>
+                        <td class="table-td">
+                            <el-input v-model="singleEmployee.branchName" placeholder="分店"></el-input>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
     <div v-if="openZon" class="col-1"></div>
-            <div v-if="openZon" class="col-1"></div>
-            <div v-if="openZon" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
-    <div v-if="openZon" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-                <el-switch
-                    v-model="isModify"
-                    inline-prompt
-                    class="value5"
-                    size="large"
-                    active-text="&nbsp;&nbsp;開啟修改&nbsp;&nbsp;"
-                    inactive-text="&nbsp;&nbsp;資料鎖定&nbsp;&nbsp;"   
-                    style="--el-switch-on-color: #a33238; -webkit-margin-start: 18px ;"
-                    @click = "openDoModify"
-                    />
-            </div>
-            <div v-if="openZon" class="col-1"></div>
-    
+    <div v-if="openZon" class="col-1"></div>
+    <div v-if="openZon" class="col-5"
+        style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
+    <div v-if="openZon" class="col-5"
+        style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
+        <el-switch v-model="isModify" inline-prompt class="value5" size="large"
+            active-text="&nbsp;&nbsp;開啟修改&nbsp;&nbsp;" inactive-text="&nbsp;&nbsp;資料鎖定&nbsp;&nbsp;"
+            style="--el-switch-on-color: #a33238; -webkit-margin-start: 18px ;" @click="openDoModify" />
+    </div>
+    <div v-if="openZon" class="col-1"></div>
+    <!-- 確認修改用彈出視窗 -->
+    <el-dialog
+        v-model="dialogVisible"
+        width="300"
+        :show-close="false"
+    >
+    <h5 class="msg-title" >確認修改 員工編號 {{singleEmployee.id}} ?</h5>
+        <template #footer>
+        <div class="dialog-footer" style="justify-content: center;">
+            <el-button @click="dialogVisible = false;isModify = true">否</el-button>
+            <el-button type="primary" @click="doModify" style="background-color: #a33238;border: #a33238;">
+            是
+            </el-button>
+        </div>
+        </template>
+    </el-dialog>
+
 </template>
 
 <script setup>
@@ -219,14 +250,20 @@ function callQuery() {
         });
 }
 
-//開啟確認修改視窗
+// 開啟確認修改視窗
 function openDoModify() {
-    if (isModify.value == false) {
-        console.log("isModify.value", isModify.value);
-        console.log("修改單號 ID", singleEmployee.value.id);
+    if (!isModify.value) {
+        console.log("開啟修改");
         isModify.value = true;
-        dialogVisible.value = true;
+        dialogVisible.value = true; // 确保这里设置为 true 显示对话框
+    } else {
+        console.log("資料鎖定中，無法開啟修改");
     }
+}
+
+//關閉詳情
+function closeInfo() {
+    openZon.value = false
 }
 
 //修改簽核
