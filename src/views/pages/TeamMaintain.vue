@@ -6,7 +6,7 @@
         <CarAdjustTable></CarAdjustTable>
         
         <!-- 假單簽核 -->
-        <Leave></Leave>
+        <leave></leave>
 
         <!-- 員工總覽 -->
         <Employee></Employee>
@@ -18,7 +18,7 @@
     
 <script setup >
     import CarAdjustTable from '@/components/CarAdjustTable.vue';
-    import Leave from '@/components/Leave.vue';
+    
     
 </script>
     

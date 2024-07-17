@@ -36,7 +36,7 @@
                         <td class="table-td">{{ employee.name }}</td>
                         <td class="table-td">{{ employee.phone }}</td>
                         <td class="table-td">{{ employee.email }}</td>
-                        <td class="table-td">{{ employee.teamLeader }}</td>
+                        <td class="table-td">{{ employee.teamLeaderName }}</td>
                         <td class="table-td">{{ employee.branchName }}</td>
                     </tr>
                 </tbody>
@@ -99,7 +99,7 @@
                         <td class="table-td">{{ singleEmployee.email }}</td>
                         <td class="table-td">{{ singleEmployee.sex }}</td>
                         <td class="table-td">{{ singleEmployee.startDate }}</td>
-                        <td class="table-td">{{ singleEmployee.teamLeader }}</td>
+                        <td class="table-td">{{ singleEmployee.teamLeaderName }}</td>
                         <td class="table-td">{{ singleEmployee.branchName }}</td>
                     </tr>
                     <tr v-if="isModify">
@@ -221,26 +221,16 @@ function callQuery() {
     console.log("callQuery - 當前頁碼:", current.value);
 
     let request = {
-        "sex": null,
-        "accountType": null,
-        "account": null,
-        "name": null,
-        "phone": null,
-        "email": null,
-        "branch": null,
-        "teamLeaderId": null,
-        "page": current.value - 1,
-        "size": rows.value,
-        "sort": "id",
-        "dir": true
+        "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
+        "pageSize": rows.value
     };
 
     axiosapi.post("/employee/query", request)
         .then(function (response) {
             console.log("API response:", response.data);
             employees.value = response.data.data.content;
-            total.value = response.data.totalElement;
-            pages.value = response.data.totalPage;
+            total.value = response.data.data.totalElements;
+            pages.value = response.data.data.totalPages;
         }).catch(function (error) {
             console.log("error", error);
             Swal.fire({
@@ -286,7 +276,7 @@ function doModify() {
         "branch": singleEmployee.value.branch
     }
 
-    axiosapi.put(`/modify/${singleEmployee.value.id}`, request).then(function (response) {
+    axiosapi.put(`/employee/modify/${singleEmployee.value.id}`, request).then(function (response) {
         console.log("response", response);
         if (response.data.success) {
             Swal.fire({

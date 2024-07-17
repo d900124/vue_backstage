@@ -341,60 +341,12 @@ const openCreat = ref(false)
 
 //產品顯示products元件用的參數
 const leaves = ref([]);
-const singleItem= ref([])
+const singleave= ref([])
 
-//開啟修改用
-const isModify = ref(false)
 
-//修改簽核狀態選單
-const approvalTypeValue = ref('1')
-const approvalTypeOptions = [
-    {
-        value: '1',
-        label: '簽核',
-    },
-    {
-        value: '2',
-        label: '拒絕',
-    }
-]
 
 //確認修改彈出視窗用
 const dialogVisible = ref(false)
-
-
-//新增用所有資料
-const creatCarIDValue = ref("1")
-const creatEmployeeIDValue = ref("1")
-const creatTeamleaderIDValue = ref("5")
-const creatApprovalStatusValue = ref("0")
-const creatApprovalTypeValue = ref("1")
-const creatFloatingAmountValue = ref("1000000")
-
-const creatApprovalTypeOptions=[
-    {
-        value: '1',
-        label: '降價',
-    },
-    {
-        value: '2',
-        label: '漲價',
-    },
-    {
-        value: '3',
-        label: '下架',
-    }
-]
-const creatTeamleaderIDOptions=[
-    {
-        value: '5',
-        label: '主管名 - emp5',
-    }
-]
-
-
-
-
 
 
 
@@ -411,12 +363,12 @@ openCreat.value=true;
 
 
 //單筆查詢
-function itemClick(itemId){
-    console.log(itemId)
-    axiosapi.get("/carAdjust/"+itemId).then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
+function leaveClick(leaveId){
+    console.log(leaveId)
+    axiosapi.get("/leave/info/"+leaveId).then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
         console.log("responce",responce.data);
         singleItem.value = responce.data.data;
-        console.log("singleItem.value.id",singleItem.value.id);
+        console.log("singleleave.value.id",singleItem.leave.id);
         openZon.value = true
         isModify.value=false
 
@@ -440,11 +392,10 @@ function callQuery(){
 
         "Page":current.value-1,
         "max":rows.value,
-        "dir":true,
-        "order":"id"
+       
     }
 
-    axiosapi.post("/leave/Query",request).then(function (responce) {  //(AJAX前端程式)多產品查詢的Post功能()
+    axiosapi.post("/leave/query",request).then(function (responce) {  //(AJAX前端程式)多產品查詢的Post功能()
         leaves.value = responce.data.data.content;
 
         //計算分頁比數資訊
