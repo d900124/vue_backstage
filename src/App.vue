@@ -1,8 +1,9 @@
 <template>
-    <div class="common-layout">
-        <el-container style="height: 100%;">
-        <el-aside style=" width: auto; box-shadow: 10px 0px 15px #ececec;"><LeftSideMenu></LeftSideMenu></el-aside>
-        <el-main >
+    <div class="common-layout" >
+        <el-container style="height: 100%; ">
+        <el-aside style=" width: auto; box-shadow: 10px 0px 15px #ececec; overflow: hidden;"><LeftSideMenu 
+            ></LeftSideMenu></el-aside>
+        <el-main style=" width: auto">
             <dev class="container">
                 <RouterView></RouterView>
             </dev>
