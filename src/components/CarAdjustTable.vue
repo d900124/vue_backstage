@@ -176,7 +176,7 @@
             <div v-if="openCreat" class="col-1"></div>
             <div v-if="openCreat" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
             <div v-if="openCreat" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-                <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click = "openDoModify" >&nbsp確認新增&nbsp</el-button>
+                <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click = "creatDdialogVisible=true" >&nbsp確認新增&nbsp</el-button>
             </div>
             <div v-if="openCreat" class="col-1"></div>
 
@@ -304,16 +304,36 @@
 <!-- 確認修改用彈出視窗 -->
     <el-dialog
         v-model="dialogVisible"
-        width="300"
+        width="350"
         :show-close="false"
     >
     <h5 class="msg-title" >確認修改 簽核編號 {{singleItem.id}} ?</h5>
         <template #footer>
-        <div class="dialog-footer" style="justify-content: center;">
-            <el-button @click="dialogVisible = false;isModify = true">否</el-button>
-            <el-button type="primary" @click="doModify" style="background-color: #a33238;border: #a33238;">
+        <div class="dialog-footer" style="display: flex;justify-content: center;">
+            <el-button @click="dialogVisible = false;isModify = false;">取消修改</el-button>
+            <el-button @click="dialogVisible = false;isModify = true">返回修改</el-button>
+            <el-button type="primary" @click="doModify" color="#a33238" :dark="isDark">
+            確認修改
+            </el-button>
+        </div>
+        </template>
+    </el-dialog>
+
+<!-- 確認新增用彈出視窗 -->
+<el-dialog
+        v-model="creatDdialogVisible"
+        width="350"
+        :show-close="false"
+    >
+    <h5 class="msg-title" >確認新增 ?</h5>
+        <template #footer>
+        <div class="dialog-footer" style="display: flex;justify-content: center;">
+            <div>
+            <el-button @click="creatDdialogVisible=false">否</el-button>
+            <el-button type="primary" @click="doCreat" style="background-color: #a33238;border: #a33238;">
             是
             </el-button>
+        </div>
         </div>
         </template>
     </el-dialog>
@@ -362,7 +382,8 @@ const approvalTypeOptions = [
 ]
 
 //確認修改彈出視窗用
-const dialogVisible = ref(false)
+const dialogVisible = ref(false)  //修改
+const creatDdialogVisible =ref(false)  //新增
 
 
 //新增用所有資料
@@ -438,21 +459,21 @@ function callFindByHQL(){
     console.log("callFindByHQL - 當前頁碼:",current.value);
 
     let request ={ 
-        "id":null, 
-        "viewCarDateStr":null, 
-        "viewCarDateEnd":null, 
-        "employeeId":null, 
-        "teamLeaderId":null, 
-        "viewCarId":null, 
+        "id":null,
+        "teamLeaderId":null,
+        "employeeId": null,
         "carId":null,
-        "carinfoId":null, 
-        "suspensionid":null, 
-        "assignedStatus":null,
+        "approvalStatus":null, 
+        "approvalType":null,
+        "floatingAmountMax":null, 
+        "floatingAmountMin": null,
+        "createTime": null,
+        "updateTime":null,
 
         "isPage":current.value-1,
         "max":rows.value,
-        "dir":true,
-        "order":"id"
+        "dir":false,
+        "order":"createTime"
     }
 
     axiosapi.post("/carAdjust/findByHQL",request).then(function (responce) {  //(AJAX前端程式)多產品查詢的Post功能()
@@ -477,6 +498,59 @@ function callFindByHQL(){
             });
         // router.push("/")
     }) 
+}
+
+//新增簽核
+function doCreat() {
+    creatDdialogVisible.value=false;
+    Swal.fire({
+        text: "執行中......",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+    });
+
+
+    let request ={  
+        "employeeId":creatEmployeeIDValue.value, 
+        "teamLeaderId":creatTeamleaderIDValue.value, 
+        "carId":creatCarIDValue.value,
+        "approvalStatus":creatApprovalStatusValue.value, 
+        "approvalType":creatApprovalTypeValue.value,
+        "floatingAmount":creatFloatingAmountValue.value
+    }
+
+    axiosapi.post("/carAdjust", request).then(function(response) {
+        console.log("response", response);
+        if(response.data.success)  {
+            callFindByHQL();
+            Swal.fire({
+                icon: "success",
+                text: response.data.message,
+                showConfirmButton: false,
+            }).then(function(result) {
+                
+                console.log("新增的物件",items.value[0]);
+                openCreat.value=false;
+                itemClick(items.value[0].id);
+                openZon.value=true;
+
+            });
+        } else {
+            Swal.fire({
+                icon: "warning",
+                text: response.data.message,
+            });
+        }
+    }).catch(function(error) {
+        console.log("error", error);
+        Swal.fire({
+            icon: "error",
+            text: "新增錯誤："+error.message,
+        });
+    });
+    setTimeout(function () {
+                    Swal.close();  //視窗關閉 
+                }, 1000);
 }
 
 //開啟確認修改視窗
