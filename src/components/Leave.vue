@@ -8,8 +8,8 @@
 
 <!-- 抬頭 -->
             <div class="col-5" style="padding: 0px 0px;">
-                <h3 class="table-title">車輛調整簽核</h3>
-            </div>
+                <h3 class="table-title">假單簽核</h3>
+            </div> 
             <div class="col-1"></div>
 
             <div class="col-1"></div>
@@ -21,22 +21,20 @@
                 <table class="table">
                 <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
-                    <th scope="col" class="table-th" >簽核編號</th>
-                    <th scope="col" class="table-th" >品牌 - 型號</th>
-                    <th scope="col" class="table-th" >簽核需求</th>
-                    <th scope="col" class="table-th" >建立時間</th>
-                    <th scope="col" class="table-th" >建立者</th>
+                    <th scope="col" class="table-th" >員工</th>
+                    <th scope="col" class="table-th" >假種</th>
+                    <th scope="col" class="table-th" >請假時段</th>
+                    <th scope="col" class="table-th" >工作代理人</th>
                     <th scope="col" class="table-th" >簽核狀態</th>
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
-                    <tr v-for="item in items" :key="item.id"  @click="itemClick(item.id)">
-                    <th scope="row" class="table-td">{{item.id}}</th>
-                    <td class="table-td"></td>
-                    <td class="table-td">{{item.approvalTypeName}} {{item.floatingAmount}}</td>
-                    <td class="table-td">{{item.createTimeString}}</td>
-                    <td class="table-td">{{item.employeeName}}</td>
-                    <td class="table-td">{{item.approvalStatusName}}</td>
+                    <tr v-for="leave in leaves" :key="leave.id"  @click="leaveClick(leave.id)">
+                    <th scope="row" class="table-td">{{leave.id}}</th>
+                    <td class="table-td">{{leave.leaveType}} </td>
+                    <td class="table-td">{{leave.startTime}}-{{leave.endTime}}</td>
+                    <td class="table-td">{{leave.deputyId}}</td>
+                    <td class="table-td">{{leave.permisionStatus}}</td>
                     </tr>
                     
                 </tbody>
@@ -66,7 +64,7 @@
                 :total="total"
                 :page-size="rows"
                 v-model:current-page="current"
-                @change="callFindByHQL"
+                @change="callQuery"
             ></el-pagination>
             
 
@@ -342,7 +340,7 @@ const openZon = ref(false)
 const openCreat = ref(false)
 
 //產品顯示products元件用的參數
-const items = ref([]);
+const leaves = ref([]);
 const singleItem= ref([])
 
 //開啟修改用
@@ -401,7 +399,7 @@ const creatTeamleaderIDOptions=[
 
 
 onMounted(function () {
-    callFindByHQL();
+    callQuery();
 })
 
 
@@ -434,35 +432,26 @@ function itemClick(itemId){
 
 
 //多筆查詢
-function callFindByHQL(){
-    console.log("callFindByHQL - 當前頁碼:",current.value);
+function callQuery(){
+    console.log("callQuery - 當前頁碼:",current.value);
 
     let request ={ 
-        "id":null, 
-        "viewCarDateStr":null, 
-        "viewCarDateEnd":null, 
-        "employeeId":null, 
-        "teamLeaderId":null, 
-        "viewCarId":null, 
-        "carId":null,
-        "carinfoId":null, 
-        "suspensionid":null, 
-        "assignedStatus":null,
+    
 
-        "isPage":current.value-1,
+        "Page":current.value-1,
         "max":rows.value,
         "dir":true,
         "order":"id"
     }
 
-    axiosapi.post("/carAdjust/findByHQL",request).then(function (responce) {  //(AJAX前端程式)多產品查詢的Post功能()
-        items.value = responce.data.data;
+    axiosapi.post("/leave/Query",request).then(function (responce) {  //(AJAX前端程式)多產品查詢的Post功能()
+        leaves.value = responce.data.data.content;
 
         //計算分頁比數資訊
         total.value = responce.data.totalElement;
         pages.value = responce.data.totalPage;
 
-        console.log("items",responce.data.data);
+        console.log("leaves",responce.data.data);
         console.log("total",responce.data.totalElement);
         console.log("responce",responce.data);
         // setTimeout(function () {
@@ -516,7 +505,7 @@ function doModify() {
                 text: response.data.message,
                 showConfirmButton: false,
             }).then(function(result) {
-                callFindByHQL();
+                callQuery();
                 itemClick(singleItem.value.id);
                 openZon.value=true;
                 
