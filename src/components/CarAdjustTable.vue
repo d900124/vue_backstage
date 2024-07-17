@@ -66,7 +66,7 @@
                 :total="total"
                 :page-size="rows"
                 v-model:current-page="current"
-                @change="callFindByHQL"
+                @change="callFindByHQL(false)"
             ></el-pagination>
             
 
@@ -422,11 +422,11 @@ const creatTeamleaderIDOptions=[
 
 
 onMounted(function () {
-    callFindByHQL();
+    callFindByHQL(false);
 })
 
 
-//單筆新增
+//開啟新增區塊
 function openModal(){
 console.log("openModal");
 openCreat.value=true;
@@ -455,7 +455,10 @@ function itemClick(itemId){
 
 
 //多筆查詢
-function callFindByHQL(){
+function callFindByHQL(doCreat){
+    if (doCreat) {
+        current.value=1
+    }
     console.log("callFindByHQL - 當前頁碼:",current.value);
 
     let request ={ 
@@ -522,7 +525,7 @@ function doCreat() {
     axiosapi.post("/carAdjust", request).then(function(response) {
         console.log("response", response);
         if(response.data.success)  {
-            callFindByHQL();
+            callFindByHQL(true);
             Swal.fire({
                 icon: "success",
                 text: response.data.message,
@@ -590,7 +593,7 @@ function doModify() {
                 text: response.data.message,
                 showConfirmButton: false,
             }).then(function(result) {
-                callFindByHQL();
+                callFindByHQL(false);
                 itemClick(singleItem.value.id);
                 openZon.value=true;
                 
