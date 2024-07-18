@@ -85,7 +85,7 @@
 
 
 <script setup>
-import { ref } from 'vue';
+import { ref , onMounted, watch } from 'vue';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -93,6 +93,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 
 const title = 'AAAA';
+const calendarApi =null;
 
 const calendarOptions = ref({
     locale: 'zh-tw',
@@ -120,7 +121,7 @@ const calendarOptions = ref({
         hour12: false, // false设置时间为24小时
     },
 
-    headerToolbar: {
+    headerToolbar: {  //標配表頭
         left: "prev,next today",
         right: "title",
         center: "dayGridMonth,timeGridWeek,timeGridDay",
@@ -193,6 +194,113 @@ const calendarOptions = ref({
     droppable: true, // this allows things to be dropped onto the calendar
     weekends: false  //周末顯示
 });
+
+const monthEvent = [
+                {
+                    id: 'number_1',
+                    resourceId: 'number_1',
+                    title: 'event 1',
+                    start: '2021-10-21',
+                    color: 'purple',
+                },
+                {
+                    resourceId: 'number_2',
+                    id: 'number_2',  title: 'event 2', start: '2021-10-22', color: 'purple',
+                },
+                { title: 'event 3', start: '2021-10-23' },
+                { title: 'event 4', start: '2021-10-24' },
+                { title: 'event 5', start: '2021-10-21' },
+                { title: 'event 6', start: '2021-10-21', color: 'purple' },
+                { title: 'event 7', start: '2021-10-21' },
+                {
+                    id: 'number_3',
+                    resourceId: 'number_3',
+                    title: 'event 6',
+                    start: '2021-11-21',
+                    end: '2021-11-21',
+                    color: 'purple',
+                    extendedProps: {
+                        description: 'asdasdasdasdasdasdasdasds',
+                    }
+                },
+                {
+                    id: 4,
+                    title: 'event 7',
+                    start: '2021-11-22',
+                    extendedProps: {
+                        description: '444444444444',
+                    },
+                },
+            ]
+
+            const weekEvent= [
+                {
+                    id: 'number_1',
+                    resourceId: 'number_1',
+                    title: 'week_event',
+                    start: '2021-11-11',
+                    color: 'purple',
+                },
+            ]
+
+onMounted(() => {
+    const calendarApi = fullCalendar.value.getApi();
+    title.value = calendarApi.view?.title;
+    getDtata();
+});
+
+// watch(() => calendarApi.value.view?.type,
+//   () => {
+//     getDtata();
+//   }
+// );
+
+const getDtata = () => {
+  setTimeout(() => {
+    calendarOptions.value.events = calendarApi.value.view?.type === 'dayGridMonth' ? monthEvent : weekEvent;
+  }, 200);
+};
+
+const prev = () => {
+  calendarApi.value.prev();
+  title.value = calendarApi.value.view?.title;
+};
+
+const next = () => {
+  calendarApi.value.next();
+  title.value = calendarApi.value.view?.title;
+};
+
+const today = () => {
+  calendarApi.value.today();
+  title.value = calendarApi.value.view?.title;
+};
+
+const month = () => {
+  calendarApi.value.changeView('dayGridMonth');
+  calendarApi.value.today();
+  title.value = calendarApi.value.view?.title;
+};
+
+const week = () => {
+  calendarApi.value.changeView('timeGridWeek');
+  calendarApi.value.today();
+  title.value = calendarApi.value.view?.title;
+};
+
+const day = () => {
+  calendarApi.value.today();
+  title.value = calendarApi.value.view?.title;
+};
+
+const search = () => {
+  calendarApi.value.changeView('dayGrid', {
+    start: '2021-10-21',
+    end: '2021-10-23',
+  });
+};
+
+
 
 // https://juejin.cn/post/7030696881420238878   還在研究中
 
