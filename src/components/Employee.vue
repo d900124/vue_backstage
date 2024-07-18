@@ -93,7 +93,7 @@
                 </thead>
                 <tbody class="table-group-divider">
                     <tr v-if="!isModify">
-                        <td class="table-td">{{ singleEmployee.accountType }}</td>
+                        <td class="table-td">{{ singleEmployee.accountTypeName }}</td>
                         <td class="table-td">{{ singleEmployee.name }}</td>
                         <td class="table-td">{{ singleEmployee.phone }}</td>
                         <td class="table-td">{{ singleEmployee.email }}</td>
@@ -129,7 +129,11 @@
                             <el-input v-model="singleEmployee.teamLeader" placeholder="直屬主管"></el-input>
                         </td>
                         <td class="table-td">
-                            <el-input v-model="singleEmployee.branchName" placeholder="分店"></el-input>
+                            <el-select v-model="singleEmployee.branchName" placeholder="請選擇分店">
+                                <el-option label="大吉祥" value="branchOne"></el-option>
+                                <el-option label="大滿貫" value="branchTwo"></el-option>
+                                <el-option label="大巨蛋" value="branchThree"></el-option>
+                            </el-select>
                         </td>
                     </tr>
                 </tbody>

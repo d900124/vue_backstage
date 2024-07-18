@@ -21,7 +21,7 @@
             <table class="table">
                 <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
-                        <th scope="col" class="table-th">員工</th>
+                        <th scope="col" class="table-th">申請人</th>
                         <th scope="col" class="table-th">假種</th>
                         <th scope="col" class="table-th">請假時段</th>
                         <th scope="col" class="table-th">工作代理人</th>
@@ -30,8 +30,8 @@
                 </thead>
                 <tbody class="table-group-divider">
                     <tr v-for="leave in leaves" :key="leave.id" @click="leaveClick(leave.id)">
-                        <th scope="row" class="table-td">{{ leave.id }}</th>
-                        <td class="table-td">{{ leave.leaveType }} </td>
+                        <th scope="row" class="table-td">{{ leave.employeeName }}</th>
+                        <td class="table-td">{{ leave.leaveTypeName }} </td>
                         <td class="table-td">{{ leave.startTime }}<br>{{ leave.endTime }}</td>
                         <td class="table-td">{{ leave.deputyName }}</td>
                         <!-- 使用v-if和v-else-if语句来显示簽核狀態 -->
