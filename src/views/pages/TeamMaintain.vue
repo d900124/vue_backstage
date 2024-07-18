@@ -8,7 +8,8 @@
             <Leave></Leave>
 
             <!-- 員工總覽 -->
-            <EmployeeList></EmployeeList>
+            <Employee></Employee>
+            
 
             <!-- 考核評比 -->
 
@@ -19,7 +20,7 @@
 <script setup>
 import CarAdjustTable from '@/components/CarAdjustTable.vue';
 import Leave from '@/components/Leave.vue';
-import EmployeeList from '@/components/Employee/EmployeeList.vue';
+import EmployeeList from '@/components/Employee.vue';
 
 
 </script>

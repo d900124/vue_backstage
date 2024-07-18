@@ -76,38 +76,74 @@
     <div class="col-1"></div>
     <div v-if="openZon" class="col-1"></div>
     <div v-if="openZon" class="col-10" style="height: 300px; background-color:rgb(245, 250, 250)  ;">
-
+        <!-- 下方詳細資料區/ 第一欄 -->
         <div class="table-responsive" style="padding:20px ; ">
             <table class="table" style="width: 1000px; ">
                 <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
                         <th scope="col" class="table-th">職等</th>
                         <th scope="col" class="table-th">姓名</th>
-                        <th scope="col" class="table-th">電話</th>
-                        <th scope="col" class="table-th">Email</th>
-                        <th scope="col" class="table-th">性別</th>
                         <th scope="col" class="table-th">入職日</th>
                         <th scope="col" class="table-th">直屬主管</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    <tr v-if="!isModify">
+                        <input type="hidden" v-model="singleEmployee.account">
+                        <td class="table-td">{{ singleEmployee.accountTypeName }}</td>
+                        <td class="table-td">{{ singleEmployee.name }}</td>
+                        <td class="table-td">{{ singleEmployee.startDate }}</td>
+                        <td class="table-td">{{ singleEmployee.teamLeaderName }}</td>
+                    </tr>
+                    <tr v-if="isModify">
+                        <input type="hidden" v-model="singleEmployee.account">
+                        <td class="table-td">
+                            <el-select v-model="singleEmployee.accountTypeName" placeholder="請選擇職等">
+                                <el-option label="銷售業務" value="3"></el-option>
+                                <el-option label="主管" value="4"></el-option>
+                            </el-select>
+                        </td>
+                        <td class="table-td">
+                            <el-input v-model="singleEmployee.name" placeholder="姓名"></el-input>
+                        </td>
+                        <td class="table-td">
+                            <el-date-picker v-model="singleEmployee.startDate" type="date" placeholder="入職日"
+                                style="width: 100%;"></el-date-picker>
+                        </td>
+                        <!-- <td class="table-td">
+                            <el-input v-model="singleEmployee.teamLeader" placeholder="直屬主管"></el-input>
+                        </td> -->
+                        <td class="table-td">
+                            <el-select v-model="singleEmployee.teamLeaderName" placeholder="請選擇直屬主管">
+                                <el-option v-for="leader in teamLeaders" :key="leader.id" :label="leader.name"
+                                    :value="leader.id"></el-option>
+                            </el-select>
+                        </td>
+                    </tr>
+                </tbody>
+                <div style="height: 20px;"></div>
+                <!-- 下方詳細資料區/ 第二欄 -->
+                <thead style="border-bottom: 2px solid #a33238;">
+                    <tr>
+                        <th scope="col" class="table-th">性別</th>
+                        <th scope="col" class="table-th">電話</th>
+                        <th scope="col" class="table-th">Email</th>
                         <th scope="col" class="table-th">分店</th>
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
                     <tr v-if="!isModify">
-                        <td class="table-td">{{ singleEmployee.accountTypeName }}</td>
-                        <td class="table-td">{{ singleEmployee.name }}</td>
+                        <td class="table-td">{{ singleEmployee.sex }}</td>
                         <td class="table-td">{{ singleEmployee.phone }}</td>
                         <td class="table-td">{{ singleEmployee.email }}</td>
-                        <td class="table-td">{{ singleEmployee.sex }}</td>
-                        <td class="table-td">{{ singleEmployee.startDate }}</td>
-                        <td class="table-td">{{ singleEmployee.teamLeaderName }}</td>
                         <td class="table-td">{{ singleEmployee.branchName }}</td>
                     </tr>
                     <tr v-if="isModify">
                         <td class="table-td">
-                            <el-input v-model="singleEmployee.accountType" placeholder="職等"></el-input>
-                        </td>
-                        <td class="table-td">
-                            <el-input v-model="singleEmployee.name" placeholder="姓名"></el-input>
+                            <el-select v-model="singleEmployee.sex" placeholder="請選擇性別">
+                                <el-option label="M" value="M"></el-option>
+                                <el-option label="F" value="F"></el-option>
+                            </el-select>
                         </td>
                         <td class="table-td">
                             <el-input v-model="singleEmployee.phone" placeholder="電話"></el-input>
@@ -116,27 +152,16 @@
                             <el-input v-model="singleEmployee.email" placeholder="Email"></el-input>
                         </td>
                         <td class="table-td">
-                            <el-select v-model="singleEmployee.sex" placeholder="請選擇性別">
-                                <el-option label="M" value="M"></el-option>
-                                <el-option label="F" value="F"></el-option>
-                            </el-select>
-                        </td>
-                        <td class="table-td">
-                            <el-date-picker v-model="singleEmployee.startDate" type="date" placeholder="入職日"
-                                style="width: 100%;"></el-date-picker>
-                        </td>
-                        <td class="table-td">
-                            <el-input v-model="singleEmployee.teamLeader" placeholder="直屬主管"></el-input>
-                        </td>
-                        <td class="table-td">
                             <el-select v-model="singleEmployee.branchName" placeholder="請選擇分店">
-                                <el-option label="大吉祥" value="branchOne"></el-option>
-                                <el-option label="大滿貫" value="branchTwo"></el-option>
-                                <el-option label="大巨蛋" value="branchThree"></el-option>
+                                <el-option label="大吉祥" value="1"></el-option>
+                                <el-option label="大滿貫" value="2"></el-option>
+                                <el-option label="大巨蛋" value="3"></el-option>
                             </el-select>
                         </td>
                     </tr>
                 </tbody>
+
+
             </table>
         </div>
     </div>
@@ -152,19 +177,15 @@
     </div>
     <div v-if="openZon" class="col-1"></div>
     <!-- 確認修改用彈出視窗 -->
-    <el-dialog
-        v-model="dialogVisible"
-        width="300"
-        :show-close="false"
-    >
-    <h5 class="msg-title" >確認修改 員工編號 {{singleEmployee.id}} ?</h5>
+    <el-dialog v-model="dialogVisible" width="300" :show-close="false">
+        <h5 class="msg-title">確認修改 員工編號 {{ singleEmployee.id }} ?</h5>
         <template #footer>
-        <div class="dialog-footer" style="justify-content: center;">
-            <el-button @click="dialogVisible = false;isModify = true">否</el-button>
-            <el-button type="primary" @click="doModify" style="background-color: #a33238;border: #a33238;">
-            是
-            </el-button>
-        </div>
+            <div class="dialog-footer" style="justify-content: center;">
+                <el-button @click="dialogVisible = false; isModify = true">否</el-button>
+                <el-button type="primary" @click="doModify" style="background-color: #a33238;border: #a33238;">
+                    是
+                </el-button>
+            </div>
         </template>
     </el-dialog>
 
@@ -187,12 +208,25 @@ const openZon = ref(false); // 初始值改為false，避免一開始就顯示�
 
 const employees = ref([]);
 const singleEmployee = ref(null); // 初始值改為null，表示單個員工未定義
+const teamLeaders = ref([]); // 定义空数组或根据需求初始化
+// export { teamLeaders }; // 导出 teamLeaders 变量
 
 //開啟修改用
 const isModify = ref(false)
 
 //確認修改彈出視窗用
 const dialogVisible = ref(false)
+
+const accountTypes = [
+    { label: "銷售業務", value: 3 },
+    { label: "主管", value: 4 }
+];
+
+const branches = [
+    { label: "大吉祥", value: 1 },
+    { label: "大滿貫", value: 2 },
+    { label: "大巨蛋", value: 3 }
+];
 
 onMounted(() => {
     callQuery();
@@ -202,15 +236,34 @@ function openModal() {
     console.log("openModal");
 }
 
+// 获取所有主管ID和名称
+function getAllTeamLeaders() {
+    axiosapi.get("/employee/teamLeaders")
+        .then(function (response) {
+            console.log("teamLeaders", response.data);
+            teamLeaders.value = response.data.data;
+        }).catch(function (error) {
+            console.log("error", error);
+            Swal.fire({
+                text: "获取主管列表错误：" + error.message,
+                icon: "error"
+            });
+        });
+}
+
 // 單筆查詢
 function employeeClick(employeeId) {
-    console.log(employeeId);
+    console.log("employeeId=" + employeeId);
     axiosapi.get("/employee/info/" + employeeId)
         .then(function (response) {
             console.log("response", response.data);
             singleEmployee.value = response.data.data;
+            singleEmployee.value.branchName = getBranchName(singleEmployee.value.branch);
+            singleEmployee.value.accountTypeName = getAccountTypeName(singleEmployee.value.accountType);
+            console.log("branchName=" + singleEmployee.value.branchName);
             openZon.value = true;
             isModify.value = false;
+            getAllTeamLeaders();
         }).catch(function (error) {
             console.log("error", error);
             Swal.fire({
@@ -219,6 +272,30 @@ function employeeClick(employeeId) {
             });
         });
 }
+
+// 查找分店名
+function getBranchName(branchValue) {
+    console.log("branchValue=" + branchValue);
+    const branch = branches.find(b => b.value === branchValue);
+    console.log("branch=" + branch);
+    return branch ? branch.label : '';
+}
+
+// 查找帳號名
+function getAccountTypeName(accountTypeValue) {
+    console.log("accountTypeValue=" + accountTypeValue);
+    const accountType = accountTypes.find(a => a.value === accountTypeValue);
+    console.log("accountType=" + accountType);
+    return accountType ? accountType.label : '';
+}
+
+// // 單筆查詢後將branch轉為對應的branchName
+// function setBranch() {
+//     const branch = branches.find(b => b.label === singleEmployee.value.branchName);
+//     if (branch) {
+//         singleEmployee.value.branch = branch.value;
+//     }
+// }
 
 // 多條件多筆查詢
 function callQuery() {
@@ -270,16 +347,18 @@ function doModify() {
 
     let request = {
         "id": singleEmployee.value.id,
-        "accountType": singleEmployee.value.accountType,
+        // "account": singleEmployee.value.account,
+        "accountType": singleEmployee.value.accountTypeName,
         "name": singleEmployee.value.name,
         "phone": singleEmployee.value.phone,
         "email": singleEmployee.value.email,
         "sex": singleEmployee.value.sex,
         "startDate": singleEmployee.value.startDate,
-        "teamLeaderId": singleEmployee.value.teamLeader,
-        "branch": singleEmployee.value.branch
+        "teamLeaderId": singleEmployee.value.teamLeaderName,
+        "branch": singleEmployee.value.branchName
     }
 
+    console.log("request========>" + JSON.stringify(request))
     axiosapi.put(`/employee/modify/${singleEmployee.value.id}`, request).then(function (response) {
         console.log("response", response);
         if (response.data.success) {
@@ -289,6 +368,7 @@ function doModify() {
                 showConfirmButton: false,
             }).then(function (result) {
                 callQuery();
+                employeeClick(singleEmployee.value.id);
                 itemClick(singleEmployee.value.id);
                 openZon.value = true;
 
