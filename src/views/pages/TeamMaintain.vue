@@ -1,6 +1,6 @@
 <template>
-    <h3>團隊管理</h3>
-    <div class="container text-center">
+    
+    <div class="container text-center" >
         <div class="row">
         <!-- 車輛調整簽核 -->
         <CarAdjustTable></CarAdjustTable>
