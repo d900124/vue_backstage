@@ -207,8 +207,10 @@ const employees = ref([]);
 
 const teamLeaders = ref([]); // 定义空数组或根据需求初始化
 const singleEmployee = ref({
-    accountType: null, // 初始化 accountType
+    accountType: null,
     branch: null,
+    teamLeaderId: null,
+    teamLeaderName: '', // 添加 teamLeaderName
 });
 
 // export { teamLeaders }; // 导出 teamLeaders 变量
@@ -254,14 +256,16 @@ function getAllTeamLeaders() {
         });
 }
 
-// 單筆查詢
 function employeeClick(employeeId) {
     console.log("employeeId=" + employeeId);
     axiosapi.get("/employee/info/" + employeeId)
         .then(function (response) {
             console.log("response", response.data);
-            singleEmployee.value = response.data.data;
-            console.log("branchName=" + singleEmployee.value.branchName);
+            const employeeData = response.data.data;
+            singleEmployee.value = {
+                ...employeeData,
+                teamLeaderName: employeeData.teamLeaderName, // 設置名稱
+            };
             openZon.value = true;
             isModify.value = false;
             getAllTeamLeaders();
@@ -273,6 +277,7 @@ function employeeClick(employeeId) {
             });
         });
 }
+
 
 
 
@@ -318,7 +323,6 @@ function closeInfo() {
     openZon.value = false
 }
 
-//修改簽核
 function doModify() {
     Swal.fire({
         text: "執行中......",
@@ -334,7 +338,7 @@ function doModify() {
         "email": singleEmployee.value.email,
         "sex": singleEmployee.value.sex,
         "startDate": singleEmployee.value.startDate,
-        "teamLeaderId": singleEmployee.value.teamLeaderName,
+        "teamLeaderId": singleEmployee.value.teamLeaderId,  // 使用整數型別的 ID
         "branch": singleEmployee.value.branch
     }
 
@@ -350,7 +354,6 @@ function doModify() {
                 callQuery();
                 employeeClick(singleEmployee.value.id);
                 openZon.value = true;
-
             });
         } else {
             Swal.fire({
@@ -371,6 +374,7 @@ function doModify() {
     dialogVisible.value = false;
     isModify.value = false;
 }
+
 
 </script>
 

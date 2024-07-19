@@ -430,7 +430,7 @@ function doModify() {
                 showConfirmButton: false,
             }).then(function (result) {
                 callQuery();
-                itemClick(singleItem.value.id);
+
                 openZon.value = true;
 
             });
