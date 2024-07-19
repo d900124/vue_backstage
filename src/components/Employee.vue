@@ -98,9 +98,9 @@
                     <tr v-if="isModify">
                         <input type="hidden" v-model="singleEmployee.account">
                         <td class="table-td">
-                            <el-select v-model="singleEmployee.accountTypeName" placeholder="請選擇職等">
-                                <el-option label="銷售業務" value="3"></el-option>
-                                <el-option label="主管" value="4"></el-option>
+                            <el-select v-model="singleEmployee.accountType" placeholder="請選擇職等">
+                                <el-option v-for="status in accountTypes" :key="status.value" :label="status.label"
+                                    :value="status.value" />
                             </el-select>
                         </td>
                         <td class="table-td">
@@ -110,9 +110,6 @@
                             <el-date-picker v-model="singleEmployee.startDate" type="date" placeholder="入職日"
                                 style="width: 100%;"></el-date-picker>
                         </td>
-                        <!-- <td class="table-td">
-                            <el-input v-model="singleEmployee.teamLeader" placeholder="直屬主管"></el-input>
-                        </td> -->
                         <td class="table-td">
                             <el-select v-model="singleEmployee.teamLeaderName" placeholder="請選擇直屬主管">
                                 <el-option v-for="leader in teamLeaders" :key="leader.id" :label="leader.name"
@@ -152,10 +149,9 @@
                             <el-input v-model="singleEmployee.email" placeholder="Email"></el-input>
                         </td>
                         <td class="table-td">
-                            <el-select v-model="singleEmployee.branchName" placeholder="請選擇分店">
-                                <el-option label="大吉祥" value="1"></el-option>
-                                <el-option label="大滿貫" value="2"></el-option>
-                                <el-option label="大巨蛋" value="3"></el-option>
+                            <el-select v-model="singleEmployee.branch" placeholder="請選擇分店">
+                                <el-option v-for="status in branches" :key="status.value" :label="status.label"
+                                    :value="status.value" />
                             </el-select>
                         </td>
                     </tr>
@@ -197,6 +193,7 @@ import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
 
+
 const router = useRouter();
 
 const total = ref(0);
@@ -207,8 +204,13 @@ const rows = ref(4);
 const openZon = ref(false); // 初始值改為false，避免一開始就顯示單筆詳細資料
 
 const employees = ref([]);
-const singleEmployee = ref(null); // 初始值改為null，表示單個員工未定義
+
 const teamLeaders = ref([]); // 定义空数组或根据需求初始化
+const singleEmployee = ref({
+    accountType: null, // 初始化 accountType
+    branch: null,
+});
+
 // export { teamLeaders }; // 导出 teamLeaders 变量
 
 //開啟修改用
@@ -217,16 +219,17 @@ const isModify = ref(false)
 //確認修改彈出視窗用
 const dialogVisible = ref(false)
 
-const accountTypes = [
-    { label: "銷售業務", value: 3 },
-    { label: "主管", value: 4 }
-];
 
-const branches = [
+const accountTypes = ref([
+    { label: '銷售業務', value: 3 },
+    { label: '主管', value: 4 },
+]);
+
+const branches = ref([
     { label: "大吉祥", value: 1 },
     { label: "大滿貫", value: 2 },
     { label: "大巨蛋", value: 3 }
-];
+]);
 
 onMounted(() => {
     callQuery();
@@ -258,8 +261,6 @@ function employeeClick(employeeId) {
         .then(function (response) {
             console.log("response", response.data);
             singleEmployee.value = response.data.data;
-            singleEmployee.value.branchName = getBranchName(singleEmployee.value.branch);
-            singleEmployee.value.accountTypeName = getAccountTypeName(singleEmployee.value.accountType);
             console.log("branchName=" + singleEmployee.value.branchName);
             openZon.value = true;
             isModify.value = false;
@@ -273,29 +274,9 @@ function employeeClick(employeeId) {
         });
 }
 
-// 查找分店名
-function getBranchName(branchValue) {
-    console.log("branchValue=" + branchValue);
-    const branch = branches.find(b => b.value === branchValue);
-    console.log("branch=" + branch);
-    return branch ? branch.label : '';
-}
 
-// 查找帳號名
-function getAccountTypeName(accountTypeValue) {
-    console.log("accountTypeValue=" + accountTypeValue);
-    const accountType = accountTypes.find(a => a.value === accountTypeValue);
-    console.log("accountType=" + accountType);
-    return accountType ? accountType.label : '';
-}
 
-// // 單筆查詢後將branch轉為對應的branchName
-// function setBranch() {
-//     const branch = branches.find(b => b.label === singleEmployee.value.branchName);
-//     if (branch) {
-//         singleEmployee.value.branch = branch.value;
-//     }
-// }
+
 
 // 多條件多筆查詢
 function callQuery() {
@@ -347,15 +328,14 @@ function doModify() {
 
     let request = {
         "id": singleEmployee.value.id,
-        // "account": singleEmployee.value.account,
-        "accountType": singleEmployee.value.accountTypeName,
+        "accountType": singleEmployee.value.accountType,
         "name": singleEmployee.value.name,
         "phone": singleEmployee.value.phone,
         "email": singleEmployee.value.email,
         "sex": singleEmployee.value.sex,
         "startDate": singleEmployee.value.startDate,
         "teamLeaderId": singleEmployee.value.teamLeaderName,
-        "branch": singleEmployee.value.branchName
+        "branch": singleEmployee.value.branch
     }
 
     console.log("request========>" + JSON.stringify(request))
@@ -369,7 +349,6 @@ function doModify() {
             }).then(function (result) {
                 callQuery();
                 employeeClick(singleEmployee.value.id);
-                itemClick(singleEmployee.value.id);
                 openZon.value = true;
 
             });
