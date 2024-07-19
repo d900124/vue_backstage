@@ -4,10 +4,94 @@
 
             <div class="col-1"></div>
 <!-- 多選下拉選單(簡易搜尋) -->
-            <div class="col-5" style="padding: 0px 0px;"></div>
+            <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
+                
+                    <el-select
+                        v-model="findbbb"
+                        clearable
+                        placeholder="品牌"
+                        size="small"
+                        style="width: 130px;margin-right: 20px;"
+                        @change = "current=1;callFindByHQL(false)"
+                        >
+                        <el-option
+                            v-for="Option in xxxx"
+                            :key="Option.value"
+                            :label="Option.label"
+                            :value="Option.value"
+                            
+                        />
+                    </el-select>
+
+                    <el-select
+                        v-model="findEmployeeId"
+                        clearable
+                        placeholder="創建者"
+                        size="small"
+                        style="width: 130px;margin-right: 20px;"
+                        @change = "current=1;callFindByHQL(false)"
+                        >
+                        <el-option
+                            v-for="Option in employeeIDOptions"
+                            :key="Option.value"
+                            :label="Option.label"
+                            :value="Option.value"
+                            
+                        />
+                    </el-select>
+
+                    <el-select
+                        v-model="findApprovalType"
+                        clearable
+                        placeholder="簽核種類"
+                        size="small"
+                        style="width: 130px;margin-right: 20px;"
+                        @change = "current=1;callFindByHQL(false)"
+                        >
+                        <el-option
+                            v-for="Option in creatApprovalTypeOptions"
+                            :key="Option.value"
+                            :label="Option.label"
+                            :value="Option.value"
+                            
+                        />
+                    </el-select>
+
+                    <el-select
+                        v-model="findApprovalStatus"
+                        clearable
+                        placeholder="簽核狀態"
+                        size="small"
+                        style="width: 130px;margin-right: 20px;"
+                        @change = "current=1;callFindByHQL(false)"
+                        >
+                        <el-option
+                            v-for="Option in approvalStatusOptions"
+                            :key="Option.value"
+                            :label="Option.label"
+                            :value="Option.value"
+                            
+                        />
+                    </el-select>
+
+<!-- 開啟進階查詢 -->
+                    <div class="btm-div" style="display: flex;margin-right: 20px;" @click="openFindMore=true">
+                        <font-awesome-icon icon="magnifying-glass" size="" style="color: #a33238; padding: 0;"/>
+                        <el-button type='' link  style="color: #a33238; font-weight: 900;">進階查詢</el-button>
+                        
+                    </div>
+
+<!-- 清除查詢 -->
+                    <div class="btm-div" style="display: flex;margin-right: 20px;" @click="cleanFind">
+                        <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;"/>
+                        <el-button type='' link  style="color: #a33238; font-weight: 900;">清除查詢</el-button>
+                    </div>
+            </div>
+            
+            
 
 <!-- 抬頭 -->
-            <div class="col-5" style="padding: 0px 0px;">
+            <div class="col-2" style="padding: 0px 0px;">
                 <h3 class="table-title">車輛調整簽核</h3>
             </div>
             <div class="col-1"></div>
@@ -57,7 +141,7 @@
             </div>
         </div>
 
-        <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
+        <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; height: 50px;">
 <!-- 分頁區塊 -->
             <el-pagination
                 style="margin: 10px 0px;"
@@ -66,7 +150,7 @@
                 :total="total"
                 :page-size="rows"
                 v-model:current-page="current"
-                @change="callFindByHQL"
+                @change="callFindByHQL(false)"
             ></el-pagination>
             
 
@@ -101,7 +185,7 @@
                         size="small"
                         >
                         <el-option
-                            v-for="Option in creatTeamleaderIDOptions"
+                            v-for="Option in teamleaderIDOptions"
                             :key="Option.value"
                             :label="Option.label"
                             :value="Option.value"
@@ -176,7 +260,7 @@
             <div v-if="openCreat" class="col-1"></div>
             <div v-if="openCreat" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
             <div v-if="openCreat" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-                <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click = "openDoModify" >&nbsp確認新增&nbsp</el-button>
+                <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click = "creatDdialogVisible=true" >&nbsp確認新增&nbsp</el-button>
             </div>
             <div v-if="openCreat" class="col-1"></div>
 
@@ -262,13 +346,13 @@
                         <td class="table-td">{{singleItem.updateTimeString}}</td>
                         <td class="table-td" >
                             <el-select
-                            v-model="approvalTypeValue"
+                            v-model="approvalStatusValue"
                             placeholder="Select"
                             size="small"
                             style="width: 50%"
                             >
                             <el-option
-                                v-for="Option in approvalTypeOptions"
+                                v-for="Option in approvalStatusOptions"
                                 :key="Option.value"
                                 :label="Option.label"
                                 :value="Option.value"
@@ -304,20 +388,199 @@
 <!-- 確認修改用彈出視窗 -->
     <el-dialog
         v-model="dialogVisible"
-        width="300"
+        width="350"
         :show-close="false"
     >
     <h5 class="msg-title" >確認修改 簽核編號 {{singleItem.id}} ?</h5>
         <template #footer>
-        <div class="dialog-footer" style="justify-content: center;">
-            <el-button @click="dialogVisible = false;isModify = true">否</el-button>
-            <el-button type="primary" @click="doModify" style="background-color: #a33238;border: #a33238;">
-            是
+        <div class="dialog-footer" style="display: flex;justify-content: center;">
+            <el-button @click="dialogVisible = false;isModify = false;">取消修改</el-button>
+            <el-button @click="dialogVisible = false;isModify = true">返回修改</el-button>
+            <el-button type="primary" @click="doModify" color="#a33238" :dark="isDark">
+            確認修改
             </el-button>
         </div>
         </template>
     </el-dialog>
-            
+
+<!-- 確認新增用彈出視窗 -->
+<el-dialog
+        v-model="creatDdialogVisible"
+        width="350"
+        :show-close="false"
+    >
+    <h5 class="msg-title" >確認新增 ?</h5>
+        <template #footer>
+        <div class="dialog-footer" style="display: flex;justify-content: center;">
+            <div>
+            <el-button @click="creatDdialogVisible=false">否</el-button>
+            <el-button type="primary" @click="doCreat" style="background-color: #a33238;border: #a33238;">
+            是
+            </el-button>
+        </div>
+        </div>
+        </template>
+    </el-dialog>
+
+<!-- 多選彈出 -->
+    <el-drawer
+        v-model="openFindMore"
+        title=""
+        :direction="direction"
+        >
+        <el-divider content-position="left">
+                    <h5 class="table-title" >簽核多選選項</h5>
+        </el-divider>
+
+        <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
+                <el-form-item label="創建員工 :&nbsp;">
+                    <el-select
+                        v-model="findEmployeeId"
+                        clearable
+                        placeholder="創建員工"
+                        size="small"
+                        @change = "current=1;callFindByHQL(false)"
+                        >
+                        <el-option
+                            v-for="Option in employeeIDOptions"
+                            :key="Option.value"
+                            :label="Option.label"
+                            :value="Option.value"
+                            
+                        />
+                    </el-select>
+                </el-form-item>
+
+                <el-divider border-style="dashed" style="margin: 0;"/>
+                <el-form-item label="簽核主管 :&nbsp;">
+                    <el-select
+                        v-model="findTeamLeaderId"
+                        placeholder="簽核主管"
+                        clearable
+                        size="small"
+                        @change = "current=1;callFindByHQL(false)"
+                        >
+                        <el-option
+                            v-for="Option in teamleaderIDOptions"
+                            :key="Option.value"
+                            :label="Option.label"
+                            :value="Option.value"
+                        />
+                    </el-select>
+                </el-form-item>
+                <el-divider border-style="dashed" style="margin: 0;"/>
+
+                <el-form-item label="修改車輛 :&nbsp;">
+                    <el-select
+                        v-model="findCarId"
+                        placeholder="修改車輛"
+                        clearable
+                        size="small"
+                        @change = "current=1;callFindByHQL(false)"
+                        >
+                        <el-option
+                            v-for="Option in carIDOptions"
+                            :key="Option.value"
+                            :label="Option.label"
+                            :value="Option.value"
+                        />
+                    </el-select>
+                </el-form-item>
+                <el-divider border-style="dashed" style="margin: 0;"/>
+
+                <el-form-item label="簽核種類 :&nbsp;">
+                    <el-select
+                        v-model="findApprovalType"
+                        clearable
+                        placeholder="簽核種類"
+                        size="small"
+                        @change = "current=1;callFindByHQL(false)"
+                        >
+                        <el-option
+                            v-for="Option in creatApprovalTypeOptions"
+                            :key="Option.value"
+                            :label="Option.label"
+                            :value="Option.value"
+                            
+                        />
+                    </el-select>
+                </el-form-item>
+                <el-divider border-style="dashed" style="margin: 0;"/>
+
+                <el-form-item label="簽核狀態 :&nbsp;">
+                    <el-select
+                        v-model="findApprovalStatus"
+                        clearable
+                        placeholder="簽核狀態"
+                        size="small"
+                        @change = "current=1;callFindByHQL(false)"
+                        >
+                        <el-option
+                            v-for="Option in approvalStatusOptions"
+                            :key="Option.value"
+                            :label="Option.label"
+                            :value="Option.value"
+                            
+                        />
+                    </el-select>
+                </el-form-item>
+                <el-divider border-style="dashed" style="margin: 0;"/>
+
+                <el-form-item label="金額區間 :&nbsp;">
+                    <el-input-number
+                    v-model="findFloatingAmountMax"
+                    size="small"
+                    clearable
+                    controls-position="right"
+                    @change = "current=1;callFindByHQL(false)"
+                />&nbsp;~&nbsp;
+                <el-input-number
+                    v-model="findFloatingAmountMin"
+                    size="small"
+                    clearable
+                    controls-position="right"
+                    @change = "current=1;callFindByHQL(false)"
+                />
+                </el-form-item>
+                <el-divider border-style="dashed" style="margin: 0;"/>
+
+
+                <el-form-item label="創建時間 :&nbsp;">
+                    <el-date-picker
+                        v-model="findCreateTime"
+                        size="small"
+                        type="daterange"
+                        start-placeholder="Start date"
+                        end-placeholder="End date"
+                        value-format="YYYY-MM-DD"
+                        @change="current=1;callFindByHQL(false);"
+                        @clean ="current=1;callFindByHQL(false);"
+                    />
+                </el-form-item>
+                <el-divider border-style="dashed" style="margin: 0;"/>
+
+                <el-form-item label="修改時間 :&nbsp;">
+                    <el-date-picker
+                        v-model="findUpdateTime"
+                        clearable
+                        size="small"
+                        type="daterange"
+                        start-placeholder="Start date"
+                        end-placeholder="End date"
+                        value-format="YYYY-MM-DD"
+                        @change="current=1;callFindByHQL(false);"
+                        @clean ="current=1;callFindByHQL(false);"
+                    />
+                    <!--@calendar-change="current=1;callFindByHQL(false)"  -->
+                </el-form-item>
+                <el-divider border-style="dashed" style="margin: 0;"/>
+                
+                </el-form>
+                <div class="btm-div" style="display: flex;margin: 100px 50px; float: right" @click="cleanFind">
+                        <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;"/>
+                        <el-button type='' link  style="color: #a33238; font-weight: 900;">清除查詢</el-button>
+                    </div>
+    </el-drawer>
 </template>
     
 <script setup >
@@ -326,6 +589,7 @@ import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
 
+
 //用於重新導向 router.push
 const router = useRouter()
 
@@ -333,13 +597,16 @@ const router = useRouter()
 const total = ref(0) //總比數
 const current = ref(1) //目前頁碼
 const pages = ref(0) //分頁總數
-const rows = ref(4) //分頁資料顯示筆數
+const rows = ref(7) //分頁資料顯示筆數
 
 //下方詳細資料開啟用
 const openZon = ref(false)
 
 //下方新增資料開啟用
 const openCreat = ref(false)
+
+//左側開啟多選抽屜
+const openFindMore =ref(false)
 
 //產品顯示products元件用的參數
 const items = ref([]);
@@ -349,63 +616,124 @@ const singleItem= ref([])
 const isModify = ref(false)
 
 //修改簽核狀態選單
-const approvalTypeValue = ref('1')
-const approvalTypeOptions = [
-    {
-        value: '1',
-        label: '簽核',
-    },
-    {
-        value: '2',
-        label: '拒絕',
-    }
-]
+const approvalStatusValue = ref(1)
+
 
 //確認修改彈出視窗用
-const dialogVisible = ref(false)
+const dialogVisible = ref(false)  //修改
+const creatDdialogVisible =ref(false)  //新增
 
 
 //新增用所有資料
-const creatCarIDValue = ref("1")
-const creatEmployeeIDValue = ref("1")
-const creatTeamleaderIDValue = ref("5")
-const creatApprovalStatusValue = ref("0")
-const creatApprovalTypeValue = ref("1")
-const creatFloatingAmountValue = ref("1000000")
+const creatCarIDValue = ref(1)
+const creatEmployeeIDValue = ref(1)
+const creatTeamleaderIDValue = ref(5)
+const creatApprovalStatusValue = ref(0)
+const creatApprovalTypeValue = ref(1)
+const creatFloatingAmountValue = ref(1000000)
 
-const creatApprovalTypeOptions=[
+
+
+//所有下拉選單選項 - 後續串接方法
+const teamleaderIDOptions=[
     {
-        value: '1',
-        label: '降價',
-    },
-    {
-        value: '2',
-        label: '漲價',
-    },
-    {
-        value: '3',
-        label: '下架',
-    }
-]
-const creatTeamleaderIDOptions=[
-    {
-        value: '5',
+        value: 5,
         label: '主管名 - emp5',
     }
 ]
 
+const employeeIDOptions=[
+    {
+        value: 1,
+        label: 'emp1',
+    },
+    {
+        value: 2,
+        label: 'emp2',
+    },
+    {
+        value: 3,
+        label: 'emp3',
+    },
+    {
+        value: 4,
+        label: 'emp4',
+    },
+    {
+        value: 5,
+        label: 'emp5',
+    }
+    
+]
 
+const creatApprovalTypeOptions=[
+    {
+        value: 1,
+        label: '降價',
+    },
+    {
+        value: 2,
+        label: '漲價',
+    },
+    {
+        value: 3,
+        label: '下架',
+    }
+]
 
+const approvalStatusOptions = [
+    {
+        value: 0,
+        label: '待核',
+    },
+    {
+        value: 1,
+        label: '簽核',
+    },
+    {
+        value: 2,
+        label: '拒絕',
+    }
+]
 
+//查詢用-簡易
+const findTeamLeaderId =ref(null)
+const findEmployeeId =ref(null)
+const findApprovalType =ref(null)
+const findApprovalStatus =ref(null)
 
+//查詢用-複雜
+
+const findCarId = ref(null)
+const findFloatingAmountMax = ref(null)
+const findFloatingAmountMin = ref(null)
+const findCreateTime = ref({0:null,1:null})
+const findUpdateTime = ref({0:null,1:null})
 
 
 onMounted(function () {
-    callFindByHQL();
+    callFindByHQL(false);
 })
 
 
-//單筆新增
+//清除查詢
+function cleanFind() {
+    findTeamLeaderId.value = null;
+    findEmployeeId.value = null;
+    findApprovalType.value = null;
+    findApprovalStatus.value = null;
+
+    findCarId.value =null
+    findFloatingAmountMax.value = null
+    findFloatingAmountMin.value = null
+    findCreateTime.value = {0:null,1:null}
+    findUpdateTime.value = {0:null,1:null}
+
+    current.value=1;
+    callFindByHQL(false);
+}
+
+//開啟新增區塊
 function openModal(){
 console.log("openModal");
 openCreat.value=true;
@@ -434,25 +762,49 @@ function itemClick(itemId){
 
 
 //多筆查詢
-function callFindByHQL(){
+function callFindByHQL(doCreat){
+    if (findCreateTime.value==null){findCreateTime.value={0:null,1:null}};
+    if (findUpdateTime.value==null){findUpdateTime.value={0:null,1:null}};
+    console.log("findCreateTime",findCreateTime.value);
+    console.log("findUpdateTime",findUpdateTime.value);
+    if (doCreat) {
+        current.value=1
+        cleanFind();
+    }
     console.log("callFindByHQL - 當前頁碼:",current.value);
+    
+    let teamLeaderId = findTeamLeaderId.value="" ? null : findTeamLeaderId.value;
+    let employeeId = findEmployeeId.value="" ? null : findEmployeeId.value;
+    let approvalStatus = findApprovalStatus.value="" ? null : findApprovalStatus.value;
+    let approvalType = findApprovalType.value="" ? null : findApprovalType.value;
+
+    // let carId = findCarId.value=""  ? null : findCarId.value;
+    let floatingAmountMax = findFloatingAmountMax.value="" ? 99999999999999999999 : findFloatingAmountMax.value;
+    let floatingAmountMin = findFloatingAmountMin.value="" ? 0 : findFloatingAmountMin.value;
+    let createTimeStr = findCreateTime.value[0]=null ? null : findCreateTime.value[0];
+    let createTimeEnd = findCreateTime.value[1]=null ? null : findCreateTime.value[1];
+    let updateTimeStr = findUpdateTime.value[0]=null ? null : findUpdateTime.value[0];
+    let updateTimeEnd = findUpdateTime.value[1]=null ? null : findUpdateTime.value[1];
 
     let request ={ 
-        "id":null, 
-        "viewCarDateStr":null, 
-        "viewCarDateEnd":null, 
-        "employeeId":null, 
-        "teamLeaderId":null, 
-        "viewCarId":null, 
+        "id":null,
+        "teamLeaderId":teamLeaderId,
+        "employeeId": employeeId,
         "carId":null,
-        "carinfoId":null, 
-        "suspensionid":null, 
-        "assignedStatus":null,
+        "approvalStatus":approvalStatus, 
+        "approvalType":approvalType,
+        "floatingAmountMax":floatingAmountMax, 
+        "floatingAmountMin": floatingAmountMin,
+        "createTimeStr":createTimeStr, 
+        "createTimeEnd":createTimeEnd,
+        "updateTimeStr":updateTimeStr,
+        "updateTimeEnd":updateTimeEnd,
+
 
         "isPage":current.value-1,
         "max":rows.value,
-        "dir":true,
-        "order":"id"
+        "dir":false,
+        "order":"createTime"
     }
 
     axiosapi.post("/carAdjust/findByHQL",request).then(function (responce) {  //(AJAX前端程式)多產品查詢的Post功能()
@@ -479,12 +831,65 @@ function callFindByHQL(){
     }) 
 }
 
+//新增簽核
+function doCreat() {
+    creatDdialogVisible.value=false;
+    Swal.fire({
+        text: "執行中......",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+    });
+
+
+    let request ={  
+        "employeeId":creatEmployeeIDValue.value, 
+        "teamLeaderId":creatTeamleaderIDValue.value, 
+        "carId":creatCarIDValue.value,
+        "approvalStatus":creatApprovalStatusValue.value, 
+        "approvalType":creatApprovalTypeValue.value,
+        "floatingAmount":creatFloatingAmountValue.value
+    }
+
+    axiosapi.post("/carAdjust", request).then(function(response) {
+        console.log("response", response);
+        if(response.data.success)  {
+            callFindByHQL(true);
+            Swal.fire({
+                icon: "success",
+                text: response.data.message,
+                showConfirmButton: false,
+            }).then(function(result) {
+                
+                console.log("新增的物件",items.value[0]);
+                openCreat.value=false;
+                itemClick(items.value[0].id);
+                openZon.value=true;
+
+            });
+        } else {
+            Swal.fire({
+                icon: "warning",
+                text: response.data.message,
+            });
+        }
+    }).catch(function(error) {
+        console.log("error", error);
+        Swal.fire({
+            icon: "error",
+            text: "新增錯誤："+error.message,
+        });
+    });
+    setTimeout(function () {
+                    Swal.close();  //視窗關閉 
+                }, 1000);
+}
+
 //開啟確認修改視窗
 function openDoModify() {
     if (isModify.value==false) {
         console.log("isModify.value",isModify.value);
         console.log("修改單號 ID",singleItem.value.id);
-        console.log("修改單號 ID",approvalTypeValue.value);
+        console.log("approvalStatusValue.value",approvalStatusValue.value);
         isModify.value = true;
         dialogVisible.value=true; 
     }
@@ -503,7 +908,7 @@ function doModify() {
         "teamLeaderId":5,
         "employeeId":1,
         "carId":singleItem.value.carId,
-        "approvalStatus":approvalTypeValue.value,
+        "approvalStatus":approvalStatusValue.value,
         "approvalType":1,
         "floatingAmount":singleItem.value.floatingAmount
     }
@@ -516,7 +921,7 @@ function doModify() {
                 text: response.data.message,
                 showConfirmButton: false,
             }).then(function(result) {
-                callFindByHQL();
+                callFindByHQL(false);
                 itemClick(singleItem.value.id);
                 openZon.value=true;
                 
