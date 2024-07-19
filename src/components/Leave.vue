@@ -21,6 +21,7 @@
             <table class="table">
                 <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
+                        <th scope="col" class="table-th">申請時間</th>
                         <th scope="col" class="table-th">申請人</th>
                         <th scope="col" class="table-th">假種</th>
                         <th scope="col" class="table-th">請假時段</th>
@@ -29,26 +30,27 @@
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
-                    <tr v-for="leave in leaves" :key="leave.id" @click="leaveClick(leave.id)">
-                        <th scope="row" class="table-td">{{ leave.employeeName }}</th>
+                    <tr v-for="leave in leaves" :key="leave.id" @click="leaveInfo(leave.id)">
+                        <th scope="row" class="table-td">{{ leave.createTime }}</th>
+                        <td class="table-td">{{ leave.employeeName }} </td>
                         <td class="table-td">{{ leave.leaveTypeName }} </td>
                         <td class="table-td">{{ leave.startTime }}<br>{{ leave.endTime }}</td>
                         <td class="table-td">{{ leave.deputyName }}</td>
                         <!-- 使用v-if和v-else-if语句来显示簽核狀態 -->
                         <td class="table-td">
-    <template v-if="leave.permisionStatus === 1">
-        簽核中
-    </template>
-    <template v-else-if="leave.permisionStatus === 2">
-        同意
-    </template>
-    <template v-else-if="leave.permisionStatus === 3">
-        拒絕
-    </template>
-    <template v-else>
-        未知狀態
-    </template>
-</td>
+                            <template v-if="leave.permisionStatus === 1">
+                                簽核中
+                            </template>
+                            <template v-else-if="leave.permisionStatus === 2">
+                                同意
+                            </template>
+                            <template v-else-if="leave.permisionStatus === 3">
+                                拒絕
+                            </template>
+                            <template v-else>
+                                未知狀態
+                            </template>
+                        </td>
                     </tr>
                 </tbody>
 
@@ -167,90 +169,68 @@
     <div v-if="openZon" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openZon = false">
         <el-divider content-position="center">
             <button type="button" class="btn-close" aria-label="Close"></button>
-            <h5 class="table-title">簽核編號 {{ singleItem.id }} --單筆詳細資料</h5>
+            <h5 class="table-title">員工編號 {{ singleLeave.employeeId }} --單筆詳細請假資料</h5>
         </el-divider>
     </div>
     <div v-if="openZon" class="col-1"></div>
 
-    <!-- 下方詳細資料區 / 資料區-->
+    <!-- 下方詳細資料區 / 第一欄-->
     <div v-if="openZon" class="col-1"></div>
     <div v-if="openZon" class="col-10" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
-
         <div class="table-responsive" style="padding:20px ;height: 250px; ">
             <table class="table" style="width: 1000px; ">
                 <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
-                        <th scope="col" class="table-th">簽核編號</th>
-                        <th scope="col" class="table-th">車輛編號</th>
-                        <th scope="col" class="table-th">品牌型號</th>
-                        <th scope="col" class="table-th">品牌型號</th>
-                        <th scope="col" class="table-th">簽核需求</th>
-                        <th scope="col" class="table-th">原始價錢</th>
-                        <th scope="col" class="table-th">改後價錢</th>
+                        <th scope="col" class="table-th">申請時間</th>
+                        <th scope="col" class="table-th">申請員工</th>
+                        <th scope="col" class="table-th">請假時段</th>
+                        <th scope="col" class="table-th">總計時數</th>
+                        <th scope="col" class="table-th">請假備註</th>
+                        <th scope="col" class="table-th">工作代理人</th>
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
                     <tr v-if="!isModify">
-                        <th scope="row" class="table-td" name="id">{{ singleItem.id }}</th>
-                        <td class="table-td">{{ singleItem.carId }}</td>
-                        <td class="table-td"></td>
-                        <td class="table-td"></td>
-                        <td class="table-td">{{ singleItem.approvalTypeName }}</td>
-                        <td class="table-td"></td>
-                        <td class="table-td">{{ singleItem.floatingAmount }}</td>
+                        <th scope="row" class="table-td" name="id">{{ singleLeave.createTime }}</th>
+                        <td class="table-td">{{ singleLeave.employeeName }}</td>
+                        <td class="table-td">{{ singleLeave.startTime }}<br>{{ singleLeave.endTime }}</td>
+                        <td class="table-td">{{ singleLeave.actualLeaveHours }}</td>
+                        <td class="table-td">{{ singleLeave.reason }}</td>
+                        <td class="table-td">{{ singleLeave.deputyName }}</td>
                     </tr>
                     <tr v-if="isModify">
-                        <th scope="row" class="table-td" name="id" :value="singleItem.id">{{ singleItem.id }}</th>
-                        <td class="table-td">{{ singleItem.carId }}</td>
-                        <td class="table-td"></td>
-                        <td class="table-td"></td>
-                        <td class="table-td">{{ singleItem.approvalTypeName }}</td>
-                        <td class="table-td"></td>
-                        <td class="table-td">{{ singleItem.floatingAmount }}</td>
+                        <th scope="row" class="table-td" name="id" :value="singleLeave.id">{{ singleLeave.createTime }}</th>
+                        <td class="table-td">{{ singleLeave.employeeName }}</td>
+                        <td class="table-td">{{ singleLeave.startTime }}<br>{{ singleLeave.endTime }}</td>
+                        <td class="table-td">{{ singleLeave.actualLeaveHours }}</td>
+                        <td class="table-td">{{ singleLeave.deputyName }}</td>
                     </tr>
-
                 </tbody>
                 <div style="height: 20px;"></div>
+<!-- 下方詳細資料區 / 第二欄-->
                 <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
-                        <th scope="col" class="table-th">建立者編號</th>
-                        <th scope="col" class="table-th">建立者</th>
-                        <th scope="col" class="table-th">主管編號</th>
-                        <th scope="col" class="table-th">主管姓名</th>
-                        <th scope="col" class="table-th">建立時間</th>
-                        <th scope="col" class="table-th">修改時間</th>
+                        <th scope="col" class="table-th">簽核時間</th>
+                        <th scope="col" class="table-th">審核意見</th>
                         <th scope="col" class="table-th">簽核狀態</th>
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
                     <tr v-if="!isModify">
-                        <th scope="row" class="table-td"></th>
-                        <td class="table-td">{{ singleItem.employeeName }}</td>
-                        <td class="table-td"></td>
-                        <td class="table-td">{{ singleItem.teamLeaderName }}</td>
-                        <td class="table-td">{{ singleItem.createTimeString }}</td>
-                        <td class="table-td">{{ singleItem.updateTimeString }}</td>
-                        <td class="table-td">{{ singleItem.approvalStatusName }}</td>
+                        <th scope="row" class="table-td" name="id">{{ singleLeave.auditTime }}</th>
+                        <td class="table-td">{{ singleLeave.permisionRemarks }}</td>
+                        <td class="table-td">{{ singleLeave.permisionStatus }}</td>
                     </tr>
-
                     <tr v-if="isModify">
-                        <th scope="row" class="table-td"></th>
-                        <td class="table-td">{{ singleItem.employeeName }}</td>
-                        <td class="table-td"></td>
-                        <td class="table-td">{{ singleItem.teamLeaderName }}</td>
-                        <td class="table-td">{{ singleItem.createTimeString }}</td>
-                        <td class="table-td">{{ singleItem.updateTimeString }}</td>
-                        <td class="table-td">
-                            <el-select v-model="approvalTypeValue" placeholder="Select" size="small" style="width: 50%">
-                                <el-option v-for="Option in approvalTypeOptions" :key="Option.value"
-                                    :label="Option.label" :value="Option.value" />
-                            </el-select>
-                        </td>
+                        <th scope="row" class="table-td" name="id">{{ singleLeave.auditTime }}</th>
+                        <td class="table-td">{{ singleLeave.permisionRemarks }}</td>
+                        <td class="table-td">{{ singleLeave.permisionStatus }}</td>
                     </tr>
-
                 </tbody>
             </table>
         </div>
+        
+
 
     </div>
     <div v-if="openZon" class="col-1"></div>
@@ -269,7 +249,7 @@
 
     <!-- 確認修改用彈出視窗 -->
     <el-dialog v-model="dialogVisible" width="300" :show-close="false">
-        <h5 class="msg-title">確認修改 簽核編號 {{ singleItem.id }} ?</h5>
+        <h5 class="msg-title">確認修改 簽核編號 {{ singleLeave.id }} ?</h5>
         <template #footer>
             <div class="dialog-footer" style="justify-content: center;">
                 <el-button @click="dialogVisible = false; isModify = true">否</el-button>
@@ -303,9 +283,9 @@ const openZon = ref(false)
 //下方新增資料開啟用
 const openCreat = ref(false)
 
-//產品顯示products元件用的參數
+//產品顯示leave元件用的參數
 const leaves = ref([]);
-const singleave = ref([])
+const singleLeave = ref([])
 
 
 
@@ -328,14 +308,14 @@ function openModal() {
 
 
 //單筆查詢
-function leaveClick(leaveId) {
+function leaveInfo(leaveId) {
     console.log(leaveId)
     axiosapi.get("/leave/info/" + leaveId).then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
         console.log("responce", responce.data);
-        singleItem.value = responce.data.data;
-        console.log("singleleave.value.id", singleItem.leave.id);
+        singleLeave.value = responce.data.data;
+        // console.log("singleLeave.value.id", singleLeave.leave.id);
         openZon.value = true
-        isModify.value = false
+        // isModify.value = false 修改要開啟
 
     }).catch(function (error) {
         console.log("error", error);
@@ -381,7 +361,7 @@ function callQuery() {
 function openDoModify() {
     if (isModify.value == false) {
         console.log("isModify.value", isModify.value);
-        console.log("修改單號 ID", singleItem.value.id);
+        console.log("修改單號 ID", singleLeave.value.id);
         console.log("修改單號 ID", approvalTypeValue.value);
         isModify.value = true;
         dialogVisible.value = true;
@@ -397,7 +377,7 @@ function doModify() {
     });
 
     let request = {
-        "id": singleItem.value.id,
+        "id": singleLeave.value.id,
         "teamLeaderId": 5,
         "employeeId": 1,
         "carId": singleItem.value.carId,
