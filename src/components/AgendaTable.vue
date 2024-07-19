@@ -453,7 +453,7 @@ function doAgangaModify(infoEvent) {
         "unavailableStatus":infoEvent._def.extendedProps.unavailableStatus
     }
     console.log("request", request);
-    axiosapi.put(`/carAdjust/${infoEvent._def.publicId}`, request).then(function(response) {
+    axiosapi.put(`/agenda/${infoEvent._def.publicId}`, request).then(function(response) {
         console.log("response", response);
         if(response.data.success)  {
             Swal.fire({
