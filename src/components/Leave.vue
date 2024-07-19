@@ -36,21 +36,7 @@
                         <td class="table-td">{{ leave.leaveTypeName }} </td>
                         <td class="table-td">{{ leave.startTime }}<br>{{ leave.endTime }}</td>
                         <td class="table-td">{{ leave.deputyName }}</td>
-                        <!-- 使用v-if和v-else-if语句来显示簽核狀態 -->
-                        <td class="table-td">
-                            <template v-if="leave.permisionStatus === 1">
-                                簽核中
-                            </template>
-                            <template v-else-if="leave.permisionStatus === 2">
-                                同意
-                            </template>
-                            <template v-else-if="leave.permisionStatus === 3">
-                                拒絕
-                            </template>
-                            <template v-else>
-                                未知狀態
-                            </template>
-                        </td>
+                        <td class="table-td">{{ getPermisionStatusText(leave.permisionStatus) }}</td>
                     </tr>
                 </tbody>
 
@@ -182,54 +168,70 @@
                 <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
                         <th scope="col" class="table-th">申請時間</th>
-                        <th scope="col" class="table-th">申請員工</th>
+                        <th scope="col" class="table-th">申請人</th>
+                        <th scope="col" class="table-th">假種</th>
                         <th scope="col" class="table-th">請假時段</th>
                         <th scope="col" class="table-th">總計時數</th>
-                        <th scope="col" class="table-th">請假備註</th>
-                        <th scope="col" class="table-th">工作代理人</th>
+
+
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
                     <tr v-if="!isModify">
                         <th scope="row" class="table-td" name="id">{{ singleLeave.createTime }}</th>
                         <td class="table-td">{{ singleLeave.employeeName }}</td>
+                        <td class="table-td">{{ singleLeave.leaveTypeName }} </td>
                         <td class="table-td">{{ singleLeave.startTime }}<br>{{ singleLeave.endTime }}</td>
                         <td class="table-td">{{ singleLeave.actualLeaveHours }}</td>
-                        <td class="table-td">{{ singleLeave.reason }}</td>
-                        <td class="table-td">{{ singleLeave.deputyName }}</td>
+
+
                     </tr>
                     <tr v-if="isModify">
-                        <th scope="row" class="table-td" name="id" :value="singleLeave.id">{{ singleLeave.createTime }}</th>
+                        <th scope="row" class="table-td" name="id" :value="singleLeave.id">{{ singleLeave.createTime }}
+                        </th>
                         <td class="table-td">{{ singleLeave.employeeName }}</td>
+                        <td class="table-td">{{ singleLeave.leaveTypeName }} </td>
                         <td class="table-td">{{ singleLeave.startTime }}<br>{{ singleLeave.endTime }}</td>
                         <td class="table-td">{{ singleLeave.actualLeaveHours }}</td>
-                        <td class="table-td">{{ singleLeave.deputyName }}</td>
                     </tr>
                 </tbody>
                 <div style="height: 20px;"></div>
-<!-- 下方詳細資料區 / 第二欄-->
+                <!-- 下方詳細資料區 / 第二欄-->
                 <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
+                        <th scope="col" class="table-th">請假備註</th>
+                        <th scope="col" class="table-th">工作代理人</th>
                         <th scope="col" class="table-th">簽核時間</th>
                         <th scope="col" class="table-th">審核意見</th>
                         <th scope="col" class="table-th">簽核狀態</th>
+
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
                     <tr v-if="!isModify">
-                        <th scope="row" class="table-td" name="id">{{ singleLeave.auditTime }}</th>
+                        <th scope="row" class="table-td" name="id">{{ singleLeave.reason }}</th>
+                        <td class="table-td">{{ singleLeave.deputyName }}</td>
+                        <td class="table-td">{{ singleLeave.auditTime }}</td>
                         <td class="table-td">{{ singleLeave.permisionRemarks }}</td>
-                        <td class="table-td">{{ singleLeave.permisionStatus }}</td>
+                        <td class="table-td">{{ getPermisionStatusText(singleLeave.permisionStatus) }}</td>
                     </tr>
                     <tr v-if="isModify">
-                        <th scope="row" class="table-td" name="id">{{ singleLeave.auditTime }}</th>
-                        <td class="table-td">{{ singleLeave.permisionRemarks }}</td>
-                        <td class="table-td">{{ singleLeave.permisionStatus }}</td>
+                        <th scope="row" class="table-td" name="id">{{ singleLeave.reason }}</th>
+                        <td class="table-td">{{ singleLeave.deputyName }}</td>
+                        <td class="table-td">{{ singleLeave.auditTime }}</td>
+                        <td class="table-td"> <el-input v-model="singleLeave.permisionRemarks"
+                                placeholder="核可備註"></el-input></td>
+                        <td class="table-td">
+                            <el-select v-model="singleLeave.permisionStatus" placeholder="請選擇核可狀態">
+                                <el-option v-for="status in permissionStatuses" :key="status.value"
+                                    :label="status.label" :value="status.value" />
+                            </el-select>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        
+
 
 
     </div>
@@ -287,12 +289,33 @@ const openCreat = ref(false)
 const leaves = ref([]);
 const singleLeave = ref([])
 
-
+// 是否可以修改
+const isModify = ref(false);
 
 //確認修改彈出視窗用
 const dialogVisible = ref(false)
 
 
+const getPermisionStatusText = (status) => {
+    switch (status) {
+        case 1:
+            return '簽核中';
+        case 2:
+            return '同意';
+        case 3:
+            return '拒絕';
+        default:
+            return '未知狀態';
+    }
+};
+
+
+// 定義審核狀態選項
+const permissionStatuses = ref([
+    { value: 1, label: '簽核中' },
+    { value: 2, label: '同意' },
+    { value: 3, label: '拒絕' }
+]);
 
 
 onMounted(function () {
@@ -315,7 +338,7 @@ function leaveInfo(leaveId) {
         singleLeave.value = responce.data.data;
         // console.log("singleLeave.value.id", singleLeave.leave.id);
         openZon.value = true
-        // isModify.value = false 修改要開啟
+        isModify.value = false
 
     }).catch(function (error) {
         console.log("error", error);
@@ -339,7 +362,6 @@ function callQuery() {
 
     axiosapi.post("/leave/query", request).then(function (response) {
         leaves.value = response.data.data.content; // 获取查询到的数据列表
-
         // 更新分页信息
         total.value = response.data.data.totalElements; // 总条目数
         pages.value = response.data.data.totalPages; // 总页数
@@ -362,7 +384,6 @@ function openDoModify() {
     if (isModify.value == false) {
         console.log("isModify.value", isModify.value);
         console.log("修改單號 ID", singleLeave.value.id);
-        console.log("修改單號 ID", approvalTypeValue.value);
         isModify.value = true;
         dialogVisible.value = true;
     }
@@ -377,16 +398,30 @@ function doModify() {
     });
 
     let request = {
-        "id": singleLeave.value.id,
-        "teamLeaderId": 5,
-        "employeeId": 1,
-        "carId": singleItem.value.carId,
-        "approvalStatus": approvalTypeValue.value,
-        "approvalType": 1,
-        "floatingAmount": singleItem.value.floatingAmount
-    }
+        "id": singleLeave.value.id,  // 需要提供ID來進行修改
+        "leaveStatus": singleLeave.value.leaveStatus, 
+        "startTime": singleLeave.value.startTime,
+        "endTime": singleLeave.value.endTime,
+        "leaveType": singleLeave.value.leaveType, 
+        "leaveTypeName": singleLeave.value.leaveTypeName,
+        "employeeId": singleLeave.value.employeeId,
+        "employeeName": singleLeave.value.employeeName,
+        "deputyId": singleLeave.value.deputyId,
+        "deputyName": singleLeave.value.deputyName,
+        "teamLeaderId": singleLeave.value.teamLeaderId, 
+        "permisionRemarks": singleLeave.value.permisionRemarks,
+        "permisionStatus": singleLeave.value.permisionStatus,
+        "auditTime": singleLeave.value.auditTime,
+        "reason": singleLeave.value.reason,
+        "actualLeaveHours": singleLeave.value.actualLeaveHours, 
+        "specialLeaveHours": singleLeave.value.specialLeaveHours, 
+        "createTime": singleLeave.value.createTime, 
+        "updateTime": singleLeave.value.updateTime, 
+        "validityPeriodStart": singleLeave.value.validityPeriodStart, 
+        "validityPeriodEnd": singleLeave.value.validityPeriodEnd 
+    };
 
-    axiosapi.put(`/carAdjust/${singleItem.value.id}`, request).then(function (response) {
+    axiosapi.put(`/leave/modify/${singleLeave.value.id}`, request).then(function (response) {
         console.log("response", response);
         if (response.data.success) {
             Swal.fire({
