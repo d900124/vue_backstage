@@ -56,25 +56,42 @@
             ref="fullCalendar"
             class="demo-app-calendar"
             :options="calendarOptions">
-            <!-- <template v-slot:eventContent="arg"> -->
-                <el-popover
-                    placement="top-start"
-                    title="标题"
+            
+            <template v-slot:eventContent="arg">
+
+                <el-popover   
+                    placement="bottom"
                     width="200"
+                    popper-style="background-color: #fff5eb;
+                                  box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;
+                                  border:3px solid #ffffff;"
                     :visible-arrow="false"
                     trigger="hover">
-                    <i class="title">{{ arg.event.title }}</i>
-                    <el-button @click="more">
+                    <div style="display: flex; gap: 16px; flex-direction: column">
+                        <div>
+                            <p style="margin: 0; font-weight: 900" > 排程細節</p>
+                            <p style="margin: 0; font-size: 10px; color: var(--el-color-info)">  {{ arg.event.title }}  -  {{ arg.event.extendedProps.employeeName}} </p>
+                        </div>
+                    <p style="margin: 0">
+                        Element Plus, a Vue 3 based component library for developers,
+                        designers and product managers
+                    </p>
+                    </div>
+
+                    <el-button @click="handleMore">
                         更多
                     </el-button>
-                    <div slot="reference"
-                        class="popper-content">
-                        <span>{{ arg.timeText }}</span>
-                        <i>{{ arg.event.title }}</i>
-                        <i>{{ arg.event.title }}</i>
-                    </div>
+                    
+                    <template #reference>
+                        <div slot="reference" class="popper-content"> 
+                                <div>{{ arg.timeText }}</div>
+                                <b>{{ arg.event.title }}</b>
+                                <!-- <i>{{ arg.event.title }}</i> -->
+                        </div>
+                    </template>
+                    
                 </el-popover>
-            <!-- </template> -->
+            </template>
         </FullCalendar>
     </div>
 
@@ -165,7 +182,7 @@ const calendarOptions = ref({
         console.log('Drag-unavailableStatus:', formatDate(info.event._instance.range.end));
         // 可以在這裡記錄初始狀態或執行其他操作
     },
-    eventDrop: function(info) { //事件移動放下時間完成改變
+    eventDrop: async function(info) { //事件移動放下時間完成改變
         console.log('Event drag Droped:', info.event);
         console.log('Drop-id:', info.event._def.publicId);
         console.log('Drop-businessPurpose:', info.event._def.title);
@@ -174,7 +191,12 @@ const calendarOptions = ref({
         console.log('Drop-unavailableTimeStr:', formatDate(info.event._instance.range.start));
         console.log('Drop-unavailableStatus:', formatDate(info.event._instance.range.end));
         // 在這裡更新數據庫或執行其他操作
-        doAgangaModify(info.event);
+        var dragSuccessful = await  doAgangaModify(info.event);
+        console.log("dragSuccessful",dragSuccessful);
+        if (!dragSuccessful) {
+            info.revert();
+          }
+
     },
     eventResizeStart: function(info) { //事件區間拉動開始
         console.log('Event drag ResizeStart:', info.event);
@@ -187,7 +209,7 @@ const calendarOptions = ref({
         // 在這裡更新數據庫或執行其他操作
     },
     
-    eventResize: function(info) { //事件區間拉動放下時間完成改變
+    eventResize: async function(info) { //事件區間拉動放下時間完成改變
         console.log('Event drag Resize:', info.event);
         console.log('Resize-id:', info.event._def.publicId);
         console.log('Resize-businessPurpose:', info.event._def.title);
@@ -197,7 +219,11 @@ const calendarOptions = ref({
         console.log('Resize-unavailableStatus:', formatDate(info.event._instance.range.end));
 
         // 在這裡更新數據庫或執行其他操作
-        doAgangaModify(info.event);
+        var dragSuccessful = await  doAgangaModify(info.event);
+        console.log("dragSuccessful",dragSuccessful);
+        if (!dragSuccessful) {
+            info.revert();
+          }
     }
 });
                 
@@ -331,7 +357,7 @@ function callFindByAgangaHQL(doCreat){
                 case 1: //請假
                     agangaEvents.push({
                     id:items.value[i].id,
-                    title:items.value[i].businessPurpose,
+                    title:items.value[i].unavailableStatusName,
                     start:items.value[i].unavailableTimeStrString,
                     end: items.value[i].unavailableTimeEndString,
                     resourceId: null, //定義資源(擴展用)
@@ -341,6 +367,7 @@ function callFindByAgangaHQL(doCreat){
                     className: "holidayEvent",
                     allDay: false,
                     extendedProps: {
+                        businessPurpose:items.value[i].businessPurpose,
                         employeeId:items.value[i].employeeId,
                         employeeName:items.value[i].employeeName,
                         unavailableStatus :items.value[i].unavailableStatus,
@@ -355,7 +382,7 @@ function callFindByAgangaHQL(doCreat){
                 case 2: //排賞車
                     agangaEvents.push({
                     id:items.value[i].id,
-                    title:items.value[i].businessPurpose,
+                    title:items.value[i].unavailableStatusName,
                     start:items.value[i].unavailableTimeStrString,
                     end: items.value[i].unavailableTimeEndString,
                     resourceId: null, //定義資源(擴展用)
@@ -365,6 +392,7 @@ function callFindByAgangaHQL(doCreat){
                     className: "holidayEvent",
                     allDay: false,
                     extendedProps: {
+                        businessPurpose:items.value[i].businessPurpose,
                         employeeId:items.value[i].employeeId,
                         employeeName:items.value[i].employeeName,
                         unavailableStatus :items.value[i].unavailableStatus,
@@ -378,7 +406,7 @@ function callFindByAgangaHQL(doCreat){
                 case 3: //自行安排
                     agangaEvents.push({
                     id:items.value[i].id,
-                    title:items.value[i].businessPurpose,
+                    title:items.value[i].unavailableStatusName,
                     start:items.value[i].unavailableTimeStrString,
                     end: items.value[i].unavailableTimeEndString,
                     resourceId: null, //定義資源(擴展用)
@@ -388,6 +416,7 @@ function callFindByAgangaHQL(doCreat){
                     className: "holidayEvent",
                     allDay: false,
                     extendedProps: {
+                        businessPurpose:items.value[i].businessPurpose,
                         employeeId:items.value[i].employeeId,
                         employeeName:items.value[i].employeeName,
                         unavailableStatus :items.value[i].unavailableStatus,
@@ -437,47 +466,48 @@ function callFindByAgangaHQL(doCreat){
 }
 
 //修改排程(狀態3)
-function doAgangaModify(infoEvent) {
-    Swal.fire({
-        text: "執行中......",
-        allowOutsideClick: false,
-        showConfirmButton: false,
-    });
+async function doAgangaModify(infoEvent) {
+    // Swal.fire({
+    //     text: "執行中......",
+    //     allowOutsideClick: false,
+    //     showConfirmButton: false,
+    // });
 
     let request ={ 
         "id":infoEvent._def.publicId, 
         "employeeId":infoEvent._def.extendedProps.employeeId,
-        "businessPurpose":infoEvent._def.title,
+        "businessPurpose":infoEvent._def.extendedProps.businessPurpose,
         "unavailableTimeStr":formatDate(infoEvent._instance.range.start),
         "unavailableTimeEnd":formatDate(infoEvent._instance.range.end),
         "unavailableStatus":infoEvent._def.extendedProps.unavailableStatus
     }
     console.log("request", request);
-    axiosapi.put(`/agenda/${infoEvent._def.publicId}`, request).then(function(response) {
+
+    
+    try {
+        let response = await axiosapi.put(`/agenda/${infoEvent._def.publicId}`, request);
+
         console.log("response", response);
+
         if(response.data.success)  {
-            Swal.fire({
-                icon: "success",
-                text: response.data.message,
-                showConfirmButton: false,
-            }).then(function(result) {
-            });
+            ElMessage({
+                message: '排程修改成功',
+                type: 'success',
+            })
+            return true
         } else {
-            Swal.fire({
-                icon: "warning",
-                text: response.data.message,
-            });
+            ElMessage({
+                message: response.data.msg,
+                type: 'warning',
+            })
+            return false
         }
-    }).catch(function(error) {
+    }catch(error) {
         console.log("error", error);
-        Swal.fire({
-            icon: "error",
-            text: "修改錯誤："+error.message,
-        });
-    });
-    setTimeout(function () {
-                    Swal.close();  //視窗關閉 
-                }, 1000);
+        ElMessage.error('修改錯誤'+error.message)
+        return false
+    };
+
 }
 
 //時間轉換格式 
@@ -488,10 +518,23 @@ function formatDate(dateString) {
     return modifiedDate.format("YYYY-MM-DD HH:mm:ss");
 }
 
+function handleMore() {}
 
 </script>
     
 <style scoped>
+.popper {
+    position: fixed;
+    width: 200px;
+    height: 140px;
+    padding: 20px;
+    border: 1px solid #eee;
+    text-align: center;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    display: none;
+    background-color: #fff5eb;
+}
 
 .btn-close{
     margin: 10px;
