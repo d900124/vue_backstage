@@ -856,7 +856,7 @@ function doCreat() {
             callFindByHQL(true);
             Swal.fire({
                 icon: "success",
-                text: response.data.message,
+                text: response.data.msg,
                 showConfirmButton: false,
             }).then(function(result) {
                 
@@ -869,14 +869,14 @@ function doCreat() {
         } else {
             Swal.fire({
                 icon: "warning",
-                text: response.data.message,
+                text: response.data.msg,
             });
         }
     }).catch(function(error) {
         console.log("error", error);
         Swal.fire({
             icon: "error",
-            text: "新增錯誤："+error.message,
+            text: "新增錯誤："+error.msg,
         });
     });
     setTimeout(function () {
@@ -918,7 +918,7 @@ function doModify() {
         if(response.data.success)  {
             Swal.fire({
                 icon: "success",
-                text: response.data.message,
+                text: response.data.msg,
                 showConfirmButton: false,
             }).then(function(result) {
                 callFindByHQL(false);
@@ -929,7 +929,7 @@ function doModify() {
         } else {
             Swal.fire({
                 icon: "warning",
-                text: response.data.message,
+                text: response.data.msg,
             });
         }
     }).catch(function(error) {

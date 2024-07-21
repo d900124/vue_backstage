@@ -179,16 +179,22 @@
                     />
                 </el-form-item>
                 </el-form>
+                <div style=" float: left;text-align: left;margin: 0 25px;">
+                    <div style="margin: 0; font-size: 12px; justify-self: start;">員工 : {{createEmployeeId}}</div>
+                    <div style="margin: 0; font-size: 12px; justify-self: start;">排程期始 : {{createUnavailableTime[0]}}</div>
+                    <div style="margin: 0; font-size: 12px; justify-self: start;">排程結束 : {{createUnavailableTime[1]}}</div>
+                    <div style="margin: 0; font-size: 12px; justify-self: start;">事由 : {{createBusinessPurpose}}</div>
+                </div>
 
-                <div class="btm-div" style="text-decoration:unset;display: flex;margin: 100px 50px; float: right" @click="cleanCerateAgenda">
-                    <div class="btm-div" style="display: flex;margin: 0 70px; float: right" @click="cleanFind">
+                <div class="btm-div" style="text-decoration:unset;display: flex;margin: 100px 50px; float: right" >
+                    <div class="btm-div" style="display: flex;margin: 0 70px; float: right" @click="cleanCerateAgenda">
                         <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;margin-top: 8px"/>
                         <el-button type='' link  style="color: #a33238; font-weight: 900;">清空</el-button>
                     </div>
                     <el-button class="calendar-btm"  color="#a33238" :dark="isDark"  @click="cancelCerateAgenda">
                         <b>取消新增</b>
                     </el-button>
-                    <el-button class="calendar-btm"  color="#a33238" :dark="isDark"  @click="openDoCreateAgenda">
+                    <el-button class="calendar-btm"  color="#a33238" :dark="isDark"  @click="creatAGDVisible=true">
                         <b>確認新增</b>
                     </el-button>
                 </div>
@@ -196,21 +202,22 @@
 
 <!-- 確認新增用彈出視窗 -->
 <el-dialog
-        v-model="creatDdialogVisible"
+        v-model="creatAGDVisible"
         width="350"
         :show-close="false"
     >
     <h5 class="msg-title" >確認新增 ?</h5>
-    <!-- <p>員工 : {{createEmployeeId}}, </p>
-    <p>排程期始 : {{createUnavailableTime[0]}}, </p>
-    <p>排程結束 : {{createUnavailableTime[1]}}, </p>
-    <p>事由 : {{createBusinessPurpose}} </p> -->
-
+    <div style="text-align: left;margin: 0 25px;">
+        <p>員工 : {{createEmployeeId}} </p>
+        <p>排程期始 : {{createUnavailableTime[0]}}</p>
+        <p>排程結束 : {{createUnavailableTime[1]}} </p>
+        <p>事由 : {{createBusinessPurpose}} </p>
+    </div>
         <template #footer> 
         <div class="dialog-footer" style="display: flex;justify-content: center;">
             <div>
-            <el-button @click="creatDdialogVisible=false">否</el-button>
-            <el-button type="primary" @click="" style="background-color: #a33238;border: #a33238;">
+            <el-button @click="creatAGDVisible=false">否</el-button>
+            <el-button type="primary" @click="doCreateAgenda" style="background-color: #a33238;border: #a33238;">
             是
             </el-button>
         </div>
@@ -252,7 +259,7 @@ const fullCalendar = ref(null);
 const openAgandaDrawer = ref(false)
 const drawerByCreate = ref(false)
 const drawerByModify = ref(false)
-const creatDdialogVisible =ref(false)
+const creatAGDVisible =ref(false)
 
 //新增用屬性
 const createEmployeeId =ref(1)
@@ -457,7 +464,6 @@ function handleDateClick(arg) {
 
 //清空新增
 function cleanCerateAgenda() {
-    createEmployeeId.value =null
     createUnavailableTime.value =({0:null,1:null})
     createBusinessPurpose.value =''
 }
@@ -473,15 +479,15 @@ function cancelCerateAgenda(){
 
 //執行新增確認按鈕
 function openDoCreateAgenda() {
-    console.log("createEmployeeId",createEmployeeId.value);
-    console.log("createUnavailableTime",createUnavailableTime.value);
-    console.log("createBusinessPurpose",createBusinessPurpose.value);
-    creatDdialogVisible.value=true;
+    // console.log("createEmployeeId",createEmployeeId.value);
+    // console.log("createUnavailableTime",createUnavailableTime.value);
+    // console.log("createBusinessPurpose",createBusinessPurpose.value);
+    creatAGDVisible.value=true;
 }
 
 //執行新增排程
 function doCreateAgenda() {
-    creatDdialogVisible.value=false;
+    creatAGDVisible.value=false;
     Swal.fire({
         text: "執行中......",
         allowOutsideClick: false,
@@ -496,34 +502,47 @@ function doCreateAgenda() {
         "unavailableTimeEnd":createUnavailableTime.value[1], 
         "unavailableStatus":3
     }
-
+    console.log("request", request);
     axiosapi.post("/agenda", request).then(function(response) {
         console.log("response", response);
         if(response.data.success)  {
-            callFindByHQL(true);
+            callFindByAgangaHQL(false);
+            getDtata();
             Swal.fire({
                 icon: "success",
-                text: response.data.message,
+                text: response.data.msg,
                 showConfirmButton: false,
             }).then(function(result) {
-                openAgandaDrawer.value=false;
+                
             });
+            setTimeout(function () {
+                Swal.close();  //視窗關閉 
+                cancelCerateAgenda();
+                location.reload();
+            }, 1000); 
         } else {
             Swal.fire({
                 icon: "warning",
-                text: response.data.message,
+                text: response.data.msg,
+                showConfirmButton: false,
             });
+            setTimeout(function () {
+                    Swal.close();  //視窗關閉 
+                }, 1000); 
         }
     }).catch(function(error) {
         console.log("error", error);
         Swal.fire({
             icon: "error",
             text: "新增錯誤："+error.message,
+            showConfirmButton: false,
         });
-    });
-    setTimeout(function () {
+        setTimeout(function () {
                     Swal.close();  //視窗關閉 
-                }, 1000);
+                }, 1000); 
+    });
+    
+    
 }
 
 //資料庫Aganga回傳資料
