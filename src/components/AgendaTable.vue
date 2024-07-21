@@ -101,7 +101,16 @@
                     </div>
 
                     <div v-if="arg.event.extendedProps.unavailableStatus==3" style="display: flex; justify-content: flex-end; margin-top: 20px;">
-                        <el-button class="calendar-btm" size="small" color="#a33238" :dark="isDark" style=""  @click="openAgandaDrawer=true;drawerByCreate=false;drawerByModify=true">
+                        <el-button class="calendar-btm" size="small" color="#a33238" :dark="isDark" style=""  
+                            @click="openAgandaDrawer=true;
+                                    drawerByCreate=false;
+                                    drawerByModify=true;
+                                    modifyEventId=arg.event.id;
+                                    modifyEmpoleeId=arg.event.extendedProps.employeeId;
+                                    modifyEmpoleeName=arg.event.extendedProps.employeeName;
+                                    modifyUnavailableStatus=arg.event.extendedProps.unavailableStatus;
+                                    modifyUnavailableTime=[arg.event.extendedProps.unavailableTimeStrString,arg.event.extendedProps.unavailableTimeEndString];
+                                    modifyBusinessPurpose=arg.event.extendedProps.businessPurpose;">
                         詳細
                         </el-button>
                         <el-button class="calendar-btm" size="small" color="#a33238" :dark="isDark" style=""  @click="openRemoveAgangaEvent( arg.event.id )">
@@ -146,41 +155,41 @@
         >
         <el-divider content-position="left">
                     <h5 v-if="drawerByCreate" class="table-title" >新增公事安排</h5>
-                    <h5 v-if="drawerByModify" class="table-title" >排程詳情</h5>
+                    <h5 v-if="drawerByModify" class="table-title" >No. {{modifyEventId}}  排程詳情</h5>
         </el-divider>
-
+<!-- 新增彈出 -->
         <el-form v-if="drawerByCreate" :model="form" label-width="auto" style="width: 100%; padding: 25px;">
-                <el-form-item label="創建員工 :&nbsp;">
-                    <p style="margin: 0;">後續串接登陸員工</p>
-                </el-form-item>
+            <el-form-item label="創建員工 :&nbsp;">
+                <p style="margin: 0;">後續串接登陸員工</p>
+            </el-form-item>
 
-                
-                <el-form-item label="排程區間 :&nbsp;">
-                    <el-date-picker
-                        v-model="createUnavailableTime"
-                        size="small"
-                        type="datetimerange"
-                        start-placeholder="Start Time"
-                        end-placeholder="End Time"
-                        format="YYYY-MM-DD HH:mm"
-                        date-format="YYYY/MM/DD ddd"
-                        time-format="A hh:mm"
-                        value-format="YYYY-MM-DD HH:mm:ss"
-                        :default-time="defaultTime2"
-                    />
-                </el-form-item>
+            
+            <el-form-item label="排程區間 :&nbsp;">
+                <el-date-picker
+                    v-model="createUnavailableTime"
+                    size="small"
+                    type="datetimerange"
+                    start-placeholder="Start Time"
+                    end-placeholder="End Time"
+                    format="YYYY-MM-DD HH:mm"
+                    date-format="YYYY/MM/DD ddd"
+                    time-format="A hh:mm"
+                    value-format="YYYY-MM-DD HH:mm:ss"
+                    :default-time="defaultTime2"
+                />
+            </el-form-item>
 
-         
-                <el-form-item label="詳細事由 :&nbsp;">
-                    <el-input
-                        v-model="createBusinessPurpose"
-                        style="width: 240px"
-                        :rows="4"
-                        type="textarea"
-                        placeholder="詳細事由"
-                    />
-                </el-form-item>
-                </el-form>
+        
+            <el-form-item label="詳細事由 :&nbsp;">
+                <el-input
+                    v-model="createBusinessPurpose"
+                    style="width: 240px"
+                    :rows="4"
+                    type="textarea"
+                    placeholder="詳細事由"
+                />
+            </el-form-item>
+        </el-form>
                 <!-- <div style=" float: left;text-align: left;margin: 0 25px;">
                     <div style="margin: 0; font-size: 12px; justify-self: start;">員工 : {{createEmployeeId}}</div>
                     <div style="margin: 0; font-size: 12px; justify-self: start;">排程期始 : {{createUnavailableTime[0]}}</div>
@@ -188,18 +197,67 @@
                     <div style="margin: 0; font-size: 12px; justify-self: start;">事由 : {{createBusinessPurpose}}</div>
                 </div> -->
 
-                <div v-if="drawerByCreate" class="btm-div" style="text-decoration:unset;display: flex;margin: 100px 50px; float: right" >
-                    <div class="btm-div" style="display: flex;margin: 0 70px; float: right" @click="cleanCerateAgenda">
-                        <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;margin-top: 8px"/>
-                        <el-button type='' link  style="color: #a33238; font-weight: 900;">清空</el-button>
-                    </div>
-                    <el-button class="calendar-btm"  color="#a33238" :dark="isDark"  @click="cancelCerateAgenda">
-                        <b>取消新增</b>
-                    </el-button>
-                    <el-button class="calendar-btm"  color="#a33238" :dark="isDark"  @click="creatAGDVisible=true">
-                        <b>確認新增</b>
-                    </el-button>
-                </div>
+        <div v-if="drawerByCreate" class="btm-div" style="text-decoration:unset;display: flex;margin: 100px 50px; float: right" >
+            <div class="btm-div" style="display: flex;margin: 0 70px; float: right" @click="cleanCerateAgenda">
+                <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;margin-top: 8px"/>
+                <el-button type='' link  style="color: #a33238; font-weight: 900;">清空</el-button>
+            </div>
+            <el-button class="calendar-btm"  color="#a33238" :dark="isDark"  @click="cancelCerateAgenda">
+                <b>取消新增</b>
+            </el-button>
+            <el-button class="calendar-btm"  color="#a33238" :dark="isDark"  @click="creatAGDVisible=true">
+                <b>確認新增</b>
+            </el-button>
+        </div>
+
+<!-- 修改彈出 -->
+    <el-form v-if="drawerByModify" :model="form" label-width="auto" style="width: 100%; padding: 25px;">
+        <el-form-item label="創建員工 :&nbsp;">
+            <p style="margin: 0;">{{ modifyEmpoleeName }}</p>
+        </el-form-item>
+
+        
+        <el-form-item label="排程區間 :&nbsp;">
+            <el-date-picker
+                v-model="modifyUnavailableTime"
+                size="small"
+                type="datetimerange"
+                start-placeholder="Start Time"
+                end-placeholder="End Time"
+                format="YYYY-MM-DD HH:mm"
+                date-format="YYYY/MM/DD ddd"
+                time-format="A hh:mm"
+                value-format="YYYY-MM-DD HH:mm:ss"
+                :default-time="defaultTime2"
+                :readonly="!isModify"
+            />
+        </el-form-item>
+
+    
+        <el-form-item label="詳細事由 :&nbsp;">
+            <el-input
+                v-model="modifyBusinessPurpose"
+                style="width: 240px"
+                :rows="4"
+                type="textarea"
+                placeholder="詳細事由"
+                :readonly="!isModify"
+            />
+        </el-form-item>
+    </el-form>
+
+        <el-switch
+            v-model="isModify"
+            inline-prompt
+            class="value5"
+            size="large"
+            active-text="&nbsp;&nbsp;開啟修改&nbsp;&nbsp;"
+            inactive-text="&nbsp;&nbsp;資料鎖定&nbsp;&nbsp;"   
+            style="--el-switch-on-color: #a33238; -webkit-margin-start: 18px ;"
+            @click = "openModifyAGDVisible"
+            />
+        
+    
     </el-drawer>
 
 <!-- 確認新增用彈出視窗 -->
@@ -247,6 +305,26 @@
         </template>
     </el-dialog>
 
+
+<!-- 確認修改用彈出視窗 -->
+<el-dialog
+        v-model="modifyAGDVisible"
+        width="350"
+        :show-close="false"
+    >
+    <h5 class="msg-title" >確認修改 排程 No.{{modifyEventId}}?</h5>
+        <template #footer> 
+        <div class="dialog-footer" style="display: flex;justify-content: center;">
+            <div>
+            <el-button @click="modifyAGDVisible=false;isModify=true;">否</el-button>
+            <el-button type="primary" @click="modifyAgangaEvent" style="background-color: #a33238;border: #a33238;">
+            是
+            </el-button>
+        </div>
+        </div>
+        </template>
+    </el-dialog>
+
 </template>
     
 
@@ -283,15 +361,25 @@ const drawerByCreate = ref(false)
 const drawerByModify = ref(false)
 const creatAGDVisible =ref(false)
 const removeAGDVisible =ref(false)
+const modifyAGDVisible =ref(false)
 
 //新增用屬性
 const createEmployeeId =ref(1)
-const createUnavailableTime =ref({0:null,1:null})
+const createUnavailableTime =ref([null,null])
 const defaultTime2 = [
   new Date(2000, 1, 1, 9, 0, 0),
   new Date(2000, 2, 1, 18, 0, 0),
 ]//Unavailable的預設時間屬性
 const createBusinessPurpose =ref('')
+
+//修改用屬性
+const modifyEventId =ref(null)
+const modifyEmpoleeId =ref(null)
+const modifyEmpoleeName =ref('')
+const modifyUnavailableTime =ref([null,null])
+const modifyBusinessPurpose =ref('')
+const modifyUnavailableStatus =ref(null)
+const isModify=ref(false)
 
 //刪除用屬性
 const removeAGDId =ref(null)
@@ -482,16 +570,17 @@ function toggleWeekends(params) {
 //點擊空白開啟新增
 function handleDateClick(arg) {
     // alert('date click! ' + arg.dateStr);
+    drawerByModify.value = false;
     drawerByCreate.value = true;
     openAgandaDrawer.value=true
-    createUnavailableTime.value=({0:formatDate2(arg.dateStr),1:formatDate2Add2Hr(arg.dateStr)})
+    createUnavailableTime.value=[formatDate2(arg.dateStr),formatDate2Add2Hr(arg.dateStr)]
     console.log("formatDate2(arg.dateStr)",formatDate2(arg.dateStr));
     console.log("arg.dateStr",arg.dateStr);
 }
 
 //清空新增
 function cleanCerateAgenda() {
-    createUnavailableTime.value =({0:null,1:null})
+    createUnavailableTime.value =([null,null])
     createBusinessPurpose.value =''
 }
 
@@ -636,7 +725,9 @@ function callFindByAgangaHQL(doCreat){
                         unavailableStatus :items.value[i].unavailableStatus,
                         unavailableStatusName :items.value[i].unavailableStatusName,
                         createTimeString :items.value[i].createTimeString,
-                        updateTimeString :items.value[i].updateTimeString
+                        updateTimeString :items.value[i].updateTimeString,
+                        unavailableTimeEndString :items.value[i].unavailableTimeEndString,
+                        unavailableTimeStrString :items.value[i].unavailableTimeStrString
                     }
 
                     });
@@ -661,7 +752,9 @@ function callFindByAgangaHQL(doCreat){
                         unavailableStatus :items.value[i].unavailableStatus,
                         unavailableStatusName :items.value[i].unavailableStatusName,
                         createTimeString :items.value[i].createTimeString,
-                        updateTimeString :items.value[i].updateTimeString
+                        updateTimeString :items.value[i].updateTimeString,
+                        unavailableTimeEndString :items.value[i].unavailableTimeEndString,
+                        unavailableTimeStrString :items.value[i].unavailableTimeStrString
                     }
                     });
                     break;
@@ -685,7 +778,9 @@ function callFindByAgangaHQL(doCreat){
                         unavailableStatus :items.value[i].unavailableStatus,
                         unavailableStatusName :items.value[i].unavailableStatusName,
                         createTimeString :items.value[i].createTimeString,
-                        updateTimeString :items.value[i].updateTimeString
+                        updateTimeString :items.value[i].updateTimeString,
+                        unavailableTimeEndString :items.value[i].unavailableTimeEndString,
+                        unavailableTimeStrString :items.value[i].unavailableTimeStrString
                     }
                     });
                     break;
@@ -708,7 +803,9 @@ function callFindByAgangaHQL(doCreat){
                         unavailableStatus :items.value[i].unavailableStatus,
                         unavailableStatusName :items.value[i].unavailableStatusName,
                         createTimeString :items.value[i].createTimeString,
-                        updateTimeString :items.value[i].updateTimeString
+                        updateTimeString :items.value[i].updateTimeString,
+                        unavailableTimeEndString :items.value[i].unavailableTimeEndString,
+                        unavailableTimeStrString :items.value[i].unavailableTimeStrString
                     }
                     });
                     break;
@@ -728,7 +825,7 @@ function callFindByAgangaHQL(doCreat){
     }) 
 }
 
-//修改排程(狀態3)
+//修改排程(狀態3) (拖曳用)
 async function doAgangaModify(infoEvent) {
     // Swal.fire({
     //     text: "執行中......",
@@ -772,6 +869,74 @@ async function doAgangaModify(infoEvent) {
     };
 
 }
+
+//修改排程(狀態3) (彈出視窗)
+function modifyAgangaEvent() {
+    modifyAGDVisible.value=false;
+    let request ={ 
+        "id":modifyEventId.value, 
+        "employeeId":modifyEmpoleeId.value,
+        "businessPurpose":modifyBusinessPurpose.value,
+        "unavailableTimeStr":modifyUnavailableTime.value[0],
+        "unavailableTimeEnd":modifyUnavailableTime.value[1],
+        "unavailableStatus":modifyUnavailableStatus.value
+    }
+    axiosapi.put(`/agenda/${modifyEventId.value}`, request).then(function(response) {
+        console.log("response", response);
+        if(response.data.success)  {
+            callFindByAgangaHQL(false);
+            getDtata();
+            Swal.fire({
+                icon: "success",
+                text: response.data.msg,
+                showConfirmButton: false,
+            });
+            openAgandaDrawer.value=false;
+            drawerByModify.value=false;
+            isModify.value=false;
+
+            setTimeout(function () {
+                Swal.close();  //視窗關閉 
+                modifyEventId.value =null;
+                modifyEmpoleeId.value =null;
+                modifyEmpoleeName.value ='';
+                modifyUnavailableTime.value =[null,null];
+                modifyBusinessPurpose.value ='';
+                modifyUnavailableStatus.value =null;
+                drawerByModify
+                location.reload();
+            }, 1000); 
+        } else {
+            Swal.fire({
+                icon: "warning",
+                text: response.data.msg,
+                showConfirmButton: false,
+            });
+            isModify.value=true;
+            setTimeout(function () {
+                    Swal.close();  //視窗關閉 
+                }, 1000); 
+        }
+    }).catch(function(error) {
+        console.log("error", error);
+        Swal.fire({
+            icon: "error",
+            text: "修改錯誤："+error.message,
+            showConfirmButton: false,
+        });
+        isModify.value=true;
+        setTimeout(function () {
+                    Swal.close();  //視窗關閉 
+                }, 1000); 
+    });
+}
+
+//確認修改彈窗
+function openModifyAGDVisible() {
+    if (drawerByModify.value&&!isModify.value) {
+        modifyAGDVisible.value=true
+    }
+} 
 
 //開啟刪除小視窗 並傳ID值
 function openRemoveAgangaEvent(id) {

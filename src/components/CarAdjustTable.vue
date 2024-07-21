@@ -707,8 +707,8 @@ const findApprovalStatus =ref(null)
 const findCarId = ref(null)
 const findFloatingAmountMax = ref(null)
 const findFloatingAmountMin = ref(null)
-const findCreateTime = ref({0:null,1:null})
-const findUpdateTime = ref({0:null,1:null})
+const findCreateTime = ref([null, null])
+const findUpdateTime = ref([null, null])
 
 
 onMounted(function () {
@@ -726,8 +726,8 @@ function cleanFind() {
     findCarId.value =null
     findFloatingAmountMax.value = null
     findFloatingAmountMin.value = null
-    findCreateTime.value = {0:null,1:null}
-    findUpdateTime.value = {0:null,1:null}
+    findCreateTime.value = [null, null]
+    findUpdateTime.value = [null, null]
 
     current.value=1;
     callFindByHQL(false);
@@ -763,8 +763,8 @@ function itemClick(itemId){
 
 //多筆查詢
 function callFindByHQL(doCreat){
-    if (findCreateTime.value==null){findCreateTime.value={0:null,1:null}};
-    if (findUpdateTime.value==null){findUpdateTime.value={0:null,1:null}};
+    if (findCreateTime.value==null){findCreateTime.value=[null, null]};
+    if (findUpdateTime.value==null){findUpdateTime.value=[null, null]};
     console.log("findCreateTime",findCreateTime.value);
     console.log("findUpdateTime",findUpdateTime.value);
     if (doCreat) {
