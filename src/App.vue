@@ -6,6 +6,7 @@
         <el-main style=" width: auto; margin-left: 100px;">
             <dev class="container">
                 <RouterView></RouterView>
+            
             </dev>
         </el-main>
         </el-container>

@@ -51,6 +51,7 @@
     <div class="col-1"></div>
     <div class="col-10">
 <!-- 表身 -->
+        
         <FullCalendar
             id="calendar"
             ref="fullCalendar"
@@ -85,7 +86,7 @@
                         <el-button class="calendar-btm" size="small" color="#254252" :dark="isDark" style=""  @click="leaveURL(arg.event.id)">
                         詳細
                         </el-button>
-                        <el-button class="calendar-btm" size="small" color="#254252" :dark="isDark" style="" disabled="true" @click="removeEvent(arg.event.id)">
+                        <el-button class="calendar-btm" size="small" color="#254252" :dark="isDark" style="" disabled="true" @click="openRemoveAgangaEvent( arg.event.id )">
                         刪除
                         </el-button>
                     </div>
@@ -94,7 +95,7 @@
                         <el-button class="calendar-btm" size="small" color="#a77a2f" :dark="isDark" style=""  @click="viewCarURL(arg.event.id)">
                         詳細
                         </el-button>
-                        <el-button class="calendar-btm" size="small" color="#a77a2f" :dark="isDark" style="" disabled="true" @click="removeEvent(arg.event.id)">
+                        <el-button class="calendar-btm" size="small" color="#a77a2f" :dark="isDark" style="" disabled="true" @click="openRemoveAgangaEvent( arg.event.id )">
                         刪除
                         </el-button>
                     </div>
@@ -103,7 +104,7 @@
                         <el-button class="calendar-btm" size="small" color="#a33238" :dark="isDark" style=""  @click="openAgandaDrawer=true;drawerByCreate=false;drawerByModify=true">
                         詳細
                         </el-button>
-                        <el-button class="calendar-btm" size="small" color="#a33238" :dark="isDark" style=""  @click="removeEvent(arg.event.id)">
+                        <el-button class="calendar-btm" size="small" color="#a33238" :dark="isDark" style=""  @click="openRemoveAgangaEvent( arg.event.id )">
                         刪除
                         </el-button>
                     </div>
@@ -120,13 +121,14 @@
                 
             </template>
         </FullCalendar>
+        
     </div>   
     <div class="col-1"></div>
 
     <div class="col-1"></div>
     <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
 <!-- 新增用按鈕 -->
-        <div class="btm-div" style="display: flex;" @click="openAgandaDrawer=true;drawerByCreate=true;drawerByModify=false">
+        <div class="btm-div" style="display: flex;margin-top: 10px;" @click="openAgandaDrawer=true;drawerByCreate=true;drawerByModify=false">
         <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;"/>
         <el-button type='' link class="text-btm" style="color: #a33238;margin-top: 13px">新增公事安排</el-button>
         </div>
@@ -147,7 +149,7 @@
                     <h5 v-if="drawerByModify" class="table-title" >排程詳情</h5>
         </el-divider>
 
-        <el-form :model="form" label-width="auto" style="width: 100%; padding: 25px;">
+        <el-form v-if="drawerByCreate" :model="form" label-width="auto" style="width: 100%; padding: 25px;">
                 <el-form-item label="創建員工 :&nbsp;">
                     <p style="margin: 0;">後續串接登陸員工</p>
                 </el-form-item>
@@ -179,14 +181,14 @@
                     />
                 </el-form-item>
                 </el-form>
-                <div style=" float: left;text-align: left;margin: 0 25px;">
+                <!-- <div style=" float: left;text-align: left;margin: 0 25px;">
                     <div style="margin: 0; font-size: 12px; justify-self: start;">員工 : {{createEmployeeId}}</div>
                     <div style="margin: 0; font-size: 12px; justify-self: start;">排程期始 : {{createUnavailableTime[0]}}</div>
                     <div style="margin: 0; font-size: 12px; justify-self: start;">排程結束 : {{createUnavailableTime[1]}}</div>
                     <div style="margin: 0; font-size: 12px; justify-self: start;">事由 : {{createBusinessPurpose}}</div>
-                </div>
+                </div> -->
 
-                <div class="btm-div" style="text-decoration:unset;display: flex;margin: 100px 50px; float: right" >
+                <div v-if="drawerByCreate" class="btm-div" style="text-decoration:unset;display: flex;margin: 100px 50px; float: right" >
                     <div class="btm-div" style="display: flex;margin: 0 70px; float: right" @click="cleanCerateAgenda">
                         <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;margin-top: 8px"/>
                         <el-button type='' link  style="color: #a33238; font-weight: 900;">清空</el-button>
@@ -218,6 +220,26 @@
             <div>
             <el-button @click="creatAGDVisible=false">否</el-button>
             <el-button type="primary" @click="doCreateAgenda" style="background-color: #a33238;border: #a33238;">
+            是
+            </el-button>
+        </div>
+        </div>
+        </template>
+    </el-dialog>
+
+
+<!-- 確認刪除用彈出視窗 -->
+<el-dialog
+        v-model="removeAGDVisible"
+        width="350"
+        :show-close="false"
+    >
+    <h5 class="msg-title" >確認刪除 排程 No.{{ removeAGDId }}?</h5>
+        <template #footer> 
+        <div class="dialog-footer" style="display: flex;justify-content: center;">
+            <div>
+            <el-button @click="removeAGDVisible=false">否</el-button>
+            <el-button type="primary" @click="removeAgangaEvent" style="background-color: #a33238;border: #a33238;">
             是
             </el-button>
         </div>
@@ -260,6 +282,7 @@ const openAgandaDrawer = ref(false)
 const drawerByCreate = ref(false)
 const drawerByModify = ref(false)
 const creatAGDVisible =ref(false)
+const removeAGDVisible =ref(false)
 
 //新增用屬性
 const createEmployeeId =ref(1)
@@ -270,6 +293,8 @@ const defaultTime2 = [
 ]//Unavailable的預設時間屬性
 const createBusinessPurpose =ref('')
 
+//刪除用屬性
+const removeAGDId =ref(null)
 
 onMounted(() => {
     callFindByAgangaHQL();
@@ -295,6 +320,8 @@ const calendarOptions = ref({
     eventDisplay: 'block', // 争对全天的情况下，以块状显示
     headerToolbar: false, // 隐藏头部的导航栏
     selectMirror: false,
+    allDaySlot: false,
+    height:'700px',
     displayEventEnd: true, // like 08:00 - 13:00
     eventTimeFormat: { // like '14:30:00'
                     hour: '2-digit',
@@ -746,6 +773,14 @@ async function doAgangaModify(infoEvent) {
 
 }
 
+//開啟刪除小視窗 並傳ID值
+function openRemoveAgangaEvent(id) {
+    removeAGDId.value = id
+    removeAGDVisible.value = true
+    
+}
+
+
 //時間轉換格式 //拖曳修改用
 function formatDate(dateString) {
     // 創建 Moment 物件並減去 8 小時
@@ -770,7 +805,51 @@ function formatDate2Add2Hr(dateString) {
   return modifiedDate.format("YYYY-MM-DD HH:mm:ss");
 }
 
-function removeEvent() {}
+function removeAgangaEvent() {
+    removeAGDVisible.value=false;
+    Swal.fire({
+        text: "執行中......",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+    });
+
+    axiosapi.delete(`/agenda/${removeAGDId.value}`).then(function(response) {
+        console.log("response", response);
+        if(response.data.success)  {
+            callFindByAgangaHQL(false);
+            getDtata();
+            Swal.fire({
+                icon: "success",
+                text: response.data.msg,
+                showConfirmButton: false,
+            });
+            setTimeout(function () {
+                Swal.close();  //視窗關閉 
+                cancelCerateAgenda();
+                location.reload();
+            }, 1000); 
+        } else {
+            Swal.fire({
+                icon: "warning",
+                text: response.data.msg,
+                showConfirmButton: false,
+            });
+            setTimeout(function () {
+                    Swal.close();  //視窗關閉 
+                }, 1000); 
+        }
+    }).catch(function(error) {
+        console.log("error", error);
+        Swal.fire({
+            icon: "error",
+            text: "刪除錯誤："+error.message,
+            showConfirmButton: false,
+        });
+        setTimeout(function () {
+                    Swal.close();  //視窗關閉 
+                }, 1000); 
+    });
+}
 
 </script>
     
