@@ -50,7 +50,7 @@
 
     <div class="col-1"></div>
     <div class="col-10">
-    
+<!-- 表身 -->
         <FullCalendar
             id="calendar"
             ref="fullCalendar"
@@ -58,7 +58,7 @@
             :options="calendarOptions">
             
             <template v-slot:eventContent="arg">
-
+<!-- 事件氣泡 -->
                 <el-popover   
                     placement="bottom"
                     width="200"
@@ -69,19 +69,44 @@
                     trigger="hover">
                     <div style="display: flex; gap: 16px; flex-direction: column">
                         <div>
-                            <p style="margin: 0; font-weight: 900" > 排程細節</p>
-                            <p style="margin: 0; font-size: 10px; color: var(--el-color-info)">  {{ arg.event.title }}  -  {{ arg.event.extendedProps.employeeName}} </p>
+                            <p style="margin: 0; font-weight: 900" > 排程 No.{{ arg.event.id }}</p>
+                            <p style="margin: 0; font-size: 12px; ">  {{ arg.event.title }}    -    {{ arg.event.extendedProps.employeeName}} </p>
+                            <p style="margin: 0; font-size: 10px; color: var(--el-color-info)"> 建立時間  /  {{ arg.event.extendedProps.createTimeString}}<br>
+                                                                                                修改時間  /  {{ arg.event.extendedProps.updateTimeString}}</p>
                         </div>
-                    <p style="margin: 0">
-                        Element Plus, a Vue 3 based component library for developers,
-                        designers and product managers
-                    </p>
+                        <hr style="margin: 0">
+                                <b style="margin: 0;" >詳細事由</b>  
+                        <p style="margin: 0">
+                            {{ arg.event.extendedProps.businessPurpose}} <br>  
+                        </p>
+                        
+                    </div>
+                    <div v-if="arg.event.extendedProps.unavailableStatus==1" style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                        <el-button class="calendar-btm" size="small" color="#254252" :dark="isDark" style=""  @click="leaveURL(arg.event.id)">
+                        詳細
+                        </el-button>
+                        <el-button class="calendar-btm" size="small" color="#254252" :dark="isDark" style="" disabled="true" @click="removeEvent(arg.event.id)">
+                        刪除
+                        </el-button>
                     </div>
 
-                    <el-button @click="handleMore">
-                        更多
-                    </el-button>
-                    
+                    <div v-if="arg.event.extendedProps.unavailableStatus==2" style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                        <el-button class="calendar-btm" size="small" color="#a77a2f" :dark="isDark" style=""  @click="viewCarURL(arg.event.id)">
+                        詳細
+                        </el-button>
+                        <el-button class="calendar-btm" size="small" color="#a77a2f" :dark="isDark" style="" disabled="true" @click="removeEvent(arg.event.id)">
+                        刪除
+                        </el-button>
+                    </div>
+
+                    <div v-if="arg.event.extendedProps.unavailableStatus==3" style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                        <el-button class="calendar-btm" size="small" color="#a33238" :dark="isDark" style=""  @click="openAgandaDrawer=true;drawerByCreate=false;drawerByModify=true">
+                        詳細
+                        </el-button>
+                        <el-button class="calendar-btm" size="small" color="#a33238" :dark="isDark" style=""  @click="removeEvent(arg.event.id)">
+                        刪除
+                        </el-button>
+                    </div>
                     <template #reference>
                         <div slot="reference" class="popper-content"> 
                                 <div>{{ arg.timeText }}</div>
@@ -91,20 +116,115 @@
                     </template>
                     
                 </el-popover>
+
+                
             </template>
         </FullCalendar>
-    </div>
-
-        
-    
+    </div>   
     <div class="col-1"></div>
+
+    <div class="col-1"></div>
+    <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
+<!-- 新增用按鈕 -->
+        <div class="btm-div" style="display: flex;" @click="openAgandaDrawer=true;drawerByCreate=true;drawerByModify=false">
+        <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;"/>
+        <el-button type='' link class="text-btm" style="color: #a33238;margin-top: 13px">新增公事安排</el-button>
+        </div>
+    </div>
+    <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
+    <div class="col-1"></div>
+
+<!-- 修改/新增彈出 -->
+<el-drawer
+        v-model="openAgandaDrawer"
+        title=""
+        :direction="direction"
+        size="450"
+        
+        >
+        <el-divider content-position="left">
+                    <h5 v-if="drawerByCreate" class="table-title" >新增公事安排</h5>
+                    <h5 v-if="drawerByModify" class="table-title" >排程詳情</h5>
+        </el-divider>
+
+        <el-form :model="form" label-width="auto" style="width: 100%; padding: 25px;">
+                <el-form-item label="創建員工 :&nbsp;">
+                    <p style="margin: 0;">後續串接登陸員工</p>
+                </el-form-item>
+
+                
+                <el-form-item label="排程區間 :&nbsp;">
+                    <el-date-picker
+                        v-model="createUnavailableTime"
+                        size="small"
+                        type="datetimerange"
+                        start-placeholder="Start Time"
+                        end-placeholder="End Time"
+                        format="YYYY-MM-DD HH:mm"
+                        date-format="YYYY/MM/DD ddd"
+                        time-format="A hh:mm"
+                        value-format="YYYY-MM-DD HH:mm:ss"
+                        :default-time="defaultTime2"
+                    />
+                </el-form-item>
+
+         
+                <el-form-item label="詳細事由 :&nbsp;">
+                    <el-input
+                        v-model="createBusinessPurpose"
+                        style="width: 240px"
+                        :rows="4"
+                        type="textarea"
+                        placeholder="詳細事由"
+                    />
+                </el-form-item>
+                </el-form>
+
+                <div class="btm-div" style="text-decoration:unset;display: flex;margin: 100px 50px; float: right" @click="cleanCerateAgenda">
+                    <div class="btm-div" style="display: flex;margin: 0 70px; float: right" @click="cleanFind">
+                        <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;margin-top: 8px"/>
+                        <el-button type='' link  style="color: #a33238; font-weight: 900;">清空</el-button>
+                    </div>
+                    <el-button class="calendar-btm"  color="#a33238" :dark="isDark"  @click="cancelCerateAgenda">
+                        <b>取消新增</b>
+                    </el-button>
+                    <el-button class="calendar-btm"  color="#a33238" :dark="isDark"  @click="openDoCreateAgenda">
+                        <b>確認新增</b>
+                    </el-button>
+                </div>
+    </el-drawer>
+
+<!-- 確認新增用彈出視窗 -->
+<el-dialog
+        v-model="creatDdialogVisible"
+        width="350"
+        :show-close="false"
+    >
+    <h5 class="msg-title" >確認新增 ?</h5>
+    <!-- <p>員工 : {{createEmployeeId}}, </p>
+    <p>排程期始 : {{createUnavailableTime[0]}}, </p>
+    <p>排程結束 : {{createUnavailableTime[1]}}, </p>
+    <p>事由 : {{createBusinessPurpose}} </p> -->
+
+        <template #footer> 
+        <div class="dialog-footer" style="display: flex;justify-content: center;">
+            <div>
+            <el-button @click="creatDdialogVisible=false">否</el-button>
+            <el-button type="primary" @click="" style="background-color: #a33238;border: #a33238;">
+            是
+            </el-button>
+        </div>
+        </div>
+        </template>
+    </el-dialog>
+
 </template>
     
 
 
 
 <script setup>
-import { ref , onMounted, watch } from 'vue';
+import { ref , onMounted } from 'vue';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -121,12 +241,40 @@ import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
 
 
+
 //用於重新導向 router.push
 const router = useRouter()
 
 const title = ref('');
 const fullCalendar = ref(null);
 
+//開啟新增修改抽屜
+const openAgandaDrawer = ref(false)
+const drawerByCreate = ref(false)
+const drawerByModify = ref(false)
+const creatDdialogVisible =ref(false)
+
+//新增用屬性
+const createEmployeeId =ref(1)
+const createUnavailableTime =ref({0:null,1:null})
+const defaultTime2 = [
+  new Date(2000, 1, 1, 9, 0, 0),
+  new Date(2000, 2, 1, 18, 0, 0),
+]//Unavailable的預設時間屬性
+const createBusinessPurpose =ref('')
+
+
+onMounted(() => {
+    callFindByAgangaHQL();
+    calendarApi.value = fullCalendar.value.getApi();
+    // console.log(calendarApi.value.view);
+    title.value = calendarApi.value.view?.title;
+
+    console.log(agangaEvents);
+    getDtata();
+});
+
+//日曆屬性
 const calendarOptions = ref({
     locale: 'en',
     plugins: [ dayGridPlugin, interactionPlugin, listPlugin ,timeGridPlugin,bootstrap5Plugin],
@@ -229,16 +377,6 @@ const calendarOptions = ref({
                 
 const calendarApi = ref(null)
 
-onMounted(() => {
-    callFindByAgangaHQL();
-    calendarApi.value = fullCalendar.value.getApi();
-    // console.log(calendarApi.value.view);
-    title.value = calendarApi.value.view?.title;
-
-    console.log(agangaEvents);
-    getDtata();
-});
-
 // watch(() => calendarApi.value.view?.type, //改變資料用
 //     () => {
 //         getDtata();
@@ -301,12 +439,91 @@ const calendarsearch = () => {
 // https://juejin.cn/post/7030696881420238878   還在研究中
 // https://cloud.tencent.cn/developer/article/1019452?from=15425 屬性
 
-function handleDateClick(arg) {
-    alert('date click! ' + arg.dateStr);
-}
+
 
 function toggleWeekends(params) {
     calendarOptions.value.weekends=!calendarOptions.value.weekends;
+}
+
+//點擊空白開啟新增
+function handleDateClick(arg) {
+    // alert('date click! ' + arg.dateStr);
+    drawerByCreate.value = true;
+    openAgandaDrawer.value=true
+    createUnavailableTime.value=({0:formatDate2(arg.dateStr),1:formatDate2Add2Hr(arg.dateStr)})
+    console.log("formatDate2(arg.dateStr)",formatDate2(arg.dateStr));
+    console.log("arg.dateStr",arg.dateStr);
+}
+
+//清空新增
+function cleanCerateAgenda() {
+    createEmployeeId.value =null
+    createUnavailableTime.value =({0:null,1:null})
+    createBusinessPurpose.value =''
+}
+
+//取消新增
+function cancelCerateAgenda(){
+    cleanCerateAgenda();
+    openAgandaDrawer.value = false;
+    drawerByCreate.value = false;
+    drawerByModify.value = false;
+    
+}
+
+//執行新增確認按鈕
+function openDoCreateAgenda() {
+    console.log("createEmployeeId",createEmployeeId.value);
+    console.log("createUnavailableTime",createUnavailableTime.value);
+    console.log("createBusinessPurpose",createBusinessPurpose.value);
+    creatDdialogVisible.value=true;
+}
+
+//執行新增排程
+function doCreateAgenda() {
+    creatDdialogVisible.value=false;
+    Swal.fire({
+        text: "執行中......",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+    });
+
+
+    let request ={  
+        "employeeId":1, 
+        "businessPurpose":createBusinessPurpose.value, 
+        "unavailableTimeStr":createUnavailableTime.value[0],
+        "unavailableTimeEnd":createUnavailableTime.value[1], 
+        "unavailableStatus":3
+    }
+
+    axiosapi.post("/agenda", request).then(function(response) {
+        console.log("response", response);
+        if(response.data.success)  {
+            callFindByHQL(true);
+            Swal.fire({
+                icon: "success",
+                text: response.data.message,
+                showConfirmButton: false,
+            }).then(function(result) {
+                openAgandaDrawer.value=false;
+            });
+        } else {
+            Swal.fire({
+                icon: "warning",
+                text: response.data.message,
+            });
+        }
+    }).catch(function(error) {
+        console.log("error", error);
+        Swal.fire({
+            icon: "error",
+            text: "新增錯誤："+error.message,
+        });
+    });
+    setTimeout(function () {
+                    Swal.close();  //視窗關閉 
+                }, 1000);
 }
 
 //資料庫Aganga回傳資料
@@ -510,7 +727,7 @@ async function doAgangaModify(infoEvent) {
 
 }
 
-//時間轉換格式 
+//時間轉換格式 //拖曳修改用
 function formatDate(dateString) {
     // 創建 Moment 物件並減去 8 小時
     const modifiedDate = moment(dateString, "ddd MMM DD YYYY HH:mm:ss [GMT]ZZ (zzzz)").subtract(8, 'hours');
@@ -518,7 +735,23 @@ function formatDate(dateString) {
     return modifiedDate.format("YYYY-MM-DD HH:mm:ss");
 }
 
-function handleMore() {}
+//時間轉換  //新建用
+function formatDate2(dateString) {
+  // 創建 Moment 物件
+  const modifiedDate = moment(dateString);
+  // 格式化為所需的日期時間格式
+  return modifiedDate.format("YYYY-MM-DD HH:mm:ss");
+}
+
+//時間轉換+2小時  //新建用
+function formatDate2Add2Hr(dateString) {
+  // 創建 Moment 物件
+  const modifiedDate = moment(dateString).add(2, 'hours');
+  // 格式化為所需的日期時間格式
+  return modifiedDate.format("YYYY-MM-DD HH:mm:ss");
+}
+
+function removeEvent() {}
 
 </script>
     
