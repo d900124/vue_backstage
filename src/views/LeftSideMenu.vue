@@ -22,7 +22,7 @@
                 <span><RouterLink :to="{ name:'personal-link'}" style="all: unset;"><b>個人專區</b></RouterLink></span>
             
         </template>
-            <a href="#" style="all: unset;"><el-menu-item index="1-1"> - 工作排程</el-menu-item></a>
+            <a href="/pages/personal#agenda" style="all: unset;"><el-menu-item > - 工作排程</el-menu-item></a>
             <a href="#" style="all: unset;"><el-menu-item index="1-2"> - 請假管理</el-menu-item></a>
             <a href="#" style="all: unset;"><el-menu-item index="1-3"> - 個人資料 & 考核</el-menu-item></a>
         
@@ -51,10 +51,10 @@
                 <span><RouterLink :to="{ name:'team-maintain-link'}" style="all: unset;"><b>員工管理專區</b></RouterLink></span>
             
         </template>
-            <a href="#" style="all: unset;"><el-menu-item index="4-1"> - 車輛調整簽核</el-menu-item></a>
+            <a href="/pages/teamMaintain#carAdjust" style="all: unset;"><el-menu-item > - 車輛調整簽核</el-menu-item></a>
             <a href="#" style="all: unset;"><el-menu-item index="4-2"> - 假單簽核 </el-menu-item></a>
             <a href="#" style="all: unset;"><el-menu-item index="4-3"> - 員工總覽 </el-menu-item></a>
-            <a href="#" style="all: unset;"><el-menu-item index="4-4"> - 考核評比 </el-menu-item></a>
+            <a href="/pages/teamMaintain#kpi" style="all: unset;"><el-menu-item > - 考核評比 </el-menu-item></a>
     </el-sub-menu>
 
     <el-switch

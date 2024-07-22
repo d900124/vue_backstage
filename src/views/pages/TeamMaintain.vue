@@ -10,13 +10,16 @@
         <!-- 員工總覽 -->
 
         <!-- 考核評比 -->
-
+        
+        <KpiTable></KpiTable>
         </div>
     </div>
+    
 </template>
     
 <script setup >
     import CarAdjustTable from '@/components/CarAdjustTable.vue';
+    import KpiTable from '@/components/KpiTable.vue';
     
 </script>
     

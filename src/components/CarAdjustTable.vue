@@ -92,7 +92,7 @@
 
 <!-- 抬頭 -->
             <div class="col-2" style="padding: 0px 0px;">
-                <h3 class="table-title">車輛調整簽核</h3>
+                <h3 class="table-title" id="carAdjust">車輛調整簽核</h3>
             </div>
             <div class="col-1"></div>
 
@@ -707,8 +707,8 @@ const findApprovalStatus =ref(null)
 const findCarId = ref(null)
 const findFloatingAmountMax = ref(null)
 const findFloatingAmountMin = ref(null)
-const findCreateTime = ref({0:null,1:null})
-const findUpdateTime = ref({0:null,1:null})
+const findCreateTime = ref([null, null])
+const findUpdateTime = ref([null, null])
 
 
 onMounted(function () {
@@ -726,8 +726,8 @@ function cleanFind() {
     findCarId.value =null
     findFloatingAmountMax.value = null
     findFloatingAmountMin.value = null
-    findCreateTime.value = {0:null,1:null}
-    findUpdateTime.value = {0:null,1:null}
+    findCreateTime.value = [null, null]
+    findUpdateTime.value = [null, null]
 
     current.value=1;
     callFindByHQL(false);
@@ -763,8 +763,8 @@ function itemClick(itemId){
 
 //多筆查詢
 function callFindByHQL(doCreat){
-    if (findCreateTime.value==null){findCreateTime.value={0:null,1:null}};
-    if (findUpdateTime.value==null){findUpdateTime.value={0:null,1:null}};
+    if (findCreateTime.value==null){findCreateTime.value=[null, null]};
+    if (findUpdateTime.value==null){findUpdateTime.value=[null, null]};
     console.log("findCreateTime",findCreateTime.value);
     console.log("findUpdateTime",findUpdateTime.value);
     if (doCreat) {
@@ -856,7 +856,7 @@ function doCreat() {
             callFindByHQL(true);
             Swal.fire({
                 icon: "success",
-                text: response.data.message,
+                text: response.data.msg,
                 showConfirmButton: false,
             }).then(function(result) {
                 
@@ -869,14 +869,14 @@ function doCreat() {
         } else {
             Swal.fire({
                 icon: "warning",
-                text: response.data.message,
+                text: response.data.msg,
             });
         }
     }).catch(function(error) {
         console.log("error", error);
         Swal.fire({
             icon: "error",
-            text: "新增錯誤："+error.message,
+            text: "新增錯誤："+error.msg,
         });
     });
     setTimeout(function () {
@@ -918,7 +918,7 @@ function doModify() {
         if(response.data.success)  {
             Swal.fire({
                 icon: "success",
-                text: response.data.message,
+                text: response.data.msg,
                 showConfirmButton: false,
             }).then(function(result) {
                 callFindByHQL(false);
@@ -929,7 +929,7 @@ function doModify() {
         } else {
             Swal.fire({
                 icon: "warning",
-                text: response.data.message,
+                text: response.data.msg,
             });
         }
     }).catch(function(error) {
