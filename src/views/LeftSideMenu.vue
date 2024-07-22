@@ -13,7 +13,11 @@
 >
 
     
-    <RouterLink :to="{ name:'home-link'}" style="all: unset;"><el-icon style="width: 30px; margin: 55px 20px;"><img src="/Kajarta_LOGO_02.svg"></el-icon></RouterLink>
+    <RouterLink :to="{ name:'home-link'}" style="all: unset;">
+        <el-icon style="width: 30px; margin: 55px 20px;"><img src="/Kajarta_LOGO_02.svg"></el-icon>
+        <!-- 想加username 歡迎在這 從vuex拿出來employeeInfo.name-->
+         <span style="color: #a33238; margin-left: 10px;"><b>歡迎 {{ employeeInfo.name || '用户' }}</b></span>
+    </RouterLink>
         
     
     <el-sub-menu index="/pages/personal" style="margin-top: 50px;" >
@@ -75,6 +79,20 @@ Menu as IconMenu,
 Location,
 Setting,
 } from '@element-plus/icons-vue'
+import { computed, onMounted, watch } from 'vue';
+import { useStore } from 'vuex';
+
+let employeeInfo = ref({});
+const store = useStore();
+
+onMounted(() => {
+    const username = localStorage.getItem('username');
+    if (username) {
+        store.dispatch('fetchEmployeeInfo', username);
+    }
+});
+employeeInfo = computed(() => store.state.employeeInfo.data || {});
+console.log('===>test Employee info:', employeeInfo);
 
 const isCollapse = ref(!true)
 const value5 = ref(true)
