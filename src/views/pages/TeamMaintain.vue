@@ -13,7 +13,7 @@
 
 
             <!-- 考核評比 -->
-            <LoginForm></LoginForm>
+
 
         </div>
     </div>
@@ -23,7 +23,6 @@
 import CarAdjustTable from '@/components/CarAdjustTable.vue';
 import Leave from '@/components/Leave.vue';
 import EmployeeList from '@/components/Employee.vue';
-import LoginForm from '@/components/LoginForm.vue';
 
 
 
