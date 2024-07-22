@@ -80,27 +80,25 @@
     <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
 
         <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
-            <el-form-item label="申請員工 :&nbsp;">
-                <p style="margin: 0;">串接登入員工</p>
-            </el-form-item>
-
             <el-divider border-style="dashed" style="margin: 0;" />
-            <el-form-item label="簽核主管 :&nbsp;">
-                <el-select v-model="creatTeamleaderIDValue" placeholder="Select" size="small">
-                    <el-option v-for="Option in creatTeamleaderIDOptions" :key="Option.value" :label="Option.label"
-                        :value="Option.value" />
+            <el-form-item label="職位 :&nbsp;">
+                <el-select v-model="form.accountType" placeholder="職位" size="small">
+                    <el-option v-for="status in accountTypes" :key="status.value" :label="status.label"
+                        :value="status.value" />
                 </el-select>
             </el-form-item>
-            <el-divider border-style="dashed" style="margin: 0;" />
-
-            <el-form-item label="修改車輛 :&nbsp;">
-                <el-input-number v-model="creatCarIDValue" :min="1" :max="10" size="small" controls-position="right" />
+            <el-form-item label="員工姓名 :&nbsp;">
+                <el-input v-model="form.name" placeholder="請輸入員工姓名" size="small" />
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
-
-            <el-form-item label="改後價格 :&nbsp;">
-                <el-input-number v-model="creatFloatingAmountValue" :min="1000" :max="100000000000000000" size="small"
-                    controls-position="right" />
+            <el-form-item label="入職日 :&nbsp;">
+                <el-date-picker v-model="form.startDate" type="date" placeholder="選擇入職日" size="small" clearable />
+            </el-form-item>
+            <el-divider border-style="dashed" style="margin: 0;" />
+            <el-form-item label="直屬主管 :&nbsp;">
+                <el-select v-model="form.teamLeaderId" placeholder="請選擇直屬主管" size="small">
+                    <el-option v-for="leader in teamLeaders" :key="leader.id" :label="leader.name" :value="leader.id" />
+                </el-select>
             </el-form-item>
 
         </el-form>
@@ -109,25 +107,26 @@
     <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
 
         <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
-            <el-form-item label="&nbsp;">
-                <p style="margin: 0;">&nbsp;</p>
+            <el-form-item label="性別 :&nbsp;">
+                <el-select v-model="form.sex" placeholder="請選擇性別" size="small">
+                    <el-option label="M" value="M"></el-option>
+                    <el-option label="F" value="F"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-divider border-style="dashed" style="margin: 0;" />
+            <el-form-item label="電話 :&nbsp;">
+                <el-input v-model="form.phone" placeholder="請輸入電話" size="small" />
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
 
-            <el-form-item label="&nbsp;">
-                <p style="margin: 0;">&nbsp;</p>
+            <el-form-item label="Email :&nbsp;">
+                <el-input v-model="form.email" placeholder="請輸入Email" size="small" />
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
-
-            <el-form-item label="簽核狀態 :&nbsp;">
-                <p style="margin: 0;">尚未簽核</p>
-            </el-form-item>
-            <el-divider border-style="dashed" style="margin: 0;" />
-
-            <el-form-item label="簽核需求 :&nbsp;">
-                <el-select v-model="creatApprovalTypeValue" placeholder="Select" size="small">
-                    <el-option v-for="Option in creatApprovalTypeOptions" :key="Option.value" :label="Option.label"
-                        :value="Option.value" />
+            <el-form-item label="分店 :&nbsp;">
+                <el-select v-model="form.branch" placeholder="請選擇分店">
+                    <el-option v-for="branch in branches" :key="branch.value" :label="branch.label"
+                        :value="branch.value" />
                 </el-select>
             </el-form-item>
 
@@ -142,7 +141,8 @@
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
     <div v-if="openCreat" class="col-5"
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-        <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click="openDoModify">&nbsp確認新增&nbsp</el-button>
+        <el-button color="#a33238" :dark="isDark" style="margin: 20 0;"
+            @click="creatDdialogVisible = true">&nbsp確認新增&nbsp</el-button>
     </div>
     <div v-if="openCreat" class="col-1"></div>
 
@@ -252,18 +252,6 @@
             style="--el-switch-on-color: #a33238; -webkit-margin-start: 18px ;" @click="openDoModify" />
     </div>
     <div v-if="openZon" class="col-1"></div>
-    <!-- 確認修改用彈出視窗 -->
-    <el-dialog v-model="dialogVisible" width="300" :show-close="false">
-        <h5 class="msg-title">確認修改 員工編號 {{ singleEmployee.id }} ?</h5>
-        <template #footer>
-            <div class="dialog-footer" style="justify-content: center;">
-                <el-button @click="dialogVisible = false; isModify = true">否</el-button>
-                <el-button type="primary" @click="doModify" style="background-color: #a33238;border: #a33238;">
-                    是
-                </el-button>
-            </div>
-        </template>
-    </el-dialog>
     <!-- 確認新增用彈出視窗 -->
     <el-dialog v-model="creatDdialogVisible" width="350" :show-close="false">
         <h5 class="msg-title">確認新增 ?</h5>
@@ -279,13 +267,28 @@
         </template>
     </el-dialog>
 
+
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useStore } from 'vuex';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
+
+// 串接登入員工
+let employeeInfo = ref({});
+const store = useStore();
+
+onMounted(() => {
+    const username = localStorage.getItem('username');
+    if (username) {
+        store.dispatch('fetchEmployeeInfo', username);
+    }
+});
+employeeInfo = computed(() => store.state.employeeInfo.data || {});
+console.log('===>test Employee info:', employeeInfo);
 
 
 const router = useRouter();
@@ -297,7 +300,9 @@ const rows = ref(4);
 
 const openZon = ref(false); // 初始值改為false，避免一開始就顯示單筆詳細資料
 //下方新增資料開啟用
+
 const openCreat = ref(false)
+const creatDdialogVisible = ref(false)  //新增
 
 const employees = ref([]);
 
@@ -329,6 +334,17 @@ const branches = ref([
     { label: "大巨蛋", value: 3 }
 ]);
 
+const form = ref({
+    accountType: null,
+    name: '',
+    startDate: '',
+    teamLeaderId: null,
+    sex: '',
+    phone: '',
+    email: '',
+    branch: null
+});
+
 onMounted(() => {
     callQuery();
 });
@@ -348,52 +364,35 @@ function doCreat() {
         showConfirmButton: false,
     });
 
-
-    let request = {
-        "id": singleEmployee.value.id,
-        "accountType": singleEmployee.value.accountType,
-        "name": singleEmployee.value.name,
-        "phone": singleEmployee.value.phone,
-        "email": singleEmployee.value.email,
-        "sex": singleEmployee.value.sex,
-        "startDate": singleEmployee.value.startDate,
-        "teamLeaderId": singleEmployee.value.teamLeaderId,  // 使用整數型別的 ID
-        "branch": singleEmployee.value.branch
-    }
-
-    axiosapi.post("/employee/add", request).then(function (response) {
-        console.log("response", response);
-        if (response.data.success) {
-            callFindByHQL(true);
+    axiosapi.post("/employee/add", form.value)
+        .then(response => {
+            if (response.data.success) {
+                Swal.fire({
+                    icon: "success",
+                    text: response.data.msg,
+                    showConfirmButton: false,
+                }).then(() => {
+                    // TODO: 刷新列表或更新状态
+                    openZon.value = true; // 打开详细数据区域
+                });
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    text: response.data.msg,
+                });
+            }
+        })
+        .catch(error => {
             Swal.fire({
-                icon: "success",
-                text: response.data.msg,
-                showConfirmButton: false,
-            }).then(function (result) {
-
-                console.log("新增的員工", employees.value[0]);
-                openCreat.value = false;
-                employeeClick(employees.value[0].id);
-                openZon.value = true;
-
+                icon: "error",
+                text: "新增錯誤：" + error.message,
             });
-        } else {
-            Swal.fire({
-                icon: "warning",
-                text: response.data.msg,
-            });
-        }
-    }).catch(function (error) {
-        console.log("error", error);
-        Swal.fire({
-            icon: "error",
-            text: "新增錯誤：" + error.msg,
+        })
+        .finally(() => {
+            Swal.close();
         });
-    });
-    setTimeout(function () {
-        Swal.close();  //視窗關閉 
-    }, 1000);
 }
+
 
 // 獲取所有主管ID
 function getAllTeamLeaders() {
