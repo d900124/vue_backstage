@@ -1,69 +1,66 @@
 <template>
-    <div class="col-1"></div>
-    <!-- 多选下拉菜单(简易搜索) -->
-    <div class="col-5" style="padding: 0px 0px;"></div>
+    <div class="container">
+        <!-- 抬頭 -->
+        <div class="header">
+            <h3 class="table-title">個人資訊</h3>
+        </div>
 
-    <!-- 抬头 -->
-    <div class="col-5" style="padding: 0px 0px;">
-        <h3 class="table-title">个人资讯</h3>
-    </div>
-    <div class="col-1"></div>
-
-    <div class="col-1"></div>
-    <div class="col-10">
-        <!-- 弹出式复杂搜索 -->
-        <div class="extra-menu"></div>
-        <!-- 列表主体 -->
+        <!-- 列表主體 -->
         <div class="table-part">
             <table class="table">
-                <thead style="border-bottom: 2px solid #a33238;">
+                <thead>
                     <tr>
-                        <th scope="col" class="table-th">串接{{ employeeInfo.name }}员工名</th>
+                        <th scope="col" class="table-th">{{ employeeInfo.name }} 員工資料</th>
                     </tr>
                 </thead>
-                <tbody class="table-group-divider">
+                <tbody>
                     <tr>
-                        <td class="table-th">
-                            <span>职等：</span><span>{{ employeeInfo.accountTypeName }}</span>
+                        <td class="table-td">
+                            <span>員工編號：</span><span>{{ employeeInfo.id }}</span>
                         </td>
                     </tr>
                     <tr>
-                        <td class="table-th">
+                        <td class="table-td">
+                            <span>職等：</span><span>{{ employeeInfo.accountTypeName }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="table-td">
                             <span>姓名：</span><span>{{ employeeInfo.name }}</span>
                         </td>
                     </tr>
                     <tr>
-                        <td class="table-th">
+                        <td class="table-td">
                             <span>性别：</span><span>{{ employeeInfo.sex }}</span>
                         </td>
                     </tr>
                     <tr>
-                        <td class="table-th">
-                            <span>帐号：</span><span>{{ employeeInfo.account }}</span>
+                        <td class="table-td">
+                            <span>帳號：</span><span>{{ employeeInfo.account }}</span>
                         </td>
                     </tr>
                     <tr>
-                        <td class="table-th">
-                            <span>手机：</span><span>{{ employeeInfo.phone }}</span>
+                        <td class="table-td">
+                            <span>手機：</span><span>{{ employeeInfo.phone }}</span>
                         </td>
                     </tr>
                     <tr>
-                        <td class="table-th">
+                        <td class="table-td">
                             <span>Email：</span><span>{{ employeeInfo.email }}</span>
                         </td>
                     </tr>
                     <tr>
-                        <td class="table-th">
-                            <span>入职日：</span><span>{{ employeeInfo.startDate }}</span>
+                        <td class="table-td">
+                            <span>入職日：</span><span>{{ employeeInfo.startDate }}</span>
                         </td>
                     </tr>
                     <tr>
-                        <td class="table-th">
-                            <span>直属主管：</span><span>{{ employeeInfo.teamLeaderName }}</span>
+                        <td class="table-td">
+                            <span>直屬主管：</span><span>{{ employeeInfo.teamLeaderName }}</span>
                         </td>
                     </tr>
                     <tr>
-                        <td class="table-th">
+                        <td class="table-td">
                             <span>分店：</span><span>{{ employeeInfo.branchName }}</span>
                         </td>
                     </tr>
@@ -84,7 +81,6 @@ console.log('===>Employee info:', employeeInfo.value);
 const accountTypeName = computed(() => employeeInfo.value?.accountTypeName || '');
 console.log('Account Type Name:', accountTypeName.value);
 
-
 onMounted(() => {
     const username = localStorage.getItem('username');
     if (username) {
@@ -94,78 +90,63 @@ onMounted(() => {
 
 // 可选：调试数据
 watch(employeeInfo, (newValue) => {
-  console.log('Employee info updated:', newValue);
+    console.log('Employee info updated:', newValue);
 });
 </script>
 
 <style scoped>
-.btn-close {
-    margin: 10px;
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff5eb;
+    padding: 20px;
 }
 
-.btm-div:hover {
-    text-decoration: underline 2px solid #a33238;
+.header {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
 }
 
-.text-btm {
-    font-size: 1.2em;
-    font-weight: 900;
+.table-part {
+    width: 100%;
+    max-width: 800px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.table-td {
-    font-size: 0.8em;
+.table {
+    width: 100%;
+    border-collapse: collapse;
 }
 
 .table-th {
     color: #a33238;
+    font-weight: 900;
+    text-align: left;
 }
 
-div.col-10 {
-    padding: 0px 0px;
-    background-color: #fff5eb;
-    justify-content: center;
-    display: flex;
-}
-
-th,
-tr,
-td {
-    background-color: unset;
-    width: 100px;
-}
-
-.table-part {
-    width: 95%;
-    padding: 20px;
-}
-
-.table {
-    width: 95%;
-    margin: auto;
-    padding: 10px 10px;
-}
-
-.extra-menu {
-    width: 5%;
-    background-color: #a33238;
+.table-td {
+    font-size: 0.9em;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
 }
 
 .table-title {
-    float: right;
     color: #a33238;
     font-weight: 900;
-    margin: 10px 0px;
 }
 
-.msg-title {
-    color: #a33238;
-    font-weight: 900;
-    margin: 10px 0px;
+thead tr {
+    border-bottom: 2px solid #a33238;
 }
 
-.creat-title {
-    color: black;
-    font-weight: 900;
-    margin: 20px 20px;
+tbody tr:last-child td {
+    border-bottom: none;
 }
 </style>
