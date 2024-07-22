@@ -1,6 +1,6 @@
 <template>
-    
-    <div class="container text-center" >
+
+    <div class="container text-center">
         <div class="row">
             <!-- 車輛調整簽核 -->
             <CarAdjustTable></CarAdjustTable>
@@ -12,18 +12,14 @@
             <Employee></Employee>
 
             <!-- 考核評比 -->
-        <KpiTable></KpiTable>
+            <KpiTable></KpiTable>
         </div>
     </div>
 </template>
-    
-<script setup >
-    import CarAdjustTable from '@/components/CarAdjustTable.vue';
-    import KpiTable from '@/components/KpiTable.vue';
-
 
 <script setup>
 import CarAdjustTable from '@/components/CarAdjustTable.vue';
+import KpiTable from '@/components/KpiTable.vue';
 import Leave from '@/components/Leave.vue';
 import EmployeeList from '@/components/Employee.vue';
 
