@@ -89,14 +89,12 @@
                 </thead>
                 <tbody class="table-group-divider">
                     <tr v-if="!isModify">
-                        <input type="hidden" v-model="singleEmployee.account">
                         <td class="table-td">{{ singleEmployee.accountTypeName }}</td>
                         <td class="table-td">{{ singleEmployee.name }}</td>
                         <td class="table-td">{{ singleEmployee.startDate }}</td>
                         <td class="table-td">{{ singleEmployee.teamLeaderName }}</td>
                     </tr>
                     <tr v-if="isModify">
-                        <input type="hidden" v-model="singleEmployee.account">
                         <td class="table-td">
                             <el-select v-model="singleEmployee.accountType" placeholder="請選擇職等">
                                 <el-option v-for="status in accountTypes" :key="status.value" :label="status.label"

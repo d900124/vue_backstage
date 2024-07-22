@@ -22,7 +22,7 @@
                 <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
                         <th scope="col" class="table-th">姓名</th>
-                        <th scope="col" class="table-th">類別</th>
+                        <th scope="col" class="table-th">帳號類別</th>
                         <th scope="col" class="table-th">電話</th>
                         <th scope="col" class="table-th">Email</th>
                         <th scope="col" class="table-th">備註</th>
@@ -70,7 +70,7 @@
     <div v-if="openCreat" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openCreat = false">
         <el-divider content-position="center">
             <button type="button" class="btn-close" aria-label="Close"></button>
-            <h5 class="table-title">新增簽核</h5>
+            <h5 class="table-title">新增客戶</h5>
         </el-divider>
     </div>
     <div v-if="openCreat" class="col-1"></div>
@@ -153,11 +153,10 @@
     <div v-if="openZon" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openZon = false">
         <el-divider content-position="center">
             <button type="button" class="btn-close" aria-label="Close"></button>
-            <h5 class="table-title">員工編號 {{ singleCustomer.employeeId }} --單筆詳細請假資料</h5>
+            <h5 class="table-title">會員編號 {{ singleCustomer.id }} --單筆詳細會員資料</h5>
         </el-divider>
     </div>
     <div v-if="openZon" class="col-1"></div>
-
     <!-- 下方詳細資料區 / 第一欄-->
     <div v-if="openZon" class="col-1"></div>
     <div v-if="openZon" class="col-10" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
@@ -165,64 +164,70 @@
             <table class="table" style="width: 1000px; ">
                 <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
+                        <th scope="col" class="table-th">註冊時間</th>
+                        <th scope="col" class="table-th">帳號類別</th>
+                        <th scope="col" class="table-th">帳號</th>
                         <th scope="col" class="table-th">姓名</th>
-                        <th scope="col" class="table-th">類別</th>
-                        <th scope="col" class="table-th">電話</th>
-                        <th scope="col" class="table-th">Email</th>
-                        <th scope="col" class="table-th">備註</th>
-						
+                        <th scope="col" class="table-th">手機</th>
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
                     <tr v-if="!isModify">
                         <th scope="row" class="table-td" name="id">{{ singleCustomer.createTime }}</th>
-                        <td class="table-td">{{ singleCustomer.employeeName }}</td>
-                        <td class="table-td">{{ singleCustomer.CustomerTypeName }} </td>
-                        <td class="table-td">{{ singleCustomer.startTime }}<br>{{ singleCustomer.endTime }}</td>
-                        <td class="table-td">{{ singleLeave.actualLeaveHours }}</td>
-
-
+                        <td class="table-td">{{ singleCustomer.accountTypeName }}</td>
+                        <td class="table-td">{{ singleCustomer.account }}</td>
+                        <td class="table-td">{{ singleCustomer.name }} </td>
+                        <td class="table-td">{{ singleCustomer.phone }}</td>
                     </tr>
                     <tr v-if="isModify">
-                        <th scope="row" class="table-td" name="id" :value="singleCustomer.id">{{ singleCustomer.createTime }}
+                        <th scope="row" class="table-td" name="id" :value="singleCustomer.id">
+                            {{ singleCustomer.createTime }}
                         </th>
-                        <td class="table-td">{{ singleCustomer.employeeName }}</td>
-                        <td class="table-td">{{ singleCustomer.leaveTypeName }} </td>
-                        <td class="table-td">{{ singleCustomer.startTime }}<br>{{ singleLeave.endTime }}</td>
-                        <td class="table-td">{{ singleCustomer.actualLeaveHours }}</td>
+                        <td class="table-td">{{ singleCustomer.accountTypeName }}</td>
+                        <td class="table-td">{{ singleCustomer.account }}</td>
+                        <td class="table-td">
+                            <el-input v-model="singleCustomer.name" placeholder="姓名"></el-input>
+                        </td>
+                        <td class="table-td">
+                            <el-input v-model="singleCustomer.phone" placeholder="電話"></el-input>
+                        </td>
                     </tr>
                 </tbody>
                 <div style="height: 20px;"></div>
                 <!-- 下方詳細資料區 / 第二欄-->
                 <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
-                        <th scope="col" class="table-th">請假備註</th>
-                        <th scope="col" class="table-th">工作代理人</th>
-                        <th scope="col" class="table-th">簽核時間</th>
-                        <th scope="col" class="table-th">審核意見</th>
-                        <th scope="col" class="table-th">簽核狀態</th>
-
+                        <th scope="col" class="table-th">性別</th>
+                        <th scope="col" class="table-th">縣市</th>
+                        <th scope="col" class="table-th">地址</th>
+                        <th scope="col" class="table-th">身分證號</th>
+                        <th scope="col" class="table-th">備註</th>
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
                     <tr v-if="!isModify">
-                        <th scope="row" class="table-td" name="id">{{ singleCustomer.reason }}</th>
-                        <td class="table-td">{{ singleCustomer.deputyName }}</td>
-                        <td class="table-td">{{ singleCustomer.auditTime }}</td>
-                        <td class="table-td">{{ singleCustomer.permisionRemarks }}</td>
-                        <td class="table-td">{{ getPermisionStatusText(singleCustomer.permisionStatus) }}</td>
+                        <th scope="row" class="table-td" name="id">{{ singleCustomer.sex }}</th>
+                        <td class="table-td">{{ singleCustomer.cityName }}</td>
+                        <td class="table-td">{{ singleCustomer.address }}</td>
+                        <td class="table-td">{{ singleCustomer.idNumber }}</td>
+                        <td class="table-td">{{ singleCustomer.remarks }}</td>
                     </tr>
                     <tr v-if="isModify">
-                        <th scope="row" class="table-td" name="id">{{ singleCustomer.reason }}</th>
-                        <td class="table-td">{{ singleCustomer.deputyName }}</td>
-                        <td class="table-td">{{ singleCustomer.auditTime }}</td>
-                        <td class="table-td"> <el-input v-model="singleCustomer.permisionRemarks"
-                                placeholder="核可備註"></el-input></td>
                         <td class="table-td">
-                            <el-select v-model="singleCustomer.permisionStatus" placeholder="請選擇核可狀態">
-                                <el-option v-for="status in permissionStatuses" :key="status.value"
-                                    :label="status.label" :value="status.value" />
+                            <el-select v-model="singleCustomer.sex" placeholder="請選擇性別">
+                                <el-option label="M" value="M"></el-option>
+                                <el-option label="F" value="F"></el-option>
                             </el-select>
+                        </td>
+                        <td class="table-td">{{ singleCustomer.cityName }}</td>
+                        <td class="table-td">
+                            <el-input v-model="singleCustomer.address" placeholder="地址"></el-input>
+                        </td>
+                        <td class="table-td">
+                            <el-input v-model="singleCustomer.idNumber" placeholder="身分證號"></el-input>
+                        </td>
+                        <td class="table-td">
+                            <el-input v-model="singleCustomer.remarks" placeholder="備註"></el-input>
                         </td>
                     </tr>
                 </tbody>
@@ -284,7 +289,7 @@ const openCreat = ref(false)
 
 //產品顯示customer元件用的參數
 const customers = ref([]);
-const singlecustomer = ref([])
+const singleCustomer = ref([])
 
 // 是否可以修改
 const isModify = ref(false);
@@ -352,7 +357,7 @@ function customerInfo(customerId) {
 function callQuery() {
     console.log("callQuery - 當前頁碼:", current.value);
 
-	let request = {
+    let request = {
         "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
         "pageSize": rows.value
     };
@@ -360,9 +365,9 @@ function callQuery() {
 
     axiosapi.post("/customer/query", request).then(function (response) {
         customers.value = response.data.data.content; // 获取查询到的数据列表
-        // 更新分页信息
+        // 更新分頁資訊
         total.value = response.data.data.totalElements; // 总条目数
-        pages.value = response.data.data.totalPages; // 总页数
+        pages.value = response.data.data.totalPages; // 總頁數
 
         console.log("customers", response.data.data.content);
         console.log("total", response.data.data.totalElements);
