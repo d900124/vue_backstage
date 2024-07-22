@@ -1,4 +1,4 @@
-// store.js
+// store.js 處理vuex
 import { createStore } from 'vuex';
 import axiosapi from '@/plugins/axios';
 
