@@ -3,6 +3,7 @@ import Swal from "sweetalert2";
 
 const axiosapi = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
+    withCredentials: true,
 });
 
 //axiosapi.interceptors攔截器 (post/get...接收後)
