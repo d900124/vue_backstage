@@ -35,7 +35,7 @@
             <el-button ref="next" size="small" color="#a33238" :dark="isDark" 
                     class="calendar-btm"
                     type="button"
-                    @click="calendarsearch">
+                    @click="selectDaysVisible = true">
                     <b>查询</b>
             </el-button>
             <el-button class="calendar-btm" size="small" color="#a33238" :dark="isDark"  @click="toggleWeekends" >
@@ -44,7 +44,7 @@
         </el-button-group>
     </div>
     <div class="col-2" style="padding: 0px 0px;">
-        <h3 class="table-title" >工作排程</h3>
+        <h3 class="table-title" id="agenda">工作排程</h3>
     </div>
     <div class="col-1"></div>
 
@@ -64,8 +64,8 @@
                     placement="bottom"
                     width="200"
                     popper-style="background-color: #fff5eb;
-                                  box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;
-                                  border:3px solid #ffffff;"
+                                box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; padding: 20px;
+                                border:3px solid #ffffff;"
                     :visible-arrow="false"
                     trigger="hover">
                     <div style="display: flex; gap: 16px; flex-direction: column">
@@ -247,6 +247,7 @@
     </el-form>
 
         <el-switch
+            v-if="drawerByModify"
             v-model="isModify"
             inline-prompt
             class="value5"
@@ -325,10 +326,35 @@
         </template>
     </el-dialog>
 
+
+<!-- 查詢用彈出視窗 -->
+<el-dialog v-model="selectDaysVisible" title="" width="500">
+    <el-form :model="form">
+    <el-form-item label="查詢日期區間" :label-width="formLabelWidth">
+        <el-date-picker
+            v-model="selectDays"
+            size="small"
+            type="daterange"
+            start-placeholder="Start Time"
+            end-placeholder="End Time"
+            value-format="YYYY-MM-DD"
+        />
+    </el-form-item>
+</el-form>
+<template #footer>
+    <div class="dialog-footer">
+    <el-button @click="selectDaysVisible = false">否</el-button>
+    <el-button type="primary" @click="calendarsearch" style="background-color: #a33238;border: #a33238;">
+        是
+    </el-button>
+    </div>
+</template>
+</el-dialog>
+
+
+
 </template>
     
-
-
 
 <script setup>
 import { ref , onMounted } from 'vue';
@@ -355,20 +381,21 @@ const router = useRouter()
 const title = ref('');
 const fullCalendar = ref(null);
 
-//開啟新增修改抽屜
+//開啟抽屜或視窗
 const openAgandaDrawer = ref(false)
 const drawerByCreate = ref(false)
 const drawerByModify = ref(false)
 const creatAGDVisible =ref(false)
 const removeAGDVisible =ref(false)
 const modifyAGDVisible =ref(false)
+const selectDaysVisible =ref(false)
 
 //新增用屬性
 const createEmployeeId =ref(1)
 const createUnavailableTime =ref([null,null])
 const defaultTime2 = [
-  new Date(2000, 1, 1, 9, 0, 0),
-  new Date(2000, 2, 1, 18, 0, 0),
+    new Date(2000, 1, 1, 9, 0, 0),
+    new Date(2000, 2, 1, 18, 0, 0),
 ]//Unavailable的預設時間屬性
 const createBusinessPurpose =ref('')
 
@@ -383,6 +410,10 @@ const isModify=ref(false)
 
 //刪除用屬性
 const removeAGDId =ref(null)
+
+//尋日期用屬性
+const selectDays = ref([null,null])
+
 
 onMounted(() => {
     callFindByAgangaHQL();
@@ -465,7 +496,7 @@ const calendarOptions = ref({
         console.log("dragSuccessful",dragSuccessful);
         if (!dragSuccessful) {
             info.revert();
-          }
+        }
 
     },
     eventResizeStart: function(info) { //事件區間拉動開始
@@ -493,7 +524,7 @@ const calendarOptions = ref({
         console.log("dragSuccessful",dragSuccessful);
         if (!dragSuccessful) {
             info.revert();
-          }
+        }
     }
 });
                 
@@ -549,10 +580,15 @@ const calendarday = () => {
     title.value = calendarApi.value.view?.title;
 };
 
+
+//尋觸發發事件
+
 const calendarsearch = () => {
+    selectDaysVisible.value=false;
+    console.log(selectDays.value[0],selectDays.value[1]);
     calendarApi.value.changeView('dayGrid', {
-        start: '2024-10-21',
-        end: '2024-10-23',
+        start: selectDays.value[0],
+        end: selectDays.value[1],
     });
 };
 
@@ -562,7 +598,7 @@ const calendarsearch = () => {
 // https://cloud.tencent.cn/developer/article/1019452?from=15425 屬性
 
 
-
+//六日是否顯示
 function toggleWeekends(params) {
     calendarOptions.value.weekends=!calendarOptions.value.weekends;
 }

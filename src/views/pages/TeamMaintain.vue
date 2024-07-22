@@ -1,5 +1,5 @@
 <template>
-    <el-scrollbar>
+    
     <div class="container text-center" >
         <div class="row">
         <!-- 車輛調整簽核 -->
@@ -10,14 +10,16 @@
         <!-- 員工總覽 -->
 
         <!-- 考核評比 -->
-
+        
+        <KpiTable></KpiTable>
         </div>
     </div>
-    </el-scrollbar>
+    
 </template>
     
 <script setup >
     import CarAdjustTable from '@/components/CarAdjustTable.vue';
+    import KpiTable from '@/components/KpiTable.vue';
     
 </script>
     
