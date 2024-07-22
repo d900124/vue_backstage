@@ -5,12 +5,11 @@ import { createRouter, createWebHistory } from "vue-router";
 import Home from '../views/Home.vue';
 import NotFound from "../views/NotFound.vue";
 import routerPages from "@/views/pages/router-pages";
-import CarInsert from "../views/CarInsert.vue";
+
 
 // 2. 定義網頁路由
 const routes = [
     { name: "home-link", path: "/", component: Home },
-    { name: "carinsert-link", path: "/employee/carinsert", component: CarInsert },
     { name: "notfound-link", path: "/:pathMatch(.*)*", component: NotFound },
     ...routerPages
     // ...routerLogin
