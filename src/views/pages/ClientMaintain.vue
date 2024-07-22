@@ -1,8 +1,8 @@
 <template>
     <div class="container text-center" >
         <div class="row">
-    <h3>客戶管理</h3>
         <!-- 客戶總覽 -->
+        <Customer></Customer>
 
         <!-- 客戶詳情 -->
         </div>
@@ -10,6 +10,8 @@
 </template>
     
 <script setup >
+import Customer from '@/components/Customer.vue';
+
     
 </script>
     
