@@ -31,7 +31,7 @@
                 <tbody class="table-group-divider">
                     <tr v-for="customer in customers" :key="customer.id" @click="customerInfo(customer.id)">
                         <th scope="row" class="table-td">{{ customer.name }}</th>
-                        <td class="table-td">{{ customer.accountType }} </td>
+                        <td class="table-td">{{ customer.accountTypeName }} </td>
                         <td class="table-td">{{ customer.phone }} </td>
                         <td class="table-td">{{ customer.email }}</td>
                         <td class="table-td">{{ customer.remarks }}</td>
@@ -165,13 +165,12 @@
             <table class="table" style="width: 1000px; ">
                 <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
-                        <th scope="col" class="table-th">申請時間</th>
-                        <th scope="col" class="table-th">申請人</th>
-                        <th scope="col" class="table-th">假種</th>
-                        <th scope="col" class="table-th">請假時段</th>
-                        <th scope="col" class="table-th">總計時數</th>
-
-
+                        <th scope="col" class="table-th">姓名</th>
+                        <th scope="col" class="table-th">類別</th>
+                        <th scope="col" class="table-th">電話</th>
+                        <th scope="col" class="table-th">Email</th>
+                        <th scope="col" class="table-th">備註</th>
+						
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
