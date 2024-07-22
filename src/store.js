@@ -10,7 +10,10 @@ const store = createStore({
         setEmployeeInfo(state, employeeInfo) {
             console.log('Setting employee info:', employeeInfo);
             state.employeeInfo = employeeInfo;
-        }
+        },
+        clearEmployeeInfo(state) {
+            state.employeeInfo = {};
+          }
     },
     actions: {
         async fetchEmployeeInfo({ commit }, username) {
@@ -22,6 +25,9 @@ const store = createStore({
             } catch (error) {
                 console.error('Failed to fetch employee info', error);
             }
+        },
+        logout({ commit }) {
+          commit('clearEmployeeInfo');
         }
     }
 });
