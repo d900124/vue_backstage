@@ -37,7 +37,6 @@
                         <td class="table-td">{{ customer.remarks }}</td>
                     </tr>
                 </tbody>
-
             </table>
             <div>
             </div>
@@ -48,10 +47,8 @@
 
     <div class="col-1"></div>
     <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
-        <!-- 新增用按鈕 -->
+        <!-- 新增用按鈕 ，此功能不須新增-->
         <div class="btm-div" style="display: flex;" @click="openModal('insert')">
-            <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;" />
-            <el-button type='' link class="text-btm" style="color: #a33238;">新增簽核</el-button>
         </div>
     </div>
 
@@ -59,93 +56,8 @@
         <!-- 分頁區塊 -->
         <el-pagination style="margin: 10px 0px;" hide-on-single-page=true layout="total,prev, pager, next"
             :total="total" :page-size="rows" v-model:current-page="current" @change="callQuery"></el-pagination>
-
-
     </div>
     <div class="col-1"></div>
-
-    <!-- 新增區塊 / 抬頭-->
-    <div v-if="openCreat" style="height: 50px;"></div>
-    <div v-if="openCreat" class="col-1"></div>
-    <div v-if="openCreat" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openCreat = false">
-        <el-divider content-position="center">
-            <button type="button" class="btn-close" aria-label="Close"></button>
-            <h5 class="table-title">新增客戶</h5>
-        </el-divider>
-    </div>
-    <div v-if="openCreat" class="col-1"></div>
-
-    <!-- 新增區塊 / 資料區-->
-    <div v-if="openCreat" class="col-1"></div>
-    <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
-
-        <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
-            <el-form-item label="申請員工 :&nbsp;">
-                <p style="margin: 0;">串接登入員工</p>
-            </el-form-item>
-
-            <el-divider border-style="dashed" style="margin: 0;" />
-            <el-form-item label="簽核主管 :&nbsp;">
-                <el-select v-model="creatTeamleaderIDValue" placeholder="Select" size="small">
-                    <el-option v-for="Option in creatTeamleaderIDOptions" :key="Option.value" :label="Option.label"
-                        :value="Option.value" />
-                </el-select>
-            </el-form-item>
-            <el-divider border-style="dashed" style="margin: 0;" />
-
-            <el-form-item label="修改車輛 :&nbsp;">
-                <el-input-number v-model="creatCarIDValue" :min="1" :max="10" size="small" controls-position="right" />
-            </el-form-item>
-            <el-divider border-style="dashed" style="margin: 0;" />
-
-            <el-form-item label="改後價格 :&nbsp;">
-                <el-input-number v-model="creatFloatingAmountValue" :min="1000" :max="100000000000000000" size="small"
-                    controls-position="right" />
-            </el-form-item>
-
-        </el-form>
-    </div>
-
-    <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
-
-        <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
-            <el-form-item label="&nbsp;">
-                <p style="margin: 0;">&nbsp;</p>
-            </el-form-item>
-            <el-divider border-style="dashed" style="margin: 0;" />
-
-            <el-form-item label="&nbsp;">
-                <p style="margin: 0;">&nbsp;</p>
-            </el-form-item>
-            <el-divider border-style="dashed" style="margin: 0;" />
-
-            <el-form-item label="簽核狀態 :&nbsp;">
-                <p style="margin: 0;">尚未簽核</p>
-            </el-form-item>
-            <el-divider border-style="dashed" style="margin: 0;" />
-
-            <el-form-item label="簽核需求 :&nbsp;">
-                <el-select v-model="creatApprovalTypeValue" placeholder="Select" size="small">
-                    <el-option v-for="Option in creatApprovalTypeOptions" :key="Option.value" :label="Option.label"
-                        :value="Option.value" />
-                </el-select>
-            </el-form-item>
-
-        </el-form>
-    </div>
-    <div v-if="openCreat" class="col-1"></div>
-
-
-    <!-- 新增區塊 / 確認按鈕-->
-    <div v-if="openCreat" class="col-1"></div>
-    <div v-if="openCreat" class="col-5"
-        style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
-    <div v-if="openCreat" class="col-5"
-        style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-        <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click="openDoModify">&nbsp確認新增&nbsp</el-button>
-    </div>
-    <div v-if="openCreat" class="col-1"></div>
-
 
     <!-- 下方詳細資料區 / 抬頭-->
     <div v-if="openZon" style="height: 50px;"></div>
@@ -284,9 +196,6 @@ const rows = ref(4) //分頁資料顯示筆數
 //下方詳細資料開啟用
 const openZon = ref(false)
 
-//下方新增資料開啟用
-const openCreat = ref(false)
-
 //產品顯示customer元件用的參數
 const customers = ref([]);
 const singleCustomer = ref([])
@@ -298,38 +207,10 @@ const isModify = ref(false);
 const dialogVisible = ref(false)
 
 
-const getPermisionStatusText = (status) => {
-    switch (status) {
-        case 1:
-            return '簽核中';
-        case 2:
-            return '同意';
-        case 3:
-            return '拒絕';
-        default:
-            return '未知狀態';
-    }
-};
-
-
-// 定義審核狀態選項
-const permissionStatuses = ref([
-    { value: 1, label: '簽核中' },
-    { value: 2, label: '同意' },
-    { value: 3, label: '拒絕' }
-]);
-
 
 onMounted(function () {
     callQuery();
 })
-
-
-//單筆新增
-function openModal() {
-    console.log("openModal");
-    openCreat.value = true;
-}
 
 
 //單筆查詢
@@ -392,7 +273,7 @@ function openDoModify() {
     }
 }
 
-//修改簽核
+//修改客戶資料
 function doModify() {
     Swal.fire({
         text: "執行中......",
@@ -401,9 +282,12 @@ function doModify() {
     });
 
     let request = {
-
-
-
+        "name": singleCustomer.value.name,
+        "phone": singleCustomer.value.phone,
+        "sex": singleCustomer.value.sex,
+        "address": singleCustomer.value.address,
+        "idNumber": singleCustomer.value.idNumber,
+        "remarks": singleCustomer.value.remarks
     };
 
     axiosapi.put(`/customer/modify/${singleCustomer.value.id}`, request).then(function (response) {

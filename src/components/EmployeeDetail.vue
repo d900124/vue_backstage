@@ -1,19 +1,22 @@
 <template>
+    <div class="col-1"></div>
+    <div class="col-5" style="padding: 0px 0px;"></div>
+    <!-- 抬頭 -->
+    <div class="col-5" style="padding: 0px 0px;">
+        <h3 class="table-title">個人資訊</h3>
+    </div>
+    <div class="col-1"></div>
+    <div class="col-1"></div>
     <div class="container">
-        <!-- 抬頭 -->
-        <div class="header">
-            <h3 class="table-title">個人資訊</h3>
-        </div>
-
         <!-- 列表主體 -->
         <div class="table-part">
             <table class="table">
-                <thead>
+                <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
                         <th scope="col" class="table-th">{{ employeeInfo.name }} 員工資料</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="table-group-divider">
                     <tr>
                         <td class="table-td">
                             <span>員工編號：</span><span>{{ employeeInfo.id }}</span>

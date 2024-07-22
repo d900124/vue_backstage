@@ -47,13 +47,13 @@
     <div class="col-1"></div>
     <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
 
-
-        <!-- 左下新增按鈕 -->
+        <!-- 新增用按鈕 -->
         <div class="btm-div" style="display: flex;" @click="openModal('insert')">
             <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;" />
             <el-button type='' link class="text-btm" style="color: #a33238;">新增員工</el-button>
         </div>
     </div>
+
     <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
 
         <!-- 右下分頁控制區 -->
@@ -63,6 +63,90 @@
 
     </div>
     <div class="col-1"></div>
+
+    <!-- 新增區塊 / 抬頭-->
+    <div v-if="openCreat" style="height: 50px;"></div>
+    <div v-if="openCreat" class="col-1"></div>
+    <div v-if="openCreat" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openCreat = false">
+        <el-divider content-position="center">
+            <button type="button" class="btn-close" aria-label="Close"></button>
+            <h5 class="table-title">新增員工</h5>
+        </el-divider>
+    </div>
+    <div v-if="openCreat" class="col-1"></div>
+
+    <!-- 新增區塊 / 資料區-->
+    <div v-if="openCreat" class="col-1"></div>
+    <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
+
+        <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
+            <el-form-item label="申請員工 :&nbsp;">
+                <p style="margin: 0;">串接登入員工</p>
+            </el-form-item>
+
+            <el-divider border-style="dashed" style="margin: 0;" />
+            <el-form-item label="簽核主管 :&nbsp;">
+                <el-select v-model="creatTeamleaderIDValue" placeholder="Select" size="small">
+                    <el-option v-for="Option in creatTeamleaderIDOptions" :key="Option.value" :label="Option.label"
+                        :value="Option.value" />
+                </el-select>
+            </el-form-item>
+            <el-divider border-style="dashed" style="margin: 0;" />
+
+            <el-form-item label="修改車輛 :&nbsp;">
+                <el-input-number v-model="creatCarIDValue" :min="1" :max="10" size="small" controls-position="right" />
+            </el-form-item>
+            <el-divider border-style="dashed" style="margin: 0;" />
+
+            <el-form-item label="改後價格 :&nbsp;">
+                <el-input-number v-model="creatFloatingAmountValue" :min="1000" :max="100000000000000000" size="small"
+                    controls-position="right" />
+            </el-form-item>
+
+        </el-form>
+    </div>
+
+    <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
+
+        <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
+            <el-form-item label="&nbsp;">
+                <p style="margin: 0;">&nbsp;</p>
+            </el-form-item>
+            <el-divider border-style="dashed" style="margin: 0;" />
+
+            <el-form-item label="&nbsp;">
+                <p style="margin: 0;">&nbsp;</p>
+            </el-form-item>
+            <el-divider border-style="dashed" style="margin: 0;" />
+
+            <el-form-item label="簽核狀態 :&nbsp;">
+                <p style="margin: 0;">尚未簽核</p>
+            </el-form-item>
+            <el-divider border-style="dashed" style="margin: 0;" />
+
+            <el-form-item label="簽核需求 :&nbsp;">
+                <el-select v-model="creatApprovalTypeValue" placeholder="Select" size="small">
+                    <el-option v-for="Option in creatApprovalTypeOptions" :key="Option.value" :label="Option.label"
+                        :value="Option.value" />
+                </el-select>
+            </el-form-item>
+
+        </el-form>
+    </div>
+    <div v-if="openCreat" class="col-1"></div>
+
+
+    <!-- 新增區塊 / 確認按鈕-->
+    <div v-if="openCreat" class="col-1"></div>
+    <div v-if="openCreat" class="col-5"
+        style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
+    <div v-if="openCreat" class="col-5"
+        style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
+        <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click="openDoModify">&nbsp確認新增&nbsp</el-button>
+    </div>
+    <div v-if="openCreat" class="col-1"></div>
+
+
 
     <!-- 下方詳細資料區 -->
     <div v-if="openZon" style="height: 50px;"></div>
@@ -154,8 +238,6 @@
                         </td>
                     </tr>
                 </tbody>
-
-
             </table>
         </div>
     </div>
@@ -182,6 +264,20 @@
             </div>
         </template>
     </el-dialog>
+    <!-- 確認新增用彈出視窗 -->
+    <el-dialog v-model="creatDdialogVisible" width="350" :show-close="false">
+        <h5 class="msg-title">確認新增 ?</h5>
+        <template #footer>
+            <div class="dialog-footer" style="display: flex;justify-content: center;">
+                <div>
+                    <el-button @click="creatDdialogVisible = false">否</el-button>
+                    <el-button type="primary" @click="doCreat" style="background-color: #a33238;border: #a33238;">
+                        是
+                    </el-button>
+                </div>
+            </div>
+        </template>
+    </el-dialog>
 
 </template>
 
@@ -200,6 +296,8 @@ const pages = ref(0);
 const rows = ref(4);
 
 const openZon = ref(false); // 初始值改為false，避免一開始就顯示單筆詳細資料
+//下方新增資料開啟用
+const openCreat = ref(false)
 
 const employees = ref([]);
 
@@ -235,11 +333,69 @@ onMounted(() => {
     callQuery();
 });
 
+//單筆新增
 function openModal() {
     console.log("openModal");
+    openCreat.value = true;
 }
 
-// 获取所有主管ID和名称
+//新增員工
+function doCreat() {
+    creatDdialogVisible.value = false;
+    Swal.fire({
+        text: "執行中......",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+    });
+
+
+    let request = {
+        "id": singleEmployee.value.id,
+        "accountType": singleEmployee.value.accountType,
+        "name": singleEmployee.value.name,
+        "phone": singleEmployee.value.phone,
+        "email": singleEmployee.value.email,
+        "sex": singleEmployee.value.sex,
+        "startDate": singleEmployee.value.startDate,
+        "teamLeaderId": singleEmployee.value.teamLeaderId,  // 使用整數型別的 ID
+        "branch": singleEmployee.value.branch
+    }
+
+    axiosapi.post("/employee/add", request).then(function (response) {
+        console.log("response", response);
+        if (response.data.success) {
+            callFindByHQL(true);
+            Swal.fire({
+                icon: "success",
+                text: response.data.msg,
+                showConfirmButton: false,
+            }).then(function (result) {
+
+                console.log("新增的員工", employees.value[0]);
+                openCreat.value = false;
+                employeeClick(employees.value[0].id);
+                openZon.value = true;
+
+            });
+        } else {
+            Swal.fire({
+                icon: "warning",
+                text: response.data.msg,
+            });
+        }
+    }).catch(function (error) {
+        console.log("error", error);
+        Swal.fire({
+            icon: "error",
+            text: "新增錯誤：" + error.msg,
+        });
+    });
+    setTimeout(function () {
+        Swal.close();  //視窗關閉 
+    }, 1000);
+}
+
+// 獲取所有主管ID
 function getAllTeamLeaders() {
     axiosapi.get("/employee/teamLeaders")
         .then(function (response) {
@@ -275,11 +431,6 @@ function employeeClick(employeeId) {
             });
         });
 }
-
-
-
-
-
 
 // 多條件多筆查詢
 function callQuery() {
@@ -329,15 +480,6 @@ function doModify() {
     });
 
     let request = {
-        "id": singleEmployee.value.id,
-        "accountType": singleEmployee.value.accountType,
-        "name": singleEmployee.value.name,
-        "phone": singleEmployee.value.phone,
-        "email": singleEmployee.value.email,
-        "sex": singleEmployee.value.sex,
-        "startDate": singleEmployee.value.startDate,
-        "teamLeaderId": singleEmployee.value.teamLeaderId,  // 使用整數型別的 ID
-        "branch": singleEmployee.value.branch
     }
 
     console.log("request========>" + JSON.stringify(request))
