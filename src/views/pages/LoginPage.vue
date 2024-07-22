@@ -47,17 +47,17 @@ const handleSubmit = () => {
 			console.log('Response data:', data); 
 
 			if (data.success && data.code === 200) {
-				// 登入成功处理
+				// 登入成功處理
 				console.log('Login successful', data);
 				Swal.fire({
 					icon: 'success',
 					title: '登入成功',
 					text: '您已成功登入！'
 				}).then(() => {
-					router.push({ name: 'home-link' }); // 跳轉到 Home 頁面
+					router.push({ name: 'personal-link' }); // 跳轉到 Home 頁面
 				});
 			} else {
-				// 处理非200状态码或 success 为 false 的情况
+				// 處理非200狀態碼或 success 為 false 的情况
 				console.error('Login failed with response:', response);
 				Swal.fire({
 					icon: 'error',
@@ -67,7 +67,7 @@ const handleSubmit = () => {
 			}
 		})
 		.catch(error => {
-			// 处理错误
+			// 處理其他错误
 			console.error('Login failed', error);
 			Swal.fire({
 				icon: 'error',
