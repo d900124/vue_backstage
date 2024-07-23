@@ -33,16 +33,18 @@
       <div class="d-flex flex-column">
   <!-- =======================品牌======================= -->
     <label>品牌</label>
-    <select id="brand" required>
+    <input type="text"  v-model="brand" required />
+    <!-- <select v-model="brand" required>
       <option>選擇你要的品牌</option>
       <option>BMW</option>
       <option>袋鼠會吃人</option>
       <option>唐人街拳法</option>
-    </select> 
+    </select>  -->
   
   <!-- =======================車型======================= -->
-    <label for="suspension">車型</label>
-    <select id="suspension" required>
+    <label >車型</label>
+    <input type="text"  v-model="suspension" required />
+    <!-- <select v-model="suspension" required>
       <option option value="" disabled>選擇你要的車型</option>
       <option value="suspension 1">轎車</option>
       <option value="suspension 2">休旅車</option>
@@ -50,19 +52,20 @@
       <option value="suspension 4">跑車</option>
       <option value="suspension 5">吉普車</option>
       <option value="suspension 6">掀背車</option>
-    </select> 
+    </select>  -->
   
   <!-- =======================馬力======================= -->
-    <label for="hp">馬力</label>
-    <input type="text"  id="hp" required />
+    <label >馬力</label>
+    <input type="text"  v-model="hp" required />
   
   <!-- =======================扭力======================= -->
-    <label for="torque">扭力</label>
-    <input type="text"  id="torque" required />
+    <label >扭力</label>
+    <input type="text"  v-model="torque" required />
   
   <!-- =======================排氣量======================= -->
-    <label for="displacement">排氣量</label>
-    <select id="displacement" required>
+    <label>排氣量</label>
+    <input type="text"  v-model="displacement" required />
+    <!-- <select v-model="displacement" required>
       <option option value="" disabled>選擇你要的排氣量</option>
       <option value="displacement 1">1200cc以下</option>
       <option value="displacement 2">1201cc-1800cc</option>
@@ -70,61 +73,67 @@
       <option value="displacement 4">2401cc-3000cc</option>
       <option value="displacement 5">3001cc-4200cc</option>
       <option value="displacement 6">4201cc-5400cc</option>
-    <option value="displacement 7">5401cc以上</option>
-    </select> 
+      <option value="displacement 7">5401cc以上</option>
+    </select>  -->
   
   
   <!-- =======================變速系統======================= -->
-    <label for="transmission">變速系統</label>
-    <select id="transmission" required>
+    <label>變速系統</label>
+    <input type="text"  v-model="transmission" required />
+    <!-- <select v-model="transmission" required>
       <option option value="" disabled>選擇你要的引擎燃料</option>
       <option value="transmission 1">自排</option>
       <option value="transmission 2">手排</option>
       <option value="transmission 3">手自排</option>
       <option value="transmission 4">自手排</option>
-    </select> 
+    </select>  -->
   
   <!-- =======================驅動方式======================= -->
-  <label for="rearWheel">驅動方式</label>
-  <div class="d-flex flex-row align-items-center">
-   <input type="radio" name="rearWheel">前驅
-   <input type="radio" name="rearWheel">後驅
-   <input type="radio" name="rearWheel">四驅
-  </div>
+  <label >驅動方式</label>
+  <input type="text"  v-model="rearwheel" required />
+  <!-- <select v-model="rearwheel" required><
+  <option option value="" disabled>選擇你要的驅動方式</option>
+      <option value="rearwheel 1">前驅</option>
+      <option value="rearwheel 2">後驅</option>
+      <option value="rearwheel 3">四驅</option>
+  </select> -->
   <!-- =======================引擎燃料======================= -->
     <label for="gasoline">引擎燃料</label>
-    <select id="gasoline" required>
+    <input type="text"  v-model="gasoline" required />
+    <!-- <select v-model="gasoline" required>
       <option option value="" disabled>選擇你要的引擎燃料</option>
       <option value="gasoline 1">汽油</option>
       <option value="gasoline 2">柴油</option>
       <option value="gasoline 3">油電複合</option>
       <option value="gasoline 4">純電</option>
-    </select> 
+    </select>  -->
   
   <!-- =======================車門數======================= -->
     <label for="door">車門數</label>
-    <select id="door" required>
+    <input type="text"  v-model="door" required />
+    <!-- <select v-model="door" required>
       <option option value="" disabled>選擇你要的車門數</option>
       <option value="door 1">二門</option>
       <option value="door 2">三門</option>
       <option value="door 3">四門</option>
       <option value="door 4">五門</option>
       <option value="door 5">六門</option>
-    </select> 
+    </select>  -->
   
   <!-- =======================乘客數======================= -->
     <label for="passenger">乘客數</label>
-    <select id="passenger" required>
+    <input type="text"  v-model="passenger" required />
+    <!-- <select v-model="passenger" required>
       <option option value="" disabled>選擇能容納的乘客數</option>
       <option value="passenger 1">二人座</option>
       <option value="passenger 2">四人座</option>
       <option value="passenger 3">五人座</option>
       <option value="passenger 4">七人座以上</option>
     </select> 
-  
+   -->
   <!-- =======================顏色======================= -->
-    <label for="color">顏色</label>
-    <input type="text"  id="color" required />
+    <label>顏色</label>
+    <input type="text"  v-model="color" required />
   
   <!-- =======================里程數======================= -->
         <label>里程數</label>
@@ -141,33 +150,28 @@
     <div class="d-flex flex-column">
   <!-- =======================賣家======================= -->
     <label for="customer">賣家</label>
-    <input type="text"  id="customer" required />
+    <input type="text"  v-model="customer" required />
   
   <!-- =======================管理銷售員======================= -->
     <label for="employee">管理銷售員</label>
-    <input type="text"  id="employee" required />
+    <input type="text"  v-model="employee" required />
   
   <!-- =======================議價空間======================= -->
     <label for="negotiable">議價空間</label>
-    <input type="text"  id="negotiable" required />
+    <input type="text"  v-model="negotiable" required />
   
   <!-- =======================車況評分======================= -->
     <label for="conditionScore">車況評分</label>
-    <input type="text"  id="conditionScore" required />
+    <input type="text"  v-model="conditionScore" required />
   
   <!-- =======================停放分店======================= -->
     <label for="branch">停放分店</label>
-    <input type="text"  id="branch" required />
+    <input type="text"  v-model="branch" required />
   
   <!-- =======================狀態======================= -->
-    <label for="staste">狀態</label>
-    <select id="passenger" required>
-      <option option value="" disabled>選擇能容納的乘客數</option>
-      <option value="passenger 1">二人座</option>
-      <option value="passenger 2">四人座</option>
-      <option value="passenger 3">五人座</option>
-      <option value="passenger 4">七人座以上</option>
-    </select> 
+    <label for="state">狀態</label>
+    <input type="text"  v-model="state" required />
+  
   
   <!-- =======================售價======================= -->
         <label>價格</label>
@@ -178,26 +182,61 @@
       <input type="text" v-model="selectName" required />
   
   <!-- =======================是否改裝======================= -->
-    <label for="customerId">是否改裝</label>
-    <input type="text"  id="customerId" required />
+    <label >是否改裝</label>
+    <input type="text"  v-model="remark" required />
+
+    <label >上架日期</label>
+    <input type="text"  v-model="launchDate" required />
+
+    <label >型號</label>
+    <input type="text"  v-model="carinfo_id" required />
   </div>
   </div>
 </div>
 
   
-  <button type="submit">新增草稿</button>
-  <button type="submit">取消</button>
+<button @click="submitForm">新增草稿</button>
+
 </template>
     
 <script setup>
 import { ref } from 'vue'
 import { Delete, Download, Plus, ZoomIn, UploadFilled } from '@element-plus/icons-vue'
+import { options } from '@fullcalendar/core/preact';
+import axios from 'axios'
 
 
 const dialogImageUrl = ref('')
 const dialogVisible = ref(false)
 const disabled = ref(false)
 const uploadedFiles = ref([])
+
+// const brand = ref('')
+// const suspension = ref('')
+// const hp = ref('')
+// const torque = ref('')
+// const displacement = ref('')
+// const transmission = ref('')
+// const rearwheel = ref('')
+// const gasoline = ref('')
+// const door = ref('')
+// const passenger = ref('')
+const color = ref('')
+const milage = ref('')
+const productionYear = ref('')
+const customer = ref('')
+const employee = ref('')
+const negotiable = ref('')
+const conditionScore = ref('')
+const branch = ref('')
+const state = ref('')
+const price = ref('')
+// const selectName = ref('')
+const remark = ref('')
+const launchDate = ref('')
+const carinfo_id = ref('')
+
+
 
 const handleRemove = (file) => {
   console.log(file)
@@ -217,6 +256,94 @@ const handleSuccess = (response, file) => {
       file.url = URL.createObjectURL(file.raw)
       uploadedFiles.value.push(file)
     }
+
+
+ const submitForm = async () => {
+  const formData = {
+    // brand: brand.value,
+    // suspension: suspension.value,
+    // hp: hp.value,
+    // torque: torque.value,
+    // displacement: displacement.value,
+    // transmission: transmission.value,
+    // rearwheel: rearwheel.value,
+    // gasoline: gasoline.value,
+    // door: door.value,
+    // passenger: passenger.value,
+    color: color.value,
+    milage: milage.value,
+    productionYear: productionYear.value,
+    customerId: customer.value,
+    employeeId: employee.value,
+    negotiable: negotiable.value,
+    conditionScore: conditionScore.value,
+    branch: branch.value,
+    state: state.value,
+    price: price.value,
+    // selectName: selectName.value,
+    remark: remark.value,
+    launchDate:launchDate.value,
+    carinfoId:carinfo_id.value
+    
+  }
+    try {
+    const response = await axios.post('http://localhost:8080/kajarta/car/create', formData)
+    console.log('Response:', response.data)
+  } catch (error) {
+    console.error('Error:', error)
+  }
+}
+
+
+function callCreate() {
+        Swal.fire({
+            text: "執行中......",
+            allowOutsideClick: false,
+            showConfirmButton: false,
+        });
+
+        if(product.value.id=="") {
+            product.value.id = null;
+        }
+        if(product.value.name=="") {
+            product.value.name = null;
+        }
+        if(product.value.price=="") {
+            product.value.price = null;
+        }
+        if(product.value.make=="") {
+            product.value.make = null;
+        }
+        if(product.value.expire=="") {
+            product.value.expire = null;
+        }
+        // console.log("request", product.value);
+
+        axiosapi.post("/ajax/pages/products", product.value).then(function(response) {
+            console.log("response", response);
+            if(response.data.success)  {
+                Swal.fire({
+                    icon: "success",
+                    text: response.data.message,
+                }).then(function(result) {
+                    productModal.value.hideModal();
+                    callFind(current.value);
+                });
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    text: response.data.message,
+                });
+            }
+        }).catch(function(error) {
+            console.log("error", error);
+            Swal.fire({
+                icon: "error",
+                text: "新增錯誤："+error.message,
+            });
+        });
+    }
+
 
 </script>
     
