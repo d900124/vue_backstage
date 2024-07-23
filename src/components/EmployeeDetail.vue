@@ -1,11 +1,11 @@
 <template>
-    <div class="col-1"></div>
-    <div class="col-5" style="padding: 0px 0px;"></div>
+    <div class="col-1">&nbsp;</div>
+    <div class="col-5" style="padding: 0px 0px;">&nbsp;</div>
     <!-- 抬頭 -->
-    <div class="col-5" style="padding: 0px 0px;">
-        <h3 class="table-title">個人資訊</h3>
+    <div class="col-5" style="padding: 0px 0px; ">
+        <h3 class="table-title" style="justify-content: flex-end;">個人資訊</h3>
     </div>
-    <div class="col-1"></div>
+    <div class="col-1">&nbsp;</div>
     <div class="col-1"></div>
     <div class="container">
         <!-- 列表主體 -->

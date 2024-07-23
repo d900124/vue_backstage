@@ -6,8 +6,6 @@
 
         <RouterLink :to="{ name: 'home-link' }" style="all: unset;">
             <el-icon style="width: 30px; margin: 55px 20px;"><img src="/Kajarta_LOGO_02.svg"></el-icon>
-            <!-- 想加username 歡迎在這 從vuex拿出來employeeInfo.name-->
-            <span style="color: #a33238; margin-left: 10px;"><b>歡迎 {{ employeeInfo.name || '用户' }}</b></span>
         </RouterLink>
 
 
@@ -63,15 +61,6 @@
             <a href="#" style="all: unset;"><el-menu-item index="4-3"> - 員工總覽 </el-menu-item></a>
             <a href="/pages/teamMaintain#kpi" style="all: unset;"><el-menu-item> - 考核評比 </el-menu-item></a>
         </el-sub-menu>
-        <el-sub-menu>
-            <template #title>
-                <!-- <button @click="logout">登出</button> -->
-                <div class="logout-container">
-                    <el-button round @click="logout" plain>登出</el-button>
-                </div>
-            </template>
-
-        </el-sub-menu>
 
 
         <el-switch v-model="isCollapse" class="ml-2" size="small"
@@ -80,7 +69,7 @@
     </el-menu>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { ref } from 'vue'
 import {
     Document,
@@ -97,49 +86,6 @@ import 'element-plus/dist/index.css';
 
 const router = useRouter();
 
-const logout = async () => {
-    try {
-        const response = await axiosapi.post('/logout', {}, {
-            withCredentials: true // 确保带上 Cookie
-        });
-
-        if (response.status === 200) {
-            // 清除本地存储的用户信息
-            localStorage.removeItem('username');
-
-            // 调用 Vuex 的 logout action 清除 Vuex 状态
-            store.dispatch('logout');
-
-            // 跳转到登录页面
-            router.push('/');
-        }
-    } catch (error) {
-        console.error('Logout failed:', error);
-    }
-};
-
-
-let employeeInfo = ref({});
-const store = useStore();
-
-onMounted(() => {
-    const username = localStorage.getItem('username');
-    if (username) {
-        store.dispatch('fetchEmployeeInfo', username);
-    }
-});
-employeeInfo = computed(() => store.state.employeeInfo.data || {});
-console.log('===>test Employee info:', employeeInfo);
-
-const isCollapse = ref(!true)
-const value5 = ref(true)
-
-const handleOpen = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath)
-}
-const handleClose = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath)
-}
 </script>
 
 <style>

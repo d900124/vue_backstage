@@ -2,6 +2,9 @@
 
     <div class="container text-center">
         <div class="row">
+            <!-- 登出圖釘 -->
+            <Logout></Logout>
+            
             <!-- 車輛調整簽核 -->
             <CarAdjustTable></CarAdjustTable>
 
@@ -13,6 +16,8 @@
 
             <!-- 考核評比 -->
             <KpiTable></KpiTable>
+
+
         </div>
     </div>
 </template>
@@ -22,7 +27,7 @@ import CarAdjustTable from '@/components/CarAdjustTable.vue';
 import KpiTable from '@/components/KpiTable.vue';
 import Leave from '@/components/Leave.vue';
 import EmployeeList from '@/components/Employee.vue';
-
+import Logout from '@/components/Logout.vue';
 
 
 </script>
