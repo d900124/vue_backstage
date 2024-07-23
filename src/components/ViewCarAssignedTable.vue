@@ -36,6 +36,22 @@
             <td class="table-td">{{item.customerName}}</td>
             <td v-if="!isVKAModify" class="table-td">{{item.employeeName}}</td>
             <td v-if="isVKAModify" class="table-td">
+                <el-select
+                        v-model="item.employeeId"
+                        placeholder="指派員工"
+                        size="small"
+                        style="width: 100%;height: 100%"
+                        @change = "logoutAndCreateVCA(item.viewCarAssignedId,item.employeeId,item.id)"
+                        @click="vcaTableDoEmpFindAll();"
+                        >
+                        <el-option
+                            v-for="Option in employeeIDOptions"
+                            :key="Option.value"
+                            :label="Option.label"
+                            :value="Option.value"
+                            
+                        />
+                    </el-select>
             </td>
             <td class="table-td">{{item.assignedStatusName}}</td>
             </tr>
@@ -107,6 +123,9 @@ const singleItem= ref([])
 //修改賞車排業務用
 const isVKAModify = ref(false)
 
+//下拉選單用屬性
+const employeeIDOptions=ref([])
+
 onMounted(function () {
     callViewCarSelect(false);
 })
@@ -163,7 +182,7 @@ function callViewCarSelect(doCreat) {
                 if (responce.data.data.length==0) {
                     console.log("no單");
                     vcInfo.viewCarAssignedId=-10
-                    vcInfo.employeeId=-10
+                    vcInfo.employeeId=null
                     vcInfo.employeeName="--"
                     vcInfo.assignedStatus=-1
                     vcInfo.assignedStatusName="未指派"
@@ -192,7 +211,118 @@ function callViewCarSelect(doCreat) {
         // router.push("/")
     }) 
 }
+
+//員工查詢全部製作下拉選單
+function vcaTableDoEmpFindAll() {
+    let empcount = 0;
+    axiosapi.get("employee/count").then(function (responce){
+        empcount=responce.data.data;
+        console.log("empcount",empcount);
+    })
+
+    axiosapi.get("employee/all").then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
+        console.log("employee/all responce",responce.data);
+        employeeIDOptions.value=[];
+        for(let i = 0;i<empcount;i++){
+            employeeIDOptions.value.push({
+                        value:responce.data.data[i].id,
+                        label: responce.data.data[i].name})
+        }
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "員工查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
+}
+  
+//指派(註銷同時新增)
+function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId){
+    console.log("OldViewCarAssignedId",OldViewCarAssignedId);    
+    console.log("ViewCarSelseId",ViewCarSelseId);  
+    console.log("ViewCarId",ViewCarId);      
+
+    //註銷的修改
+    let request ={ 
+        "id":OldViewCarAssignedId, 
+        "assignedStatus":2
+    }
+
+    //原先有單的情況(OldViewCarAssignedId != -10)
+    if (OldViewCarAssignedId != -10) {
+        axiosapi.put(`/viewCarAssigned/${OldViewCarAssignedId}`, request).then(function(response) {
+            console.log("response", response);
+            if(response.data.success)  {
+                // ElMessage({
+                //         message: '賞車指派中',
+                //         type: 'success',
+                //     })
+                let requestCreate ={ 
+                        "teamLeaderId":5, //後續串接
+                        "employeeId":ViewCarSelseId,
+                        "viewCarId":ViewCarId,
+                        "assignedStatus":1
+                }  
+                axiosapi.post("/viewCarAssigned", requestCreate).then(function(response) {  
+                    console.log("responseCreate", response);
+                    if(response.data.success)  {
+                        ElMessage({
+                            message: '賞車指派成功',
+                            type: 'success',
+                        })
+                        callViewCarSelect(false);
+
+                    }else{
+                        ElMessage({
+                            message: response.data.msg,
+                            type: 'warning',
+                        })
+                    }
+                }).catch(function(error) {
+                    console.log("error", error);
+                    ElMessage.error('指派錯誤'+error.message)
+                });
+            }else{
+                ElMessage({
+                    message: response.data.msg,
+                    type: 'warning',
+                })
+            }
+        }).catch(function(error) {
+            console.log("error", error);
+            ElMessage.error('指派錯誤'+error.message)
+        });
     
+    //原先沒有有單的情況
+    }else if(OldViewCarAssignedId == -10){
+        let requestCreate ={ 
+                        "teamLeaderId":5, //後續串接
+                        "employeeId":ViewCarSelseId,
+                        "viewCarId":ViewCarId,
+                        "assignedStatus":1
+                }  
+                axiosapi.post("/viewCarAssigned", requestCreate).then(function(response) {  
+                    console.log("responseCreate", response);
+                    if(response.data.success)  {
+                        ElMessage({
+                            message: '賞車指派成功',
+                            type: 'success',
+                        })
+                        callViewCarSelect(false);
+                    }else{
+                        ElMessage({
+                            message: response.data.msg,
+                            type: 'warning',
+                        })
+                    }
+                }).catch(function(error) {
+                    console.log("error", error);
+                    ElMessage.error('指派錯誤'+error.message)
+                });
+    }
+}
 </script>
     
 <style scoped>
