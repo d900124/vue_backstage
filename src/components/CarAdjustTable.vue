@@ -587,13 +587,19 @@
                         <el-button type='' link  style="color: #a33238; font-weight: 900;">清除查詢</el-button>
                     </div>
     </el-drawer>
+
+<!-- <div>
+用户名:{{ employeeInfo.name || "" }} / 用户ID:{{ employeeInfo.id || "" }}  / 帳號:{{ employeeInfo.account || "" }} / 帳號分類:{{ employeeInfo.accountType || "" }}
+</div> -->
+
 </template>
     
 <script setup >
-import { onMounted,ref } from 'vue';
+import { computed,onMounted,ref } from 'vue';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
+import { useStore } from "vuex";
 
 
 //用於重新導向 router.push
@@ -700,10 +706,20 @@ const findFloatingAmountMin = ref(null)
 const findCreateTime = ref([null, null])
 const findUpdateTime = ref([null, null])
 
+//登錄資訊用
+const store = useStore();
+const isAuthenticated = computed(() => store.state.isAuthenticated);
+const employeeInfo = computed(() => store.state.employeeInfo.data || {});
 
 onMounted(function () {
     callFindByHQL(false);
     // cadTableDoEmpFindAll();
+
+    //登錄資訊用
+    const username = localStorage.getItem("username");
+    if (username) {
+    store.dispatch("fetchEmployeeInfo", username);
+    }
 })
 
 

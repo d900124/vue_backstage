@@ -352,19 +352,22 @@
 </template>
 </el-dialog>
 
-
+<!-- <div>
+用户名:{{ employeeInfo.name || "" }} / 用户ID:{{ employeeInfo.id || "" }}  / 帳號:{{ employeeInfo.account || "" }} / 帳號分類:{{ employeeInfo.accountType || "" }}
+</div> -->
 
 </template>
     
 
 <script setup>
-import { ref , onMounted } from 'vue';
+import { computed, ref , onMounted } from 'vue';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import listPlugin from '@fullcalendar/list';
 import moment from 'moment'//時間轉換套件
+import { useStore } from "vuex";
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -415,6 +418,11 @@ const removeAGDId =ref(null)
 //尋日期用屬性
 const selectDays = ref([null,null])
 
+//登錄資訊用
+const store = useStore();
+const isAuthenticated = computed(() => store.state.isAuthenticated);
+const employeeInfo = computed(() => store.state.employeeInfo.data || {});
+
 
 onMounted(() => {
     callFindByAgangaHQL();
@@ -424,6 +432,12 @@ onMounted(() => {
 
     console.log(agangaEvents);
     getDtata();
+
+    //登錄資訊用
+    const username = localStorage.getItem("username");
+    if (username) {
+    store.dispatch("fetchEmployeeInfo", username);
+    }
 });
 
 //日曆屬性
@@ -441,7 +455,7 @@ const calendarOptions = ref({
     headerToolbar: false, // 隐藏头部的导航栏
     selectMirror: false,
     allDaySlot: false,
-    height:'700px',
+    height:'650px',
     displayEventEnd: true, // like 08:00 - 13:00
     eventTimeFormat: { // like '14:30:00'
                     hour: '2-digit',

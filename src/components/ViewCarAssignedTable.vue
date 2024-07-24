@@ -197,13 +197,19 @@
     </div>
   </el-dialog>
 <div class="col-1"></div>
+
+<!-- <div>
+用户名:{{ employeeInfo.name || "" }} / 用户ID:{{ employeeInfo.id || "" }}  / 帳號:{{ employeeInfo.account || "" }} / 帳號分類:{{ employeeInfo.accountType || "" }}
+</div> -->
+
 </template>
     
 <script setup>
-import { onMounted,ref } from 'vue';
+import {computed, onMounted,ref } from 'vue';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
+import { useStore } from "vuex";
 
 
 //用於重新導向 router.push
@@ -250,8 +256,20 @@ const assignedStatusOptions=ref([
 //彈出視窗/抽屜
 const vcaTableVisible = ref(false)
 
+//登錄資訊用
+const store = useStore();
+const isAuthenticated = computed(() => store.state.isAuthenticated);
+const employeeInfo = computed(() => store.state.employeeInfo.data || {});
+
+
 onMounted(function () {
     callViewCarSelect(false);
+
+    //登錄資訊用
+    const username = localStorage.getItem("username");
+    if (username) {
+    store.dispatch("fetchEmployeeInfo", username);
+    }
 })
 
 //賞車查詢
