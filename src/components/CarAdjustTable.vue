@@ -711,15 +711,22 @@ const store = useStore();
 const isAuthenticated = computed(() => store.state.isAuthenticated);
 const employeeInfo = computed(() => store.state.employeeInfo.data || {});
 
-onMounted(function () {
-    callFindByHQL(false);
-    // cadTableDoEmpFindAll();
+//登錄資訊用 使用 async 和 await 來等待 Vuex action 完成並更新
+const fetchEmployeeData = async () => {
+  const username = localStorage.getItem("username");
+  if (username) {
+    await store.dispatch("fetchEmployeeInfo", username);
+  }
+};
 
-    //登錄資訊用
-    const username = localStorage.getItem("username");
-    if (username) {
-    store.dispatch("fetchEmployeeInfo", username);
-    }
+onMounted(async () => {
+    await fetchEmployeeData();
+    if (employeeInfo.value.id) {
+        console.log("employeeInfo",employeeInfo.value)
+        callFindByHQL(false);
+    }else {
+    console.warn('Employee info not loaded yet');
+  }
 })
 
 

@@ -143,7 +143,27 @@
         <el-button type='' link class="text-btm" style="color: #a33238;margin-top: 13px">新增公事安排</el-button>
         </div>
     </div>
-    <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
+    <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end">
+<!-- (主管專用)所有員工日程查詢 -->
+        <el-select
+            v-if="employeeInfo!=null &&employeeInfo.accountType==4"
+            v-model="findEmployeeId"
+            placeholder="查詢員工排程"
+            clearable
+            size="small"
+            style="width: 200px;margin-top: 20px;"
+            @change = "findByTeamLeader()"
+            @click="agdTableDoEmpFindAll();"
+            >
+            <el-option
+                v-for="Option in employeeIDOptions"
+                :key="Option.value"
+                :label="Option.label"
+                :value="Option.value"
+                
+            />
+        </el-select>
+    </div>
     <div class="col-1"></div>
 
 <!-- 修改/新增彈出 -->
@@ -161,7 +181,7 @@
 <!-- 新增彈出 -->
         <el-form v-if="drawerByCreate" :model="form" label-width="auto" style="width: 100%; padding: 25px;">
             <el-form-item label="創建員工 :&nbsp;">
-                <p style="margin: 0;">後續串接登陸員工</p>
+                <p style="margin: 0;">{{ employeeInfo.name }}</p>
             </el-form-item>
 
             
@@ -360,7 +380,7 @@
     
 
 <script setup>
-import { computed, ref , onMounted } from 'vue';
+import { computed, ref , onMounted} from 'vue';
 import FullCalendar from '@fullcalendar/vue3';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -395,7 +415,7 @@ const modifyAGDVisible =ref(false)
 const selectDaysVisible =ref(false)
 
 //新增用屬性
-const createEmployeeId =ref(1)
+const createEmployeeId =ref(null)
 const createUnavailableTime =ref([null,null])
 const defaultTime2 = [
     new Date(2000, 1, 1, 9, 0, 0),
@@ -418,27 +438,43 @@ const removeAGDId =ref(null)
 //尋日期用屬性
 const selectDays = ref([null,null])
 
+//下拉選單用屬性
+const employeeIDOptions=ref([])
+
+//查詢用屬性
+const findEmployeeID =ref(null)
+
 //登錄資訊用
 const store = useStore();
-const isAuthenticated = computed(() => store.state.isAuthenticated);
-const employeeInfo = computed(() => store.state.employeeInfo.data || {});
+const isAuthenticated = computed(() => store.state.isAuthenticated); // 計算是否已認證
+const employeeInfo = computed(() => store.state.employeeInfo.data || {}); // 計算員工信息
 
+//登錄資訊用 使用 async 和 await 來等待 Vuex action 完成並更新
+const fetchEmployeeData = async () => {
+  const username = localStorage.getItem("username");
+  if (username) {
+    await store.dispatch("fetchEmployeeInfo", username);
+  }
+};
 
-onMounted(() => {
-    callFindByAgangaHQL();
-    calendarApi.value = fullCalendar.value.getApi();
-    // console.log(calendarApi.value.view);
-    title.value = calendarApi.value.view?.title;
+onMounted(async () => {
+    await fetchEmployeeData();
+    if (employeeInfo.value.id) {
+        console.log("employeeInfo",employeeInfo.value)
+        createEmployeeId.value=employeeInfo.value.id;
+        callFindByAgangaHQL();
+        calendarApi.value = fullCalendar.value.getApi();
+        // console.log(calendarApi.value.view);
+        title.value = calendarApi.value.view?.title;
 
-    console.log(agangaEvents);
-    getDtata();
+        console.log(agangaEvents.value);
+        getDtata();
+    }else {
+    console.warn('Employee info not loaded yet');
+  }
 
-    //登錄資訊用
-    const username = localStorage.getItem("username");
-    if (username) {
-    store.dispatch("fetchEmployeeInfo", username);
-    }
 });
+
 
 //日曆屬性
 const calendarOptions = ref({
@@ -553,7 +589,7 @@ const calendarApi = ref(null)
 
 const getDtata = () => {
     setTimeout(() => {
-        calendarOptions.value.events = calendarApi.value.view?.type === 'timeGridWeek' ? agangaEvents : agangaEvents;
+        calendarOptions.value.events = calendarApi.value.view?.type === 'timeGridWeek' ? agangaEvents.value : agangaEvents.value;
     }, 200);
 };
 
@@ -663,7 +699,7 @@ function doCreateAgenda() {
 
 
     let request ={  
-        "employeeId":1, 
+        "employeeId":createEmployeeId.value, 
         "businessPurpose":createBusinessPurpose.value, 
         "unavailableTimeStr":createUnavailableTime.value[0],
         "unavailableTimeEnd":createUnavailableTime.value[1], 
@@ -673,7 +709,7 @@ function doCreateAgenda() {
     axiosapi.post("/agenda", request).then(function(response) {
         console.log("response", response);
         if(response.data.success)  {
-            callFindByAgangaHQL(false);
+            callFindByAgangaHQL();
             getDtata();
             Swal.fire({
                 icon: "success",
@@ -685,7 +721,7 @@ function doCreateAgenda() {
             setTimeout(function () {
                 Swal.close();  //視窗關閉 
                 cancelCerateAgenda();
-                location.reload();
+                // location.reload();
             }, 1000); 
         } else {
             Swal.fire({
@@ -714,7 +750,7 @@ function doCreateAgenda() {
 
 //資料庫Aganga回傳資料
 const items = ref([]);
-const agangaEvents = [];
+const agangaEvents = ref([]);
 
 //查詢用參數
 const  findEmployeeId =ref(null);
@@ -725,17 +761,27 @@ function move() {
     console.log(calendarApi.value.view.events);
 }
 
-//多筆查詢
-function callFindByAgangaHQL(doCreat){
-    if (doCreat) {
-        cleanFind();
-    }
+//主管查詢
+function findByTeamLeader(){
+    callFindByAgangaHQL();
+
+    console.log(agangaEvents.value);
+    console.log("request AGD findEmployeeId",findEmployeeId.value);
+}
+
+//多筆查詢(多選)
+function callFindByAgangaHQL(){
     
-    let employeeId = findEmployeeId.value="" ? null : findEmployeeId.value;
-    let unavailableStatus = findUnavailableStatus.value="" ? null : findUnavailableStatus.value;
+    console.log("findEmployeeId.value",findEmployeeId.value)
+    console.log("employeeInfo.value.id",employeeInfo.value.id)
+    let employeeId = findEmployeeId.value==null ? employeeInfo.value.id : findEmployeeId.value;
+    let unavailableStatus = findUnavailableStatus.value=="" ? null : findUnavailableStatus.value;
+    if (employeeId==0) {
+        employeeId=null;
+    }
+    console.log("employeeId.value",employeeId)
 
     let request ={ 
-        "id":null,
         "id":null,
         "employeeId":employeeId,
         "unavailableTimeStr":null,
@@ -749,16 +795,17 @@ function callFindByAgangaHQL(doCreat){
         "dir":true,
         "order":"id"
     }
-
+    console.log("request AGD",request);
     axiosapi.post("/agenda/findByHQL",request).then(function (responce) {  //(AJAX前端程式)多產品查詢的Post功能()
         items.value = responce.data.data;
         console.log("items",responce.data.data);
         console.log("total",responce.data.totalElement);
         console.log("responce",responce.data);
+        agangaEvents.value=[];
         for(let i = 0;i<responce.data.totalElement;i++){
             switch (items.value[i].unavailableStatus) {
                 case 1: //請假
-                    agangaEvents.push({
+                    agangaEvents.value.push({
                     id:items.value[i].id,
                     title:items.value[i].unavailableStatusName,
                     start:items.value[i].unavailableTimeStrString,
@@ -785,7 +832,7 @@ function callFindByAgangaHQL(doCreat){
                     break;
 
                 case 2: //排賞車
-                    agangaEvents.push({
+                    agangaEvents.value.push({
                     id:items.value[i].id,
                     title:items.value[i].unavailableStatusName,
                     start:items.value[i].unavailableTimeStrString,
@@ -811,7 +858,7 @@ function callFindByAgangaHQL(doCreat){
                     break;
 
                 case 3: //自行安排
-                    agangaEvents.push({
+                    agangaEvents.value.push({
                     id:items.value[i].id,
                     title:items.value[i].unavailableStatusName,
                     start:items.value[i].unavailableTimeStrString,
@@ -837,7 +884,7 @@ function callFindByAgangaHQL(doCreat){
                     break;
             
                 default:
-                    agangaEvents.push({
+                    agangaEvents.value.push({
                     id:items.value[i].id,
                     title:items.value[i].businessPurpose,
                     start:items.value[i].unavailableTimeStrString,
@@ -862,8 +909,9 @@ function callFindByAgangaHQL(doCreat){
                     break;
             }
         }
+        calendarOptions.value.events =  agangaEvents.value;
         console.log(calendarOptions.value.events);
-        console.log("agangaEvents",agangaEvents);
+        console.log("agangaEvents",agangaEvents.value);
 
         
     }).catch(function (error) {
@@ -935,7 +983,7 @@ function modifyAgangaEvent() {
     axiosapi.put(`/agenda/${modifyEventId.value}`, request).then(function(response) {
         console.log("response", response);
         if(response.data.success)  {
-            callFindByAgangaHQL(false);
+            callFindByAgangaHQL();
             getDtata();
             Swal.fire({
                 icon: "success",
@@ -955,7 +1003,7 @@ function modifyAgangaEvent() {
                 modifyBusinessPurpose.value ='';
                 modifyUnavailableStatus.value =null;
                 drawerByModify
-                location.reload();
+                // location.reload();
             }, 1000); 
         } else {
             Swal.fire({
@@ -1021,6 +1069,8 @@ function formatDate2Add2Hr(dateString) {
   return modifiedDate.format("YYYY-MM-DD HH:mm:ss");
 }
 
+
+//刪除排程
 function removeAgangaEvent() {
     removeAGDVisible.value=false;
     Swal.fire({
@@ -1032,7 +1082,7 @@ function removeAgangaEvent() {
     axiosapi.delete(`/agenda/${removeAGDId.value}`).then(function(response) {
         console.log("response", response);
         if(response.data.success)  {
-            callFindByAgangaHQL(false);
+            callFindByAgangaHQL();
             getDtata();
             Swal.fire({
                 icon: "success",
@@ -1042,7 +1092,7 @@ function removeAgangaEvent() {
             setTimeout(function () {
                 Swal.close();  //視窗關閉 
                 cancelCerateAgenda();
-                location.reload();
+                // location.reload();
             }, 1000); 
         } else {
             Swal.fire({
@@ -1065,6 +1115,35 @@ function removeAgangaEvent() {
                     Swal.close();  //視窗關閉 
                 }, 1000); 
     });
+}
+
+//員工查詢全部製作下拉選單
+function agdTableDoEmpFindAll() {
+    let empcount = 0;
+    axiosapi.get("employee/count").then(function (responce){
+        empcount=responce.data.data;
+        console.log("empcount",empcount);
+    })
+
+    axiosapi.get("employee/all").then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
+        console.log("employee/all responce",responce.data);
+        employeeIDOptions.value=[];
+        for(let i = 0;i<empcount;i++){
+            employeeIDOptions.value.push({
+                        value:responce.data.data[i].id,
+                        label: responce.data.data[i].name})
+        }
+        employeeIDOptions.value.push({
+                        value:0,
+                        label:"查詢所有員工"})
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "員工查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
 }
 
 </script>

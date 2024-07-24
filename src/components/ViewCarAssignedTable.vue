@@ -261,15 +261,22 @@ const store = useStore();
 const isAuthenticated = computed(() => store.state.isAuthenticated);
 const employeeInfo = computed(() => store.state.employeeInfo.data || {});
 
+//登錄資訊用 使用 async 和 await 來等待 Vuex action 完成並更新
+const fetchEmployeeData = async () => {
+  const username = localStorage.getItem("username");
+  if (username) {
+    await store.dispatch("fetchEmployeeInfo", username);
+  }
+};
 
-onMounted(function () {
-    callViewCarSelect(false);
-
-    //登錄資訊用
-    const username = localStorage.getItem("username");
-    if (username) {
-    store.dispatch("fetchEmployeeInfo", username);
-    }
+onMounted(async () => {
+    await fetchEmployeeData();
+    if (employeeInfo.value.id) {
+        console.log("employeeInfo",employeeInfo.value)
+        callViewCarSelect(false);
+    }else {
+    console.warn('Employee info not loaded yet');
+  }
 })
 
 //賞車查詢
