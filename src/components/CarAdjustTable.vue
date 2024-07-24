@@ -176,45 +176,35 @@
 
                 <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
                 <el-form-item label="申請員工 :&nbsp;">
-                    <p style="margin: 0;" >串接登入員工</p>
+                    <p style="margin: 0;" >{{employeeInfo.name}}</p>
                 </el-form-item>
 
                 <el-divider border-style="dashed" style="margin: 0;"/>
-                <el-form-item label="簽核主管 :&nbsp;">
+                <el-form-item label="簽核主管 :&nbsp;">{{employeeInfo.teamLeaderName}}</el-form-item>
+                <el-divider border-style="dashed" style="margin: 0;"/>
+
+                <el-form-item label="車輛編號 :&nbsp;">
+                <!--  串接查詢車輛方法 -->
                     <el-select
-                        v-model="creatTeamleaderIDValue"
-                        placeholder="Select"
-                        size="small"
-                        >
-                        <el-option
-                            v-for="Option in teamleaderIDOptions"
-                            :key="Option.value"
-                            :label="Option.label"
-                            :value="Option.value"
-                        />
+                            v-model="creatCarIDValue"
+                            placeholder="需修改之車輛編號"
+                            size="small"
+                            style="width: 200px;"
+                            @change = "creatFindCard"
+                            @click = "cadTableDoCarFindAll"
+                            >
+                            <el-option
+                                v-for="Option in carIdOptions"
+                                :key="Option.id"
+                                :label="`no.${Option.id}`"
+                                :value="Option.id"
+                            />
                     </el-select>
                 </el-form-item>
                 <el-divider border-style="dashed" style="margin: 0;"/>
 
-                <el-form-item label="修改車輛 :&nbsp;">
-                <el-input-number
-                    v-model="creatCarIDValue"
-                    :min="1"
-                    :max="10"
-                    size="small"
-                    controls-position="right"
-                />
-                </el-form-item>
-                <el-divider border-style="dashed" style="margin: 0;"/>
-
-                <el-form-item label="改後價格 :&nbsp;">
-                <el-input-number
-                    v-model="creatFloatingAmountValue"
-                    :min="1000"
-                    :max="100000000000000000"
-                    size="small"
-                    controls-position="right"
-                />
+                <el-form-item label="&nbsp;">
+                    <p style="margin: 0;" >&nbsp;</p>
                 </el-form-item>
 
                 </el-form>
@@ -223,18 +213,22 @@
             <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
 
                 <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
-                <el-form-item label="&nbsp;">
-                    <p style="margin: 0;" >&nbsp;</p>
-                </el-form-item>
-                <el-divider border-style="dashed" style="margin: 0;"/>
+                    
+                    <el-form-item label="原本價格 :&nbsp;">
+                        <p style="margin: 0;" >{{creatBaseCarPrice}}</p>
+                    </el-form-item>
+                    <el-divider border-style="dashed" style="margin: 0;"/>
 
-                <el-form-item label="&nbsp;">
-                    <p style="margin: 0;" >&nbsp;</p>
-                </el-form-item>
-                <el-divider border-style="dashed" style="margin: 0;"/>
-
-                <el-form-item label="簽核狀態 :&nbsp;">
-                    <p style="margin: 0;" >尚未簽核</p>
+                    <el-form-item label="改後價格 :&nbsp;">
+                <el-input-number
+                    v-model="creatFloatingAmountValue"
+                    :min="0"
+                    :max="100000000000000000"
+                    size="small"
+                    style="width: 200px;"
+                    controls-position="right"
+                    @change = "creatFindCard"
+                />
                 </el-form-item>
                 <el-divider border-style="dashed" style="margin: 0;"/>
 
@@ -243,6 +237,8 @@
                         v-model="creatApprovalTypeValue"
                         placeholder="Select"
                         size="small"
+                        style="width: 200px;"
+                        @change = "creatFindCard"
                         >
                         <el-option
                             v-for="Option in creatApprovalTypeOptions"
@@ -252,6 +248,12 @@
                         />
                     </el-select>
                 </el-form-item>
+                <el-divider border-style="dashed" style="margin: 0;"/>
+
+                <el-form-item label="簽核狀態 :&nbsp;">
+                    <p style="margin: 0;" >尚未簽核</p>
+                </el-form-item>
+                
 
                 </el-form>
                 </div>
@@ -375,7 +377,7 @@
             <div v-if="openZon" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
             <div v-if="openZon" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
                 <el-switch 
-                    v-if="singleItem.approvalStatus===0"
+                    v-if="singleItem.approvalStatus===0&singleItem.teamLeaderId===employeeInfo.id"
                     v-model="isModify"
                     inline-prompt
                     class="value5"
@@ -637,9 +639,8 @@ const creatDdialogVisible =ref(false)  //新增
 
 
 //新增用所有資料
+const creatBaseCarPrice= ref(null)
 const creatCarIDValue = ref(1)
-const creatEmployeeIDValue = ref(1)
-const creatTeamleaderIDValue = ref(5)
 const creatApprovalStatusValue = ref(0)
 const creatApprovalTypeValue = ref(1)
 const creatFloatingAmountValue = ref(1000000)
@@ -859,9 +860,11 @@ function doCreat() {
     });
 
 
+
+
     let request ={  
-        "employeeId":creatEmployeeIDValue.value, 
-        "teamLeaderId":creatTeamleaderIDValue.value, 
+        "employeeId":employeeInfo.value.id, 
+        "teamLeaderId":employeeInfo.value.teamLeaderId, 
         "carId":creatCarIDValue.value,
         "approvalStatus":creatApprovalStatusValue.value, 
         "approvalType":creatApprovalTypeValue.value,
@@ -910,6 +913,44 @@ function openDoModify() {
         console.log("approvalStatusValue.value",approvalStatusValue.value);
         isModify.value = true;
         dialogVisible.value=true; 
+    }
+}
+
+//新增簽核中-顯示原價-自動簽合需求
+function creatFindCard() {
+    if (creatApprovalTypeValue.value==3) {
+        creatFloatingAmountValue.value=0
+    }else{
+        axiosapi.get(`/car/find/${creatCarIDValue.value}`).then(function(response) {
+            console.log("response", response);
+            if(response.status==200)  {
+                ElMessage({
+                    message: '錨定修改',
+                    type: 'success',
+                })
+                let car = response.data.list 
+                console.log("car", car);
+                creatBaseCarPrice.value = response.data.list[0].price
+                // console.log("creatBaseCarPrice", creatBaseCarPrice.value);
+                // console.log("creatBaseCarPrice", creatBaseCarPrice.value);
+                // console.log("creatFloatingAmountValue", creatFloatingAmountValue.value);
+                if (creatBaseCarPrice.value>creatFloatingAmountValue.value) {
+                    creatApprovalTypeValue.value=1
+                }else if (creatBaseCarPrice.value<creatFloatingAmountValue.value) {
+                    creatApprovalTypeValue.value=2
+                }
+            } else {
+                ElMessage({
+                    message: response.data.message,
+                    type: 'warning',
+                })
+                creatBaseCarPrice.value = "--"
+            }
+        }).catch(function(error) {
+            console.log("error", error);
+            ElMessage.error('錨定錯誤'+error.message)
+            creatBaseCarPrice.value = "--"
+        });
     }
 }
 
@@ -1020,6 +1061,7 @@ function cadTableDoCarFindAll() {
         // router.push("/")
     }) 
 }
+
 
 
 </script>

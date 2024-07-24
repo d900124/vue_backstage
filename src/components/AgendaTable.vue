@@ -163,6 +163,24 @@
                 
             />
         </el-select>
+
+        <el-select
+            v-model="findUnavailableStatus"
+            placeholder="查詢排程種類"
+            clearable
+            size="small"
+            style="width: 200px;margin-top: 20px;margin-left: 20px;"
+            @change = "findByTeamLeader()"
+            @click="agdTableDoEmpFindAll();"
+            >
+            <el-option
+                v-for="Option in unavailableStatusOptions"
+                :key="Option.value"
+                :label="Option.label"
+                :value="Option.value"
+                
+            />
+        </el-select>
     </div>
     <div class="col-1"></div>
 
@@ -440,6 +458,12 @@ const selectDays = ref([null,null])
 
 //下拉選單用屬性
 const employeeIDOptions=ref([])
+const unavailableStatusOptions=[
+    {value:0,label:"全部種類"},
+    {value:1,label:"請假"},
+    {value:2,label:"賞車"},
+    {value:3,label:"公事安排"}
+]
 
 //查詢用屬性
 const findEmployeeID =ref(null)
@@ -778,6 +802,9 @@ function callFindByAgangaHQL(){
     let unavailableStatus = findUnavailableStatus.value=="" ? null : findUnavailableStatus.value;
     if (employeeId==0) {
         employeeId=null;
+    }
+    if (unavailableStatus==0) {
+        unavailableStatus=null;
     }
     console.log("employeeId.value",employeeId)
 

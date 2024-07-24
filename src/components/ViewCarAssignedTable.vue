@@ -71,15 +71,16 @@
 <!-- 賞車排單修改按鈕-->
         <div class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start; ">
         <el-switch
+            v-if="employeeInfo.accountType==4"
             v-model="isVKAModify"
             inline-prompt
             class="value5"
             size="large"
             active-text="&nbsp;&nbsp;排程修改&nbsp;&nbsp;"
             inactive-text="&nbsp;&nbsp;排程鎖定&nbsp;&nbsp;"   
-            style="--el-switch-on-color: #a33238; ;"
+            style="--el-switch-on-color: #a33238; margin-right: 8px;"
             />
-            <el-button color="#a33238" :dark="isDark" size="small" style="margin: 8px ;" @click = "vcaTableVisible=true;callViewAssignedFindByHQL(false)" round>&nbsp;賞車排程記錄&nbsp;</el-button>
+            <el-button color="#a33238" :dark="isDark" size="small" style="margin: 8px 0px;" @click = "vcaTableVisible=true;callViewAssignedFindByHQL(false)" round>&nbsp;賞車排程記錄&nbsp;</el-button>
         </div>
 
     </div>

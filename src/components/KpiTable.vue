@@ -105,8 +105,8 @@
             <td class="table-td">{{item.seasonStrDayString.substring(0, 4)}} - {{item.seasonStrDayString.substring(5, 10)}}</td>
             <td class="table-td"><b style="color: red;font-weight: 900;">{{item.totalScore}}</b></td>
             <td class="table-td">{{item.salesScore}}</td>
-            <td v-if="!isKpiModify" class="table-td">{{item.teamLeaderRating}}</td>
-            <td v-if="isKpiModify" class="table-td">
+            <td v-if="(!isKpiModify)|(item.teamLeaderId!=employeeInfo.id)" class="table-td">{{item.teamLeaderRating}}</td>
+            <td v-if="(isKpiModify)&(item.teamLeaderId==employeeInfo.id)" class="table-td">
                 <el-input-number
                     v-model="item.teamLeaderRating"
                     size="small"
@@ -125,13 +125,14 @@
     </div>
     
     </div>
-    <div class="col-1"></div>
+    <div class="col-1"> </div>
 
     <div class="col-1"></div>
     <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
 <!-- KPI修改按鈕-->
         <div v-if="(findKpiYear=='2024')&&(findKpiSeasonStrDay=='-07-01')" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start; ">
         <el-switch
+            v-if="employeeInfo.accountType==4"
             v-model="isKpiModify"
             inline-prompt
             class="value5"
