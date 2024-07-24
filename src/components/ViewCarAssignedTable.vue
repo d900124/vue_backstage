@@ -75,12 +75,13 @@
             inline-prompt
             class="value5"
             size="large"
-            active-text="&nbsp;&nbsp;開啟修改&nbsp;&nbsp;"
-            inactive-text="&nbsp;&nbsp;資料鎖定&nbsp;&nbsp;"   
+            active-text="&nbsp;&nbsp;排程修改&nbsp;&nbsp;"
+            inactive-text="&nbsp;&nbsp;排程鎖定&nbsp;&nbsp;"   
             style="--el-switch-on-color: #a33238; ;"
-            @click = "openDoKpiModify"
             />
+            <el-button color="#a33238" :dark="isDark" size="small" style="margin: 8px ;" @click = "vcaTableVisible=true;callViewAssignedFindByHQL(false)" round>&nbsp;賞車排程記錄&nbsp;</el-button>
         </div>
+
     </div>
 
     <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; height: 50px;">
@@ -97,6 +98,104 @@
         
 
     </div>
+
+<!-- 排程詳情 -->
+<el-dialog v-model="vcaTableVisible" title="" width="800" draggable overflow>
+    <div class="row">
+    <div class="col-4" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
+        <h4 class="table-title" style="float: left;margin-left:22px ;" id="ViewCarAssigned">賞車排程詳細記錄表</h4>
+    </div>
+    <div class="col-8" style="padding: 0px 20px;display: flex; justify-content: flex-end;align-items: center;">
+        <el-select
+            v-model="findAssignedStatus"
+            clearable
+            placeholder="指派狀態"
+            size="small"
+            style="width: 110px;margin-right: 20px;"
+            @change = "vcacurrent=1;callViewAssignedFindByHQL(false)"
+            >
+            <el-option
+                v-for="Option in assignedStatusOptions"
+                :key="Option.value"
+                :label="Option.label"
+                :value="Option.value"
+                
+            />
+        </el-select>
+        <el-select
+            v-model="findTeamLeaderId"
+            clearable
+            placeholder="派單主管"
+            size="small"
+            style="width: 110px;margin-right: 20px;"
+            @change = "vcacurrent=1;callViewAssignedFindByHQL(false)"
+            @click = "vcaTableDoTeamleaderFindAll"
+            >
+            <el-option
+                v-for="Option in teamleaderIDOptions"
+                :key="Option.id"
+                :label="Option.name"
+                :value="Option.id"
+            />
+        </el-select>
+        <el-select
+            v-model="findEmployeeId"
+            clearable
+            placeholder="賞車銷售"
+            size="small"
+            style="width: 110px;margin-right: 20px;"
+            @change = "vcacurrent=1;callViewAssignedFindByHQL(false)"
+            @click="vcaTableDoEmpFindAll"
+            >
+            <el-option
+                v-for="Option in employeeIDOptions"
+                :key="Option.value"
+                :label="Option.label"
+                :value="Option.value"
+                
+            />
+        </el-select>
+        <el-input-number
+            clearable
+            v-model="findViewCarId"
+            placeholder="賞車單號"
+            size="small"
+            controls-position="right"
+            style="width: 110px;"
+            @change = "vcacurrent=1;callViewAssignedFindByHQL(false)"
+        />
+    </div>
+    </div>
+    <el-table :data="vcaitems">
+      <el-table-column property="assignedStatusName" label="指派狀態" width="150"/>
+      <el-table-column property="viewCarId" label="賞車單號" width="150"/>
+      <el-table-column property="employeeName" label="賞車銷售" width="150" />
+      <el-table-column property="teamLeaderName" label="派單主管" width="150" />
+      <el-table-column property="updateTimeString" label="修改時間" />
+    </el-table>
+
+    <div class="row">
+        <div class="col-1"></div>
+            <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
+            </div>
+
+            <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; height: 50px;">
+<!-- 分頁區塊 -->
+                <el-pagination
+                    style="margin: 10px 0px;"
+                    hide-on-single-page=true
+                    layout="total,prev, pager, next"
+                    :total="vcatotal"
+                    :page-size="vcarows"
+                    v-model:current-page="vcacurrent"
+                    @change="callViewAssignedFindByHQL(false)"
+                ></el-pagination>
+                
+
+                </div>
+            <div class="col-1"></div>
+    </div>
+  </el-dialog>
 <div class="col-1"></div>
 </template>
     
@@ -110,21 +209,46 @@ import { useRouter } from 'vue-router';
 //用於重新導向 router.push
 const router = useRouter()
 
-//分頁用參數
+//賞車分頁用參數
 const total = ref(0) //總比數
 const current = ref(1) //目前頁碼
 const pages = ref(0) //分頁總數
 const rows = ref(1) //分頁資料顯示筆數 (ViewCarService 目前鎖定為1)
 
-//產品顯示products元件用的參數
+//賞車顯示元件用的參數
 const items = ref([]);
 const singleItem= ref([])
+
+
+//分頁用參數
+const vcatotal = ref(0) //總比數
+const vcacurrent = ref(1) //目前頁碼
+const vcapages = ref(0) //分頁總數
+const vcarows = ref(5) //分頁資料顯示筆數 
+
+//賞車排程顯示元件
+const vcaitems = ref([]);
+const vcasingleItem= ref([])
+
+//排程用多條件查詢
+const findAssignedStatus  = ref(null);
+const findTeamLeaderId  = ref(null);
+const findEmployeeId  = ref(null);
+const findViewCarId  = ref(null);
+
 
 //修改賞車排業務用
 const isVKAModify = ref(false)
 
 //下拉選單用屬性
 const employeeIDOptions=ref([])
+const teamleaderIDOptions=ref([])
+const assignedStatusOptions=ref([
+    {value:0,label:"未指派"},{value:1,label:"已指派"},{value:2,label:"已註銷"}
+])
+
+//彈出視窗/抽屜
+const vcaTableVisible = ref(false)
 
 onMounted(function () {
     callViewCarSelect(false);
@@ -212,6 +336,48 @@ function callViewCarSelect(doCreat) {
     }) 
 }
 
+//賞排程查詢
+function callViewAssignedFindByHQL(doCreat){
+    let employeeId = findEmployeeId.value="" ? null : findEmployeeId.value;
+    let teamLeaderId = findTeamLeaderId.value="" ? null : findTeamLeaderId.value;
+    let viewCarId = findViewCarId.value="" ? null : findViewCarId.value;
+    let assignedStatus = findAssignedStatus.value="" ? null : findAssignedStatus.value;
+
+    let request ={
+        "id":null, 
+        "viewCarDateStr":null, 
+        "viewCarDateEnd":null, 
+        "employeeId":employeeId, 
+        "teamLeaderId":teamLeaderId, 
+        "viewCarId":viewCarId, 
+        "carId":null,
+        "carinfoId":null, 
+        "suspensionid":null, 
+        "assignedStatus":assignedStatus,
+
+        "isPage":vcacurrent.value-1,
+        "max":vcarows.value,
+        "dir":false,
+        "order":"updateTime"  
+    }
+    console.log("request",request);
+
+    axiosapi.post("/viewCarAssigned/findByHQL",request).then(function (responce) {
+        vcaitems.value = responce.data.data;
+        vcatotal.value=responce.data.totalElement;
+        console.log("vcaitems",responce.data.data);
+        console.log("vcatotal",responce.data.totalElement);
+        console.log("vcaresponce",responce.data);
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
+}
+
 //員工查詢全部製作下拉選單
 function vcaTableDoEmpFindAll() {
     let empcount = 0;
@@ -237,7 +403,22 @@ function vcaTableDoEmpFindAll() {
         // router.push("/")
     }) 
 }
-  
+
+//主管下拉選單
+function vcaTableDoTeamleaderFindAll() {
+    axiosapi.get("employee/teamLeaders").then(function (responce) {
+        console.log("teamLeaders responce",responce.data);
+        teamleaderIDOptions.value=responce.data.data;
+}).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "主管查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
+} 
+
 //指派(註銷同時新增)
 function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId){
     console.log("OldViewCarAssignedId",OldViewCarAssignedId);    

@@ -262,7 +262,7 @@
             <div v-if="openCreat" class="col-1"></div>
             <div v-if="openCreat" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
             <div v-if="openCreat" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-                <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click = "creatDdialogVisible=true" >&nbsp確認新增&nbsp</el-button>
+                <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click = "creatDdialogVisible=true" round>&nbsp確認新增&nbsp</el-button>
             </div>
             <div v-if="openCreat" class="col-1"></div>
 
