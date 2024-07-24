@@ -1,19 +1,21 @@
 <template>
-        <div class="container text-center" >
+        <div class="container text-center">
                 <div class="row">
-        <h3>車輛管理</h3>
+                        <!-- 登出圖釘 -->
+                        <Logout></Logout>
+                        <h3>車輛管理</h3>
 
-        <!-- 賞車清單 -->
+                        <!-- 賞車清單 -->
 
-        <!-- 車輛總覽 -->
-        </div>
+                        <!-- 車輛總覽 -->
+
+
+                </div>
         </div>
 </template>
-    
-<script setup >
-    
+
+<script setup>
+import Logout from '@/components/Logout.vue';
 </script>
-    
-<style>
-    
-</style>
+
+<style></style>

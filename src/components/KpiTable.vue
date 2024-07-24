@@ -8,6 +8,7 @@
             type="year"
             placeholder="年份"
             size="small"
+            value-format="YYYY"
             style="width: 130px;margin-right: 20px;"
             @change = "current=1;findKpiSeasonStrDayDuring=[null,null];callKpiFindByHQL(false)"
             />
@@ -81,6 +82,87 @@
     </div>
     <div class="col-1"></div>
 
+    <div class="col-1"></div>
+    <div class="col-10">
+<!-- 彈出式複雜搜尋 -->
+        <div class="extra-menu"></div>
+<!-- 列表主體 -->
+        <div class="table-part">
+        <table class="table">
+        <thead style="border-bottom: 2px solid #a33238;">
+            <tr>
+            <th scope="col" class="table-th" >員工姓名</th>
+            <th scope="col" class="table-th" >年分 - 季度</th>
+            <th scope="col" class="table-th" >考核均分</th>
+            <th scope="col" class="table-th" >客戶評分</th>
+            <th scope="col" class="table-th" >主管評分</th>
+            <th scope="col" class="table-th" >主管姓名</th>
+            </tr>
+        </thead>
+        <tbody class="table-group-divider">
+            <tr v-for="item in items" :key="item.id"  @click="">
+            <th scope="row" class="table-td">{{item.employeeName}}</th>
+            <td class="table-td">{{item.seasonStrDayString.substring(0, 4)}} - {{item.seasonStrDayString.substring(5, 10)}}</td>
+            <td class="table-td"><b style="color: red;font-weight: 900;">{{item.totalScore}}</b></td>
+            <td class="table-td">{{item.salesScore}}</td>
+            <td v-if="!isKpiModify" class="table-td">{{item.teamLeaderRating}}</td>
+            <td v-if="isKpiModify" class="table-td">
+                <el-input-number
+                    v-model="item.teamLeaderRating"
+                    size="small"
+                    controls-position="right"
+                    style="width: 50%;height: 100%"
+                    @change = "TeamLeaderRatingChange(item)"
+                />
+            </td>
+            <td class="table-td">{{item.teamLeaderName}}</td>
+            </tr>
+            
+        </tbody>
+        </table>
+        <div>
+        </div>
+    </div>
+    
+    </div>
+    <div class="col-1"></div>
+
+    <div class="col-1"></div>
+    <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
+<!-- KPI修改按鈕-->
+        <div v-if="(findKpiYear=='2024')&&(findKpiSeasonStrDay=='-07-01')" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start; ">
+        <el-switch
+            v-model="isKpiModify"
+            inline-prompt
+            class="value5"
+            size="large"
+            active-text="&nbsp;&nbsp;開啟修改&nbsp;&nbsp;"
+            inactive-text="&nbsp;&nbsp;資料鎖定&nbsp;&nbsp;"   
+            style="--el-switch-on-color: #a33238; ;"
+            @click = "openDoKpiModify"
+            />
+        </div>
+    </div>
+
+    <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; height: 50px;">
+<!-- 分頁區塊 -->
+        <el-pagination
+            style="margin: 10px 0px;"
+            hide-on-single-page=true
+            layout="total,prev, pager, next"
+            :total="total"
+            :page-size="rows"
+            v-model:current-page="current"
+            @change="callKpiFindByHQL(false)"
+        ></el-pagination>
+        
+
+        </div>
+    <div class="col-1"></div>
+
+
+
+
 <!-- 多選彈出 -->
     <el-drawer
         v-model="openKpiFindMore"
@@ -99,7 +181,7 @@
                     clearable
                     placeholder="員工姓名"
                     size="small"
-                    @change = "current=1;callFindByHQL(false)"
+                    @change = "current=1;callKpiFindByHQL(false)"
                     >
                     <el-option
                         v-for="Option in employeeIDOptions"
@@ -118,7 +200,7 @@
                     placeholder="主管姓名"
                     clearable
                     size="small"
-                    @change = "current=1;callFindByHQL(false)"
+                    @change = "current=1;callKpiFindByHQL(false)"
                     >
                     <el-option
                         v-for="Option in teamleaderIDOptions"
@@ -189,7 +271,7 @@
                 @change = "current=1;callKpiFindByHQL(false)"
             />&nbsp;~&nbsp;
             <el-input-number
-                v-model="findTalScoreMin"
+                v-model="findTotalScoreMin"
                 size="small"
                 clearable
                 controls-position="right"
@@ -230,9 +312,9 @@ const findTeamLeaderRatingMin = ref(0)
 const findSalesScoreMax = ref(100)
 const findSalesScoreMin = ref(0)
 const findTotalScoreMax = ref(100)
-const findTalScoreMin = ref(0)
-const findKpiEmployeeId = ref('')
-const findKpiTeamLeaderId = ref('')
+const findTotalScoreMin = ref(0)
+const findKpiEmployeeId = ref(null)
+const findKpiTeamLeaderId = ref(null)
 
 //開啟抽屜/視窗用屬性
 const openKpiFindMore =ref(false)
@@ -270,27 +352,168 @@ const teamleaderIDOptions=[
     { value: 5, label: '主管5', }
 ]
 
+//分頁用參數
+const total = ref(0) //總比數
+const current = ref(1) //目前頁碼
+const pages = ref(0) //分頁總數
+const rows = ref(7) //分頁資料顯示筆數
+
+//產品顯示products元件用的參數
+const items = ref([]);
+const singleItem= ref([])
+
+//修改用屬性
+const  isKpiModify = ref(false);
+
+onMounted(function () {
+    callKpiFindByHQL(false);
+})
+
 //清除查詢
 function cleanKpiFind() {
     findKpiYear.value='2024';
     findKpiSeasonStrDay.value='-07-01';
     findKpiEmployeeBranch.value=-1;
     findKpiEmployeeType.value=1;
-    findKpiEmployeeId.value = '';
-    findKpiTeamLeaderId.value = '';
+    findKpiEmployeeId.value = null;
+    findKpiTeamLeaderId.value = null;
     findTeamLeaderRatingMax.value = 100;
     findTeamLeaderRatingMin.value = 0;
     findSalesScoreMax.value = 100;
     findSalesScoreMin.value = 0;
     findTotalScoreMax.value = 100;
-    findTalScoreMin.value = 0;
+    findTotalScoreMin.value = 0;
     findKpiSeasonStrDayDuring.value=[null,null];
+    callKpiFindByHQL(false);
 }
 
 //多筆查詢
 function callKpiFindByHQL(doCreat) {
+    let selectStrDay =null;
+    let selectEndDay =null;
+
+    const kpiYear = findKpiYear.value;
+    const kpiSeasonStrDay = findKpiSeasonStrDay.value;
+    const kpiSeasonStrDayDuring = findKpiSeasonStrDayDuring.value;
+
+    console.log("findKpiYear", kpiYear);
+    console.log("findKpiSeasonStrDay", kpiSeasonStrDay);
+    console.log("findKpiSeasonStrDayDuring", kpiSeasonStrDayDuring);
+
+    if (kpiSeasonStrDayDuring[0]!==null) {
+        selectStrDay = kpiSeasonStrDayDuring[0];
+        selectEndDay = kpiSeasonStrDayDuring[1];
+    } else if (kpiYear !== null && kpiSeasonStrDay !== null){
+        selectStrDay = `${kpiYear}${kpiSeasonStrDay}`;
+        selectEndDay = `${kpiYear}${kpiSeasonStrDay}`;
+    } else if (kpiYear !== null && kpiSeasonStrDay === null){
+        selectStrDay = `${kpiYear}-01-01`;
+        selectEndDay = `${kpiYear}-12-31`;
+    }else if (kpiYear === null && kpiSeasonStrDay !== null){
+        findKpiYear.value="2024";
+        selectStrDay = `2024${kpiSeasonStrDay}`;
+        selectEndDay = `2024${kpiSeasonStrDay}`;
+    }else{
+        selectStrDay = null;
+        selectEndDay = null;
+    }
+
+
+
+    console.log("selectStrDay", selectStrDay);
+    console.log("selectEndDay", selectEndDay);
     
+    if (doCreat) {
+        current.value=1
+        cleanKpiFind();
+    }
+
+    console.log("callFindByHQL - 當前頁碼:",current.value);
+    
+    
+    let employeeId = findKpiEmployeeId.value="" ? null : findKpiEmployeeId.value;
+    let teamLeaderId = findKpiTeamLeaderId.value="" ? null : findKpiTeamLeaderId.value;
+    let teamLeaderRatingMax = findTeamLeaderRatingMax.value="" ? 100 : findTeamLeaderRatingMax.value;
+    let teamLeaderRatingMin = findTeamLeaderRatingMin.value="" ? 0 : findTeamLeaderRatingMin.value;
+    let salesScoreMax = findSalesScoreMax.value="" ? 100 : findSalesScoreMax.value;
+    let salesScoreMin = findSalesScoreMin.value="" ? 0 : findSalesScoreMin.value;
+    let totalScoreMax = findTotalScoreMax.value="" ? 100 : findTotalScoreMax.value;
+    let totalScoreMin = findTotalScoreMin.value="" ? 0 : findTotalScoreMin.value;
+
+    let request ={ 
+        "id":null,
+        "selectStrDay":selectStrDay,
+        "selectEndDay": selectEndDay,
+        "employeeId":employeeId,
+        "teamLeaderId":teamLeaderId, 
+        "teamLeaderRatingMax":teamLeaderRatingMax,
+        "teamLeaderRatingMin":teamLeaderRatingMin, 
+        "salesScoreMax": salesScoreMax,
+        "salesScoreMin":salesScoreMin, 
+        "totalScoreMax":totalScoreMax,
+        "totalScoreMin":totalScoreMin,
+
+
+        "isPage":current.value-1,
+        "max":rows.value,
+        "dir":false,
+        "order":"createTime"
+    }
+
+    console.log("KPI request",request);
+
+    axiosapi.post("/kpi/findByHQL",request).then(function (responce) {  //(AJAX前端程式)多產品查詢的Post功能()
+        items.value = responce.data.data;
+
+        //計算分頁比數資訊
+        total.value = responce.data.totalElement;
+        pages.value = responce.data.totalPage;
+
+        console.log("items",responce.data.data);
+        console.log("total",responce.data.totalElement);
+        console.log("responce",responce.data);
+
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
 }
+
+//KPI修改
+function TeamLeaderRatingChange(item) {
+    item.totalScore= (item.salesScore + item.teamLeaderRating)/2;
+    console.log("Updated item:", item);
+
+    let request ={ 
+        "id":item.id, 
+        "teamLeaderRating":item.teamLeaderRating,
+        "salesScore":item.salesScore,
+        "totalScore":item.totalScore
+    }
+
+    axiosapi.put(`/kpi/${item.id}`, request).then(function(response) {
+        console.log("response", response);
+        if(response.data.success)  {
+            ElMessage({
+                message: 'KPI修改成功',
+                type: 'success',
+            });
+        } else {
+            Swal.fire({
+                icon: "warning",
+                text: response.data.msg,
+            });
+        }
+    }).catch(function(error) {
+        console.log("error", error);
+        ElMessage.error('修改錯誤'+error.message)
+    });
+}
+    
 </script>
     
 <style scoped>
