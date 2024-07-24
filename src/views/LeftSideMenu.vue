@@ -85,6 +85,7 @@ import { ElButton } from 'element-plus';
 import 'element-plus/dist/index.css';
 
 const router = useRouter();
+const isCollapse =ref(false);
 
 </script>
 
