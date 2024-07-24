@@ -7,7 +7,7 @@
             <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
                 
                     <el-select
-                        v-model="findbbb"
+                        v-model="findCarBrand"
                         clearable
                         placeholder="品牌"
                         size="small"
@@ -15,7 +15,7 @@
                         @change = "current=1;callFindByHQL(false)"
                         >
                         <el-option
-                            v-for="Option in xxxx"
+                            v-for="Option in carBrandOptions"
                             :key="Option.value"
                             :label="Option.label"
                             :value="Option.value"
@@ -30,6 +30,7 @@
                         size="small"
                         style="width: 130px;margin-right: 20px;"
                         @change = "current=1;callFindByHQL(false)"
+                        @click="cadTableDoEmpFindAll();"
                         >
                         <el-option
                             v-for="Option in employeeIDOptions"
@@ -116,8 +117,9 @@
                 <tbody class="table-group-divider">
                     <tr v-for="item in items" :key="item.id"  @click="itemClick(item.id)">
                     <th scope="row" class="table-td">{{item.id}}</th>
-                    <td class="table-td"></td>
-                    <td class="table-td">{{item.approvalTypeName}} {{item.floatingAmount}}</td>
+                    <td class="table-td">{{item.carBrand}}&nbsp;-&nbsp;{{item.carModelName}}</td>
+                    <td v-if="item.approvalType==1||item.approvalType==2" class="table-td">{{item.approvalTypeName}} 至 ${{item.floatingAmount}}</td>
+                    <td v-if="item.approvalType==3" class="table-td">{{item.approvalTypeName}} </td>
                     <td class="table-td">{{item.createTimeString}}</td>
                     <td class="table-td">{{item.employeeName}}</td>
                     <td class="table-td">{{item.approvalStatusName}}</td>
@@ -260,7 +262,7 @@
             <div v-if="openCreat" class="col-1"></div>
             <div v-if="openCreat" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
             <div v-if="openCreat" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-                <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click = "creatDdialogVisible=true" >&nbsp確認新增&nbsp</el-button>
+                <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click = "creatDdialogVisible=true" round>&nbsp確認新增&nbsp</el-button>
             </div>
             <div v-if="openCreat" class="col-1"></div>
 
@@ -297,19 +299,19 @@
                         <tr v-if="!isModify">
                         <th scope="row" class="table-td" name="id" >{{ singleItem.id }}</th>
                         <td class="table-td">{{singleItem.carId}}</td>
-                        <td class="table-td"></td>
-                        <td class="table-td"></td>
+                        <td class="table-td">{{singleItem.carBrand}}</td>
+                        <td class="table-td">{{singleItem.carModelName}}</td>
                         <td class="table-td">{{singleItem.approvalTypeName}}</td>
-                        <td class="table-td"></td>
+                        <td class="table-td">{{singleItem.carPrice}}</td>
                         <td class="table-td">{{singleItem.floatingAmount}}</td>
                         </tr>
                         <tr v-if="isModify">
                         <th scope="row" class="table-td" name="id" :value="singleItem.id">{{ singleItem.id }}</th>
                         <td class="table-td">{{singleItem.carId}}</td>
-                        <td class="table-td"></td>
-                        <td class="table-td"></td>
+                        <td class="table-td">{{singleItem.carBrand}}</td>
+                        <td class="table-td">{{singleItem.carModelName}}</td>
                         <td class="table-td">{{singleItem.approvalTypeName}}</td>
-                        <td class="table-td"></td>
+                        <td class="table-td">{{singleItem.carPrice}}</td>
                         <td class="table-td">{{singleItem.floatingAmount}}</td>
                         </tr>
                         
@@ -328,9 +330,9 @@
                     </thead>
                     <tbody class="table-group-divider">
                         <tr v-if="!isModify" >
-                            <th scope="row" class="table-td"></th>
+                            <th scope="row" class="table-td">{{singleItem.employeeId}}</th>
                             <td class="table-td">{{singleItem.employeeName}}</td>
-                        <td class="table-td"></td>
+                        <td class="table-td">{{singleItem.teamLeaderId}}</td>
                         <td class="table-td">{{singleItem.teamLeaderName}}</td>
                         <td class="table-td">{{singleItem.createTimeString}}</td>
                         <td class="table-td">{{singleItem.updateTimeString}}</td>
@@ -338,9 +340,9 @@
                         </tr>
 
                         <tr v-if="isModify" >
-                            <th scope="row" class="table-td"></th>
+                            <th scope="row" class="table-td">{{singleItem.employeeId}}</th>
                             <td class="table-td">{{singleItem.employeeName}}</td>
-                        <td class="table-td"></td>
+                        <td class="table-td">{{singleItem.teamLeaderId}}</td>
                         <td class="table-td">{{singleItem.teamLeaderName}}</td>
                         <td class="table-td">{{singleItem.createTimeString}}</td>
                         <td class="table-td">{{singleItem.updateTimeString}}</td>
@@ -372,7 +374,8 @@
             <div v-if="openZon" class="col-1"></div>
             <div v-if="openZon" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
             <div v-if="openZon" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-                <el-switch
+                <el-switch 
+                    v-if="singleItem.approvalStatus===0"
                     v-model="isModify"
                     inline-prompt
                     class="value5"
@@ -440,6 +443,7 @@
                         placeholder="創建員工"
                         size="small"
                         @change = "current=1;callFindByHQL(false)"
+                        @click="cadTableDoEmpFindAll();"
                         >
                         <el-option
                             v-for="Option in employeeIDOptions"
@@ -459,12 +463,13 @@
                         clearable
                         size="small"
                         @change = "current=1;callFindByHQL(false)"
+                        @click = "cadTableDoTeamleaderFindAll"
                         >
                         <el-option
                             v-for="Option in teamleaderIDOptions"
-                            :key="Option.value"
-                            :label="Option.label"
-                            :value="Option.value"
+                            :key="Option.id"
+                            :label="Option.name"
+                            :value="Option.id"
                         />
                     </el-select>
                 </el-form-item>
@@ -477,12 +482,13 @@
                         clearable
                         size="small"
                         @change = "current=1;callFindByHQL(false)"
+                        @click = "cadTableDoCarFindAll"
                         >
                         <el-option
-                            v-for="Option in carIDOptions"
-                            :key="Option.value"
-                            :label="Option.label"
-                            :value="Option.value"
+                            v-for="Option in carIdOptions"
+                            :key="Option.id"
+                            :label="`no.${Option.id}`"
+                            :value="Option.id"
                         />
                     </el-select>
                 </el-form-item>
@@ -635,37 +641,20 @@ const creatFloatingAmountValue = ref(1000000)
 
 
 //所有下拉選單選項 - 後續串接方法
-const teamleaderIDOptions=[
-    {
-        value: 5,
-        label: '主管名 - emp5',
-    }
+const teamleaderIDOptions=ref([])
+const employeeIDOptions=ref([])
+const carIdOptions=ref([])
+const carBrandOptions=[
+    {value: 1,label: 'HONDA'},
+    {value: 2,label: 'TOYOTA'},
+    {value: 3,label: 'MAZDA'},
+    {value: 4,label: 'BENZ'},
+    {value: 5,label: 'PORSCHE'},
+    {value: 6,label: 'BMW'},
+    {value: 7,label: 'VOLKSWAGEN'},
+    {value: 8,label: 'NISSAN'},
+    {value: 9,label: 'SUBARU'}
 ]
-
-const employeeIDOptions=[
-    {
-        value: 1,
-        label: 'emp1',
-    },
-    {
-        value: 2,
-        label: 'emp2',
-    },
-    {
-        value: 3,
-        label: 'emp3',
-    },
-    {
-        value: 4,
-        label: 'emp4',
-    },
-    {
-        value: 5,
-        label: 'emp5',
-    }
-    
-]
-
 const creatApprovalTypeOptions=[
     {
         value: 1,
@@ -697,6 +686,7 @@ const approvalStatusOptions = [
 ]
 
 //查詢用-簡易
+const findCarBrand =ref(null)
 const findTeamLeaderId =ref(null)
 const findEmployeeId =ref(null)
 const findApprovalType =ref(null)
@@ -713,6 +703,7 @@ const findUpdateTime = ref([null, null])
 
 onMounted(function () {
     callFindByHQL(false);
+    // cadTableDoEmpFindAll();
 })
 
 
@@ -722,6 +713,7 @@ function cleanFind() {
     findEmployeeId.value = null;
     findApprovalType.value = null;
     findApprovalStatus.value = null;
+    findCarBrand.value = null;
 
     findCarId.value =null
     findFloatingAmountMax.value = null
@@ -773,10 +765,12 @@ function callFindByHQL(doCreat){
     }
     console.log("callFindByHQL - 當前頁碼:",current.value);
     
+    let brandId = findCarBrand.value=""?null:findCarBrand.value;
     let teamLeaderId = findTeamLeaderId.value="" ? null : findTeamLeaderId.value;
     let employeeId = findEmployeeId.value="" ? null : findEmployeeId.value;
     let approvalStatus = findApprovalStatus.value="" ? null : findApprovalStatus.value;
     let approvalType = findApprovalType.value="" ? null : findApprovalType.value;
+    let carId = findCarId.value=""?null:findCarId.value;
 
     // let carId = findCarId.value=""  ? null : findCarId.value;
     let floatingAmountMax = findFloatingAmountMax.value="" ? 99999999999999999999 : findFloatingAmountMax.value;
@@ -790,7 +784,7 @@ function callFindByHQL(doCreat){
         "id":null,
         "teamLeaderId":teamLeaderId,
         "employeeId": employeeId,
-        "carId":null,
+        "carId":carId,
         "approvalStatus":approvalStatus, 
         "approvalType":approvalType,
         "floatingAmountMax":floatingAmountMax, 
@@ -799,6 +793,7 @@ function callFindByHQL(doCreat){
         "createTimeEnd":createTimeEnd,
         "updateTimeStr":updateTimeStr,
         "updateTimeEnd":updateTimeEnd,
+        "brandId":brandId,
 
 
         "isPage":current.value-1,
@@ -945,6 +940,64 @@ function doModify() {
     dialogVisible.value = false;
     isModify.value = false;
 }
+
+
+//員工查詢全部製作下拉選單
+function cadTableDoEmpFindAll() {
+    let empcount = 0;
+    axiosapi.get("employee/count").then(function (responce){
+        empcount=responce.data.data;
+        console.log("empcount",empcount);
+    })
+
+    axiosapi.get("employee/all").then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
+        console.log("employee/all responce",responce.data);
+        employeeIDOptions.value=[];
+        for(let i = 0;i<empcount;i++){
+            employeeIDOptions.value.push({
+                        value:responce.data.data[i].id,
+                        label: responce.data.data[i].name})
+        }
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "員工查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
+}
+
+//主管下拉選單
+function cadTableDoTeamleaderFindAll() {
+    axiosapi.get("employee/teamLeaders").then(function (responce) {
+        console.log("teamLeaders responce",responce.data);
+        teamleaderIDOptions.value=responce.data.data;
+}).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "主管查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
+}
+
+//車輛拉選單
+function cadTableDoCarFindAll() {
+    axiosapi.get("car/findAll?pageNumber=1&sortOrder=DESC&max=999").then(function (responce) {
+        console.log("cars responce",responce.data);
+        carIdOptions.value=responce.data.list;
+}).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "汽車查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
+}
+
 
 </script>
     

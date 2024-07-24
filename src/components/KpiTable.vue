@@ -182,6 +182,7 @@
                     placeholder="員工姓名"
                     size="small"
                     @change = "current=1;callKpiFindByHQL(false)"
+                    @click="kpiTableDoEmpFindAll"
                     >
                     <el-option
                         v-for="Option in employeeIDOptions"
@@ -201,12 +202,13 @@
                     clearable
                     size="small"
                     @change = "current=1;callKpiFindByHQL(false)"
+                    @click = "kpiTableDoTeamleaderFindAll"
                     >
                     <el-option
                         v-for="Option in teamleaderIDOptions"
-                        :key="Option.value"
-                        :label="Option.label"
-                        :value="Option.value"
+                        :key="Option.id"
+                        :label="Option.name"
+                        :value="Option.id"
                     />
                 </el-select>
             </el-form-item>
@@ -340,17 +342,17 @@ const employeeTypeOptions=[
     { value: 0, label: '離職', }
 ]
 
-const employeeIDOptions=[
-    { value: 1, label: '職員1', },
-    { value: 2, label: '職員2', },
-    { value: 3, label: '職員3', },
-    { value: 4, label: '職員4', },
-    { value: 5, label: '職員5', }
-]
+const employeeIDOptions=ref([
+    // { value: 1, label: '職員1', },
+    // { value: 2, label: '職員2', },
+    // { value: 3, label: '職員3', },
+    // { value: 4, label: '職員4', },
+    // { value: 5, label: '職員5', }
+])
 
-const teamleaderIDOptions=[
-    { value: 5, label: '主管5', }
-]
+const teamleaderIDOptions=ref([
+    // { value: 5, label: '主管5', }
+])
 
 //分頁用參數
 const total = ref(0) //總比數
@@ -439,6 +441,8 @@ function callKpiFindByHQL(doCreat) {
     let salesScoreMin = findSalesScoreMin.value="" ? 0 : findSalesScoreMin.value;
     let totalScoreMax = findTotalScoreMax.value="" ? 100 : findTotalScoreMax.value;
     let totalScoreMin = findTotalScoreMin.value="" ? 0 : findTotalScoreMin.value;
+    let branchId = findKpiEmployeeBranch.value="" ? null : findKpiEmployeeBranch.value;
+    if(findKpiEmployeeBranch.value==-1){branchId=null}
 
     let request ={ 
         "id":null,
@@ -452,6 +456,7 @@ function callKpiFindByHQL(doCreat) {
         "salesScoreMin":salesScoreMin, 
         "totalScoreMax":totalScoreMax,
         "totalScoreMin":totalScoreMin,
+        "branchId":branchId,
 
 
         "isPage":current.value-1,
@@ -512,6 +517,47 @@ function TeamLeaderRatingChange(item) {
         console.log("error", error);
         ElMessage.error('修改錯誤'+error.message)
     });
+}
+
+//員工查詢全部製作下拉選單
+function kpiTableDoEmpFindAll() {
+    let empcount = 0;
+    axiosapi.get("employee/count").then(function (responce){
+        empcount=responce.data.data;
+        console.log("empcount",empcount);
+    })
+
+    axiosapi.get("employee/all").then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
+        console.log("employee/all responce",responce.data);
+        employeeIDOptions.value=[];
+        for(let i = 0;i<empcount;i++){
+            employeeIDOptions.value.push({
+                        value:responce.data.data[i].id,
+                        label: responce.data.data[i].name})
+        }
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "員工查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
+}
+
+//主管下拉選單
+function kpiTableDoTeamleaderFindAll() {
+    axiosapi.get("employee/teamLeaders").then(function (responce) {
+        console.log("teamLeaders responce",responce.data);
+        teamleaderIDOptions.value=responce.data.data;
+}).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "主管查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
 }
     
 </script>

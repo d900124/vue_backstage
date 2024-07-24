@@ -103,6 +103,7 @@
                     <div v-if="arg.event.extendedProps.unavailableStatus==3" style="display: flex; justify-content: flex-end; margin-top: 20px;">
                         <el-button class="calendar-btm" size="small" color="#a33238" :dark="isDark" style=""  
                             @click="openAgandaDrawer=true;
+                                    isModify=false;
                                     drawerByCreate=false;
                                     drawerByModify=true;
                                     modifyEventId=arg.event.id;
