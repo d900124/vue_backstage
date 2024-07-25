@@ -7,6 +7,7 @@
             <!-- 工作排程 -->
             <AgendaTable></AgendaTable>
             <!-- 請假管理 -->
+            <LeavePersonal></LeavePersonal>
 
             <!-- 個人資料 & 考核 -->
             <EmployeeDetail></EmployeeDetail>
@@ -17,6 +18,7 @@
 <script setup>
 import AgendaTable from '@/components/AgendaTable.vue'
 import EmployeeDetail from '@/components/EmployeeDetail.vue';
+import LeavePersonal from '@/components/LeavePersonal.vue';
 import Logout from '@/components/Logout.vue';
 
 </script>
