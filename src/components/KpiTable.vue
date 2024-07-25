@@ -105,8 +105,8 @@
             <td class="table-td">{{item.seasonStrDayString.substring(0, 4)}} - {{item.seasonStrDayString.substring(5, 10)}}</td>
             <td class="table-td"><b style="color: red;font-weight: 900;">{{item.totalScore}}</b></td>
             <td class="table-td">{{item.salesScore}}</td>
-            <td v-if="!isKpiModify" class="table-td">{{item.teamLeaderRating}}</td>
-            <td v-if="isKpiModify" class="table-td">
+            <td v-if="(!isKpiModify)|(item.teamLeaderId!=employeeInfo.id)" class="table-td">{{item.teamLeaderRating}}</td>
+            <td v-if="(isKpiModify)&(item.teamLeaderId==employeeInfo.id)" class="table-td">
                 <el-input-number
                     v-model="item.teamLeaderRating"
                     size="small"
@@ -125,13 +125,14 @@
     </div>
     
     </div>
-    <div class="col-1"></div>
+    <div class="col-1"> </div>
 
     <div class="col-1"></div>
     <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
 <!-- KPI修改按鈕-->
         <div v-if="(findKpiYear=='2024')&&(findKpiSeasonStrDay=='-07-01')" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start; ">
         <el-switch
+            v-if="employeeInfo.accountType==4"
             v-model="isKpiModify"
             inline-prompt
             class="value5"
@@ -289,13 +290,18 @@
                 </div>
     </el-drawer>
 
+<!-- <div>
+用户名:{{ employeeInfo.name || "" }} / 用户ID:{{ employeeInfo.id || "" }}  / 帳號:{{ employeeInfo.account || "" }} / 帳號分類:{{ employeeInfo.accountType || "" }}
+</div> -->
+
 </template>
     
 <script setup >
-import { onMounted,ref } from 'vue';
+import { computed, onMounted,ref } from 'vue';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
+import { useStore } from "vuex";
 
 
 //用於重新導向 router.push
@@ -367,8 +373,28 @@ const singleItem= ref([])
 //修改用屬性
 const  isKpiModify = ref(false);
 
-onMounted(function () {
-    callKpiFindByHQL(false);
+//登錄資訊用
+const store = useStore();
+const isAuthenticated = computed(() => store.state.isAuthenticated);
+const employeeInfo = computed(() => store.state.employeeInfo.data || {});
+
+
+//登錄資訊用 使用 async 和 await 來等待 Vuex action 完成並更新
+const fetchEmployeeData = async () => {
+  const username = localStorage.getItem("username");
+  if (username) {
+    await store.dispatch("fetchEmployeeInfo", username);
+  }
+};
+
+onMounted(async () => {
+    await fetchEmployeeData();
+    if (employeeInfo.value.id) {
+        console.log("employeeInfo",employeeInfo.value)
+        callKpiFindByHQL(false);
+    }else {
+    console.warn('Employee info not loaded yet');
+  }
 })
 
 //清除查詢
