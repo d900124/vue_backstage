@@ -1,6 +1,5 @@
 <template>
     <!-- 抬頭 -->
-
     <div class="col-11" style="padding-top: 25px;">
         <h3 class="table-title">請假申請</h3>
     </div>
@@ -38,7 +37,7 @@
             <!-- 新增用按鈕 -->
             <div class="btm-div" style="display: flex;" @click="openModal('insert')">
                 <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;" />
-                <el-button type='' link class="text-btm" style="color: #a33238;">新增簽核</el-button>
+                <el-button type='' link class="text-btm" style="color: #a33238;">新增假單</el-button>
             </div>
         </div>
     </div>
@@ -63,7 +62,6 @@
                     <td class="table-td">{{ getPermisionStatusText(leave.permisionStatus) }}</td>
                 </tr>
             </tbody>
-
         </table>
         <div>
         </div>
@@ -87,7 +85,7 @@
     <div v-if="openCreat" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openCreat = false">
         <el-divider content-position="center">
             <button type="button" class="btn-close" aria-label="Close"></button>
-            <h5 class="table-title">新增簽核</h5>
+            <h5 class="table-title">新增假單</h5>
         </el-divider>
     </div>
     <div v-if="openCreat" class="col-1"></div>
@@ -98,11 +96,11 @@
 
         <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
             <el-form-item label="申請員工 :&nbsp;">
-                <p style="margin: 0;">串接登入員工</p>
+                <p style="margin: 0;">{{ employeeInfo.name }}</p>
             </el-form-item>
 
             <el-divider border-style="dashed" style="margin: 0;" />
-            <el-form-item label="簽核主管 :&nbsp;">
+            <el-form-item label="假別 :&nbsp;">
                 <el-select v-model="creatTeamleaderIDValue" placeholder="Select" size="small">
                     <el-option v-for="Option in creatTeamleaderIDOptions" :key="Option.value" :label="Option.label"
                         :value="Option.value" />
@@ -110,14 +108,15 @@
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
 
-            <el-form-item label="修改車輛 :&nbsp;">
-                <el-input-number v-model="creatCarIDValue" :min="1" :max="10" size="small" controls-position="right" />
+            <el-form-item label="開始時間 :&nbsp;">
+                <el-date-picker v-model="startDate" type="datetime" placeholder="選擇開始時間" size="small"
+                    format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm" />
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
 
-            <el-form-item label="改後價格 :&nbsp;">
-                <el-input-number v-model="creatFloatingAmountValue" :min="1000" :max="100000000000000000" size="small"
-                    controls-position="right" />
+            <el-form-item label="結束時間 :&nbsp;">
+                <el-date-picker v-model="endDate" type="datetime" placeholder="選擇結束時間" size="small"
+                    format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm" />
             </el-form-item>
 
         </el-form>
@@ -131,21 +130,20 @@
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
 
-            <el-form-item label="&nbsp;">
-                <p style="margin: 0;">&nbsp;</p>
+            <el-form-item label="請假時數 :&nbsp;">
+                <p style="margin: 0;"> 小時</p>
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
 
-            <el-form-item label="簽核狀態 :&nbsp;">
-                <p style="margin: 0;">尚未簽核</p>
-            </el-form-item>
-            <el-divider border-style="dashed" style="margin: 0;" />
-
-            <el-form-item label="簽核需求 :&nbsp;">
-                <el-select v-model="creatApprovalTypeValue" placeholder="Select" size="small">
-                    <el-option v-for="Option in creatApprovalTypeOptions" :key="Option.value" :label="Option.label"
+            <el-form-item label="工作代理人 :&nbsp;">
+                <el-select v-model="creatTeamleaderIDValue" placeholder="Select" size="small">
+                    <el-option v-for="Option in creatTeamleaderIDOptions" :key="Option.value" :label="Option.label"
                         :value="Option.value" />
                 </el-select>
+            </el-form-item>
+            <el-divider border-style="dashed" style="margin: 0;" />
+            <el-form-item label="備註 :&nbsp;">
+                <el-input v-model="remarkValue" type="textarea" placeholder="請輸入備註" size="small" rows="2" />
             </el-form-item>
 
         </el-form>
@@ -222,9 +220,6 @@
             </table>
         </div>
     </div>
-
-
-
 </template>
 
 <script setup>
@@ -255,8 +250,6 @@ onMounted(() => {
 watch(employeeInfo, (newValue) => {
     console.log('Employee info updated:', newValue);
 });
-
-
 
 //用於重新導向 router.push
 const router = useRouter()
