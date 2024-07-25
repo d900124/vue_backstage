@@ -3,7 +3,7 @@
     <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;"></div>
 <!-- 抬頭 -->
     <div class="col-2" style="padding: 0px 0px;">
-        <h3 class="table-title" id="ViewCarAssigned">賞車詳請</h3>
+        <h3 class="table-title" id="viewCarAssigned">賞車詳請</h3>
     </div>
     <div class="col-1"></div>
 
