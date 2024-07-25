@@ -356,8 +356,10 @@ function callQuery() {
     console.log("callQuery - 當前頁碼:", current.value);
 
     let request = {
+        "employee"
         "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
         "pageSize": rows.value
+
     };
 
     axiosapi.post("/leave/query", request).then(function (response) {
@@ -399,26 +401,26 @@ function doModify() {
 
     let request = {
         "id": singleLeave.value.id,  // 需要提供ID來進行修改
-        "leaveStatus": singleLeave.value.leaveStatus, 
+        "leaveStatus": singleLeave.value.leaveStatus,
         "startTime": singleLeave.value.startTime,
         "endTime": singleLeave.value.endTime,
-        "leaveType": singleLeave.value.leaveType, 
+        "leaveType": singleLeave.value.leaveType,
         "leaveTypeName": singleLeave.value.leaveTypeName,
         "employeeId": singleLeave.value.employeeId,
         "employeeName": singleLeave.value.employeeName,
         "deputyId": singleLeave.value.deputyId,
         "deputyName": singleLeave.value.deputyName,
-        "teamLeaderId": singleLeave.value.teamLeaderId, 
+        "teamLeaderId": singleLeave.value.teamLeaderId,
         "permisionRemarks": singleLeave.value.permisionRemarks,
         "permisionStatus": singleLeave.value.permisionStatus,
         "auditTime": singleLeave.value.auditTime,
         "reason": singleLeave.value.reason,
-        "actualLeaveHours": singleLeave.value.actualLeaveHours, 
-        "specialLeaveHours": singleLeave.value.specialLeaveHours, 
-        "createTime": singleLeave.value.createTime, 
-        "updateTime": singleLeave.value.updateTime, 
-        "validityPeriodStart": singleLeave.value.validityPeriodStart, 
-        "validityPeriodEnd": singleLeave.value.validityPeriodEnd 
+        "actualLeaveHours": singleLeave.value.actualLeaveHours,
+        "specialLeaveHours": singleLeave.value.specialLeaveHours,
+        "createTime": singleLeave.value.createTime,
+        "updateTime": singleLeave.value.updateTime,
+        "validityPeriodStart": singleLeave.value.validityPeriodStart,
+        "validityPeriodEnd": singleLeave.value.validityPeriodEnd
     };
 
     axiosapi.put(`/leave/modify/${singleLeave.value.id}`, request).then(function (response) {
