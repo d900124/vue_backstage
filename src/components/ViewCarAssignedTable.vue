@@ -3,7 +3,7 @@
     <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;"></div>
 <!-- 抬頭 -->
     <div class="col-2" style="padding: 0px 0px;">
-        <h3 class="table-title" id="ViewCarAssigned">賞車詳請</h3>
+        <h3 class="table-title" id="viewCarAssigned">賞車詳請</h3>
     </div>
     <div class="col-1"></div>
 
@@ -71,15 +71,16 @@
 <!-- 賞車排單修改按鈕-->
         <div class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start; ">
         <el-switch
+            v-if="employeeInfo.accountType==4"
             v-model="isVKAModify"
             inline-prompt
             class="value5"
             size="large"
             active-text="&nbsp;&nbsp;排程修改&nbsp;&nbsp;"
             inactive-text="&nbsp;&nbsp;排程鎖定&nbsp;&nbsp;"   
-            style="--el-switch-on-color: #a33238; ;"
+            style="--el-switch-on-color: #a33238; margin-right: 8px;"
             />
-            <el-button color="#a33238" :dark="isDark" size="small" style="margin: 8px ;" @click = "vcaTableVisible=true;callViewAssignedFindByHQL(false)" round>&nbsp;賞車排程記錄&nbsp;</el-button>
+            <el-button color="#a33238" :dark="isDark" size="small" style="margin: 8px 0px;" @click = "vcaTableVisible=true;callViewAssignedFindByHQL(false)" round>&nbsp;賞車排程記錄&nbsp;</el-button>
         </div>
 
     </div>
@@ -197,13 +198,19 @@
     </div>
   </el-dialog>
 <div class="col-1"></div>
+
+<!-- <div>
+用户名:{{ employeeInfo.name || "" }} / 用户ID:{{ employeeInfo.id || "" }}  / 帳號:{{ employeeInfo.account || "" }} / 帳號分類:{{ employeeInfo.accountType || "" }}
+</div> -->
+
 </template>
     
 <script setup>
-import { onMounted,ref } from 'vue';
+import {computed, onMounted,ref } from 'vue';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
+import { useStore } from "vuex";
 
 
 //用於重新導向 router.push
@@ -250,8 +257,27 @@ const assignedStatusOptions=ref([
 //彈出視窗/抽屜
 const vcaTableVisible = ref(false)
 
-onMounted(function () {
-    callViewCarSelect(false);
+//登錄資訊用
+const store = useStore();
+const isAuthenticated = computed(() => store.state.isAuthenticated);
+const employeeInfo = computed(() => store.state.employeeInfo.data || {});
+
+//登錄資訊用 使用 async 和 await 來等待 Vuex action 完成並更新
+const fetchEmployeeData = async () => {
+  const username = localStorage.getItem("username");
+  if (username) {
+    await store.dispatch("fetchEmployeeInfo", username);
+  }
+};
+
+onMounted(async () => {
+    await fetchEmployeeData();
+    if (employeeInfo.value.id) {
+        console.log("employeeInfo",employeeInfo.value)
+        callViewCarSelect(false);
+    }else {
+    console.warn('Employee info not loaded yet');
+  }
 })
 
 //賞車查詢
