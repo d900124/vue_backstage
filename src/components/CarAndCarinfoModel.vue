@@ -1,107 +1,205 @@
 <template>
+<div>
+    <!-- <el-upload
+    class="upload-demo"
+    drag
+    multiple
+    :on-preview="handlePictureCardPreview"
+    :on-remove="handleRemove"
+    :on-success="handleSuccess"
+    list-type="picture-card"
+    action="http://localhost:8080/kajarta/image/create"
+    :auto-upload="false"
+    :data="uploadData"
+    ref="upload"
+    >
+    
+    <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+    <div class="el-upload__text">
+      Drop file here or <em>click to upload</em>
+    </div>
+    <template #tip>
+      <br><br><br><br><br>
+      <div class="el-upload__tip">
+        jpg/png files with a size less than 500kb
+      </div>
+    </template>
+  </el-upload> -->
+
+
+  <el-upload
+    action="#"
+    list-type="picture-card"
+    :auto-upload="false"
+    :file-list="fileList"
+    ref="upload"
+  >
+    <el-icon><Plus /></el-icon>
+
+    <template #file="{ file }">
+      <div>
+        <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
+        <span class="el-upload-list__item-actions">
+          <span
+            class="el-upload-list__item-preview"
+            @click="handlePictureCardPreview(file)"
+          >
+            <el-icon><ZoomIn /></el-icon>
+          </span>
+          <span
+            v-if="!disabled"
+            class="el-upload-list__item-delete"
+            @click="handleDownload(file)"
+          >
+            <el-icon><Download /></el-icon>
+          </span>
+          <span
+            v-if="!disabled"
+            class="el-upload-list__item-delete"
+            @click="handleRemove(file)"
+          >
+            <el-icon><Delete /></el-icon>
+          </span>
+        </span>
+      </div>
+    </template>
+  </el-upload>
+
+  <el-dialog v-model="dialogVisible">
+    <img w-full :src="dialogImageUrl" alt="Preview Image" />
+  </el-dialog>
+
+  <!-- =======================圖片上傳區塊======================= -->
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+<label>是否為清單小圖</label>
+    <select name="isListPic" :value="modelValue.isListPic"  @change="doInput('isListPic',$event)" required>
+      <option option value="" disabled>是否為清單小圖</option>
+      <option value="1">是</option>
+      <option value="2">否</option>
+    </select> 
+
+<label>是否為產品主圖</label>
+<select name="isMainPic" :value="modelValue.isMainPic"  @change="doInput('isMainPic',$event)" required>
+      <option option value="" disabled>是否為產品主圖</option>
+      <option value="1">是</option>
+      <option value="2">否</option>
+    </select> 
+
+<label>carId</label>
+<input type="text" name="carId" :value="modelValue.carId" @input="doInput('carId',$event)" required />
+
         <div class="d-flex flex-row">
     <div class="p-2">
       <div class="d-flex flex-column">
   <!-- =======================品牌======================= -->
     <label>品牌</label>
-    <input type="text"  v-model="brand" required />
-    <!-- <select v-model="brand" required>
-      <option>選擇你要的品牌</option>
-      <option>BMW</option>
-      <option>袋鼠會吃人</option>
-      <option>唐人街拳法</option>
-    </select>  -->
+    <select name="brand" :value="modelValue.brand" @change="doInput('brand',$event)" required>
+      <option value="" disabled>選擇品牌</option>
+      <option value="1">HONDA</option>
+      <option value="2">TOYOTA</option>
+      <option value="3">MAZDA</option>
+      <option value="4">BENZ</option>
+      <option value="5">PORSCHE</option>
+      <option value="6">BMW</option>
+      <option value="7">VOLSWAGEN</option>
+      <option value="8">NISSAN</option>
+      <option value="9">SUBARU</option>
+    </select> 
   
   <!-- =======================車型======================= -->
     <label >車型</label>
-    <input type="text"  v-model="suspension" required />
-    <!-- <select v-model="suspension" required>
-      <option option value="" disabled>選擇你要的車型</option>
-      <option value="suspension 1">轎車</option>
-      <option value="suspension 2">休旅車</option>
-      <option value="suspension 3">敞篷車</option>
-      <option value="suspension 4">跑車</option>
-      <option value="suspension 5">吉普車</option>
-      <option value="suspension 6">掀背車</option>
-    </select>  -->
+    <select name="suspension" :value="modelValue.suspension"  @change="doInput('suspension',$event)" required>
+      <option value="" disabled>選擇車型</option>
+      <option value="1">轎車</option>
+      <option value="2">休旅車</option>
+      <option value="3">敞篷車</option>
+      <option value="4">跑車</option>
+      <option value="5">吉普車</option>
+      <option value="6">掀背車</option>
+    </select> 
   
   <!-- =======================馬力======================= -->
     <label >馬力</label>
-    <input type="text"  v-model="hp" required />
+    <input type="text" name="hp" :value="modelValue.hp" @input="doInput('hp',$event)" required />
   
   <!-- =======================扭力======================= -->
     <label >扭力</label>
-    <input type="text"  v-model="torque" required />
+    <input type="text" name="torque" :value="modelValue.torque" @input="doInput('torque',$event)" required />
   
   <!-- =======================排氣量======================= -->
     <label>排氣量</label>
-    <input type="text"  v-model="displacement" required />
-    <!-- <select v-model="displacement" required>
+    <select name="cc" :value="modelValue.cc"  @change="doInput('cc',$event)" required>
       <option option value="" disabled>選擇你要的排氣量</option>
-      <option value="displacement 1">1200cc以下</option>
-      <option value="displacement 2">1201cc-1800cc</option>
-      <option value="displacement 3">1801cc-2400cc</option>
-      <option value="displacement 4">2401cc-3000cc</option>
-      <option value="displacement 5">3001cc-4200cc</option>
-      <option value="displacement 6">4201cc-5400cc</option>
-      <option value="displacement 7">5401cc以上</option>
-    </select>  -->
+      <option value="1">1200cc以下</option>
+      <option value="2">1201cc-1800cc</option>
+      <option value="3">1801cc-2400cc</option>
+      <option value="4">2401cc-3000cc</option>
+      <option value="5">3001cc-4200cc</option>
+      <option value="6">4201cc-5400cc</option>
+      <option value="7">5401cc以上</option>
+    </select> 
   
   
   <!-- =======================變速系統======================= -->
     <label>變速系統</label>
-    <input type="text"  v-model="transmission" required />
-    <!-- <select v-model="transmission" required>
-      <option option value="" disabled>選擇你要的引擎燃料</option>
-      <option value="transmission 1">自排</option>
-      <option value="transmission 2">手排</option>
-      <option value="transmission 3">手自排</option>
-      <option value="transmission 4">自手排</option>
-    </select>  -->
+    <select  name="transmission" :value="modelValue.transmission"  @change="doInput('transmission',$event)" required>
+      <option value="" disabled>選擇你要的引擎燃料</option>
+      <option value="1">自排</option>
+      <option value="2">手排</option>
+      <option value="3">手自排</option>
+      <option value="4">自手排</option>
+    </select> 
   
   <!-- =======================驅動方式======================= -->
   <label >驅動方式</label>
-  <input type="text"  v-model="rearwheel" required />
-  <!-- <select v-model="rearwheel" required><
-  <option option value="" disabled>選擇你要的驅動方式</option>
-      <option value="rearwheel 1">前驅</option>
-      <option value="rearwheel 2">後驅</option>
-      <option value="rearwheel 3">四驅</option>
-  </select> -->
+  <select name="rearwheel" :value="modelValue.rearwheel"  @change="doInput('rearwheel',$event)" required><
+      <option value="" disabled>選擇你要的驅動方式</option>
+      <option value="1">前驅</option>
+      <option value="2">後驅</option>
+      <option value="3">四驅</option>
+  </select>
   <!-- =======================引擎燃料======================= -->
     <label for="gasoline">引擎燃料</label>
-    <input type="text"  v-model="gasoline" required />
-    <!-- <select v-model="gasoline" required>
-      <option option value="" disabled>選擇你要的引擎燃料</option>
-      <option value="gasoline 1">汽油</option>
-      <option value="gasoline 2">柴油</option>
-      <option value="gasoline 3">油電複合</option>
-      <option value="gasoline 4">純電</option>
-    </select>  -->
+    <select name="gasoline" :value="modelValue.gasoline"  @change="doInput('gasoline',$event)" required>
+      <option value="" disabled>選擇你要的引擎燃料</option>
+      <option value="1">汽油</option>
+      <option value="2">柴油</option>
+      <option value="3">油電複合</option>
+      <option value="4">純電</option>
+    </select> 
   
   <!-- =======================車門數======================= -->
     <label for="door">車門數</label>
-    <input type="text"  v-model="door" required />
-    <!-- <select v-model="door" required>
-      <option option value="" disabled>選擇你要的車門數</option>
-      <option value="door 1">二門</option>
-      <option value="door 2">三門</option>
-      <option value="door 3">四門</option>
-      <option value="door 4">五門</option>
-      <option value="door 5">六門</option>
-    </select>  -->
+    <select id="door" name="door" :value="modelValue.door"  @change="doInput('door',$event)" required>
+      <option value="" disabled>選擇你要的車門數</option>
+      <option value="1">二門</option>
+      <option value="2">三門</option>
+      <option value="3">四門</option>
+      <option value="4">五門</option>
+      <option value="5">六門</option>
+    </select> 
   
   <!-- =======================乘客數======================= -->
     <label for="passenger">乘客數</label>
-    <input type="text"  v-model="passenger" required />
-    <!-- <select v-model="passenger" required>
-      <option option value="" disabled>選擇能容納的乘客數</option>
-      <option value="passenger 1">二人座</option>
-      <option value="passenger 2">四人座</option>
-      <option value="passenger 3">五人座</option>
-      <option value="passenger 4">七人座以上</option>
+    <select name="passenger" :value="modelValue.passenger"  @change="doInput('passenger',$event)" required>
+      <option value="" disabled>選擇能容納的乘客數</option>
+      <option value="1">二人座</option>
+      <option value="2">四人座</option>
+      <option value="3">五人座</option>
+      <option value="4">七人座以上</option>
     </select> 
-   -->
+  
   <!-- =======================顏色======================= -->
     <label>顏色</label>
     <input type="text" name="color" :value="modelValue.color" @input="doInput('color',$event)" required />
@@ -129,7 +227,13 @@
   
   <!-- =======================議價空間======================= -->
     <label for="negotiable">議價空間</label>
-    <input type="text" name="negotiable" :value="modelValue.negotiable" @input="doInput('negotiable',$event)" required />
+    <select name="negotiable" :value="modelValue.negotiable"  @change="doInput('negotiable',$event)" required>
+      <option value="" disabled>選擇能容納的乘客數</option>
+      <option value="1">5%</option>
+      <option value="2">10%</option>
+      <option value="3">15%</option>
+      <option value="4">20%</option>
+    </select> 
   
   <!-- =======================車況評分======================= -->
     <label for="conditionScore">車況評分</label>
@@ -137,7 +241,12 @@
   
   <!-- =======================停放分店======================= -->
     <label for="branch">停放分店</label>
-    <input type="text"  name="branch" :value="modelValue.branch" @input="doInput('branch',$event)" required />
+    <select name="branch" :value="modelValue.branch"  @change="doInput('branch',$event)" required>
+      <option value="" disabled>選擇能容納的乘客數</option>
+      <option value="1">台北市</option>
+      <option value="2">台中市</option>
+      <option value="3">高雄市</option>
+    </select> 
   
   <!-- =======================狀態======================= -->
     <label for="state">狀態</label>
@@ -149,106 +258,142 @@
         <input type="text" name="price" :value="modelValue.price" @input="doInput('price',$event)" required />
   
   <!-- =======================型號======================= -->
-      <label>車輛名稱搜尋</label>
-      <input type="text" v-model="selectName" required />
+      <label>車輛型號</label>
+      <input type="text" name="modelname" :value="modelValue.modelname" @input="doInput('modelname',$event)" required />
   
   <!-- =======================是否改裝======================= -->
     <label >是否改裝</label>
-    <input type="text"  name="remark" :value="modelValue.remark" @input="doInput('remark',$event)" required />
+    <select name="remark" :value="modelValue.remark"  @change="doInput('remark',$event)" required>
+      <option value="" disabled>是否有改裝</option>
+      <option value="1">有</option>
+      <option value="2">無</option>
+    </select> 
 
     <label >上架日期</label>
     <input type="text"  name="launchDate" :value="modelValue.launchDate" @input="doInput('launchDate',$event)" required />
 
-    <label >型號</label>
+    <label >carinfoId</label>
     <input type="text" name="carinfoId" :value="modelValue.carinfoId" @input="doInput('carinfoId',$event)" required />
   </div>
   </div>
 </div>
 
   
-<button @click="emits('customInsert')">新增草稿</button>
+<button @click="submitForm">新增草稿</button>
 </template>
     
 <script setup >
 import { ref } from 'vue'
-import axios from 'axios'
+// import axios from 'axios'
+// import { Delete, Download, Plus, ZoomIn } from '@element-plus/icons-vue'
+// import  { UploadFile } from 'element-plus'
 
-const emits = defineEmits(["customInsert"]);
 const props = defineProps(["modelValue"]);
+const emits = defineEmits(["customInsert","update:modelValue"]);
+
+const uploadData = ref({
+  images: [] 
+});
 
 function doInput(key,event) {
-    emits('update:modelValue'),{
-        ...props.modelValue,
-        [key]:event.target.value
-    };
-}
+    // emits('update:modelValue',{
+    //     ...props.modelValue,
+    //     [key]:event.target.value
+    // });
 
+    // uploadData.value[key] = event.target.value;
 
-     // const brand = ref('')
-// const suspension = ref('')
-// const hp = ref('')
-// const torque = ref('')
-// const displacement = ref('')
-// const transmission = ref('')
-// const rearwheel = ref('')
-// const gasoline = ref('')
-// const door = ref('')
-// const passenger = ref('')
-const color = ref('')
-const milage = ref('')
-const productionYear = ref('')
-const customer = ref('')
-const employee = ref('')
-const negotiable = ref('')
-const conditionScore = ref('')
-const branch = ref('')
-const state = ref('')
-const price = ref('')
-// const selectName = ref('')
-const remark = ref('')
-const launchDate = ref('')
-const carinfo_id = ref('')
-
- const submitForm = async () => {
-  const formData = {
-    // brand: brand.value,
-    // suspension: suspension.value,
-    // hp: hp.value,
-    // torque: torque.value,
-    // displacement: displacement.value,
-    // transmission: transmission.value,
-    // rearwheel: rearwheel.value,
-    // gasoline: gasoline.value,
-    // door: door.value,
-    // passenger: passenger.value,
-    color: color.value,
-    milage: milage.value,
-    productionYear: productionYear.value,
-    customerId: customer.value,
-    employeeId: employee.value,
-    negotiable: negotiable.value,
-    conditionScore: conditionScore.value,
-    branch: branch.value,
-    state: state.value,
-    price: price.value,
-    // selectName: selectName.value,
-    remark: remark.value,
-    launchDate:launchDate.value,
-    carinfoId:carinfo_id.value
+    const value = event.target.value;
     
-  }
-    try {
-    const response = await axios.post('http://localhost:8080/kajarta/car/create', formData)
-    console.log('Response:', response.data)
-  } catch (error) {
-    console.error('Error:', error)
-  }
+    emits('update:modelValue', {
+        ...props.modelValue,
+        [key]: value
+    });
+
+    if (key !== 'images') {
+        uploadData.value[key] = value;
+    }
+
+
 }
 
 
+
+// const dialogImageUrl = ref('')
+// const dialogVisible = ref(false)
+// const disabled = ref(false)
+// const fileList = ref([])
+
+// const handleRemove = (file) => {
+//   fileList.value = fileList.value.filter(f => f.uid !== file.uid)
+//   console.log('Removed file:', file)
+// }
+
+// const handlePictureCardPreview = (file) => {
+//   dialogImageUrl.value = file.url
+//   dialogVisible.value = true
+// }
+
+// const handleDownload = (file) => {
+//   console.log('Download file:', file)
+// }
+
+
+
+
+// function submitForm() {
+  // const combinedData = {
+  //   ...props.modelValue,
+  //   images: uploadData.value.images.map(file => file.url)
+  // };
+
+  // // Emit the combined data
+  // emits('customInsert', combinedData);
+
+
+
+//   const formData = new FormData();
+
+//   // Add form fields to FormData
+//     Object.keys(props.modelValue).forEach(key => {
+//         formData.append(key, props.modelValue[key]);
+//     });
+
+//     // Add files to FormData
+//     uploadedFiles.value.forEach(file => {
+//         formData.append('images', file.raw, file.name); // Attach file.raw
+//     });
+
+//     console.log("Uploaded Files:", uploadedFiles.value);
+
+
+//     for (let [key, value] of formData.entries()) {
+//     console.log(key, value);
+// }
+// console.log(formData);
+//     axios.post('http://localhost:8080/kajarta/image/create', formData,{
+//       headers:{
+//         'Content-Type': 'multipart/form-data'
+//       }
+//     }).then(function(response){
+//     console.log("response",response)
+//   }).catch(function(error) {
+//     console.log("error",error)
+//   })
+
+
+    // Emit the combined data
+    // emits('customInsert', {
+    //     additionalData: props.modelValue
+    // });
+
+
+    
+
+// }
 
 </script>
     
 <style>
-    
+
 </style>
