@@ -356,10 +356,8 @@ function callQuery() {
     console.log("callQuery - 當前頁碼:", current.value);
 
     let request = {
-        "employee"
         "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
         "pageSize": rows.value
-
     };
 
     axiosapi.post("/leave/query", request).then(function (response) {
