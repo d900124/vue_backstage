@@ -68,18 +68,10 @@
         </div>
     </div>
 
-    <div class="col-1"></div>
+    <div class="col-3"></div>
 
-    <div class="col-1"></div>
-    <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
-        <!-- 新增用按鈕 -->
-        <div class="btm-div" style="display: flex;" @click="openModal('insert')">
-            <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;" />
-            <el-button type='' link class="text-btm" style="color: #a33238;">新增簽核</el-button>
-        </div>
-    </div>
 
-    <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
+    <div class="col-11" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
         <!-- 分頁區塊 -->
         <el-pagination style="margin: 10px 0px;" hide-on-single-page=true layout="total,prev, pager, next"
             :total="total" :page-size="rows" v-model:current-page="current" @change="callQuery"></el-pagination>
@@ -380,10 +372,23 @@ function callQuery() {
     width: 30%;
     padding: 40px;
     background-color: #fff5eb;
+    position: relative;
+    /* 确保父容器是相对定位的 */
 }
 
 .btn-close {
     margin: 10px;
+}
+
+.btm-div {
+    position: absolute;
+    right: 20px;
+    /* 你可以根据需要调整右侧的距离 */
+    bottom: 20px;
+    /* 你可以根据需要调整底部的距离 */
+    text-decoration: underline 2px solid transparent;
+    transition: text-decoration 0.3s;
+    /* 添加一个过渡效果 */
 }
 
 
