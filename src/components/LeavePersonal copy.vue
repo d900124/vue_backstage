@@ -1,6 +1,6 @@
-<template>
+\<template>
     <!-- 抬頭 -->
-    <div class="col-11" style="padding: 0px 0px;">
+    <div style="padding:20px;">
         <h3 class="table-title">請假申請</h3>
     </div>
     <!-- 主容器 -->
@@ -33,24 +33,28 @@
             </table>
         </div>
     </div>
+
+    <!-- 右邊的假單簽核表格 -->
     <!-- 列表主體 -->
-    <div class="table-partr right-panel" v-if="employeeInfo">
+    <div class="table-part">
         <table class="table">
             <thead style="border-bottom: 2px solid #a33238;">
                 <tr>
                     <th scope="col" class="table-th">申請時間</th>
+                    <th scope="col" class="table-th">申請人</th>
                     <th scope="col" class="table-th">假種</th>
                     <th scope="col" class="table-th">請假時段</th>
-                    <th scope="col" class="table-th">時數</th>
+                    <th scope="col" class="table-th">工作代理人</th>
                     <th scope="col" class="table-th">簽核狀態</th>
                 </tr>
             </thead>
             <tbody class="table-group-divider">
                 <tr v-for="leave in leaves" :key="leave.id" @click="leaveInfo(leave.id)">
                     <th scope="row" class="table-td">{{ leave.createTime }}</th>
+                    <td class="table-td">{{ leave.employeeName }} </td>
                     <td class="table-td">{{ leave.leaveTypeName }} </td>
                     <td class="table-td">{{ leave.startTime }}<br>{{ leave.endTime }}</td>
-                    <td class="table-td">{{ leave.actualLeaveHours }}</td>
+                    <td class="table-td">{{ leave.deputyName }}</td>
                     <td class="table-td">{{ getPermisionStatusText(leave.permisionStatus) }}</td>
                 </tr>
             </tbody>
@@ -277,7 +281,6 @@
     </el-dialog>
 
 </template>
-
 <script setup>
 import { computed, onMounted, watch, ref } from 'vue';
 import { useStore } from 'vuex';
@@ -286,8 +289,14 @@ import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
 
 //用於重新導向 router.push
-
+const router = useRouter()
 const store = useStore();
+//分頁用參數
+const total = ref(0) //總比數
+const current = ref(1) //目前頁碼
+const pages = ref(0) //分頁總數
+const rows = ref(4) //分頁資料顯示筆數
+
 // 确保 employeeInfo 在页面加载时是一个初始值为空的对象，而不是 null 或 undefined。这样可以确保在模板渲染时不会出错
 const employeeInfo = computed(() => store.state.employeeInfo.data || {});
 console.log('===>Employee info:', employeeInfo);
@@ -308,101 +317,14 @@ watch(employeeInfo, (newValue) => {
 });
 
 
-
-//用於重新導向 router.push
-const router = useRouter()
-
-//分頁用參數
-const total = ref(0) //總比數
-const current = ref(1) //目前頁碼
-const pages = ref(0) //分頁總數
-const rows = ref(4) //分頁資料顯示筆數
-
-//下方詳細資料開啟用
-const openZon = ref(false)
-
-//下方新增資料開啟用
-const openCreat = ref(false)
-
-//產品顯示leave元件用的參數
-const leaves = ref([]);
-const singleLeave = ref([])
-
-// 是否可以修改
-const isModify = ref(false);
-
-//確認修改彈出視窗用
-const dialogVisible = ref(false)
-
-
-const getPermisionStatusText = (status) => {
-    switch (status) {
-        case 1:
-            return '簽核中';
-        case 2:
-            return '同意';
-        case 3:
-            return '拒絕';
-        default:
-            return '未知狀態';
-    }
-};
-
-
-// 定義審核狀態選項
-const permissionStatuses = ref([
-    { value: 1, label: '簽核中' },
-    { value: 2, label: '同意' },
-    { value: 3, label: '拒絕' }
-]);
-
-
-onMounted(function () {
-    callQuery();
-})
-
-
-//單筆新增
-function openModal() {
-    console.log("openModal");
-    openCreat.value = true;
-}
-
-
-//單筆查詢
-function leaveInfo(leaveId) {
-    console.log(leaveId)
-    axiosapi.get("/leave/info/" + leaveId).then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
-        console.log("responce", responce.data);
-        singleLeave.value = responce.data.data;
-        // console.log("singleLeave.value.id", singleLeave.leave.id);
-        openZon.value = true
-        isModify.value = false
-
-    }).catch(function (error) {
-        console.log("error", error);
-        Swal.fire({
-            text: "查詢錯誤" + error.message,
-            icon: "error"
-        });
-        // router.push("/")
-    })
-}
-
-
 // 多筆查詢
 function callQuery() {
     console.log("callQuery - 當前頁碼:", current.value);
-    console.log("employeeInfo.id", employeeInfo.id);
-    console.log("employeeInfo", employeeInfo);
-    console.log("employeeInfo.value", employeeInfo.value.accountTypeName.value);
-    const employeeId = computed(() => employeeInfo.value.id);
-    console.log('Employee ID:', employeeId.value);
 
     let request = {
+
         "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
-        "pageSize": rows.value,
-        "employeeId": employeeId.value
+        "pageSize": rows.value
     };
 
     axiosapi.post("/leave/query", request).then(function (response) {
@@ -422,149 +344,9 @@ function callQuery() {
         });
     });
 }
-
-
-//開啟確認修改視窗
-function openDoModify() {
-    if (isModify.value == false) {
-        console.log("isModify.value", isModify.value);
-        console.log("修改單號 ID", singleLeave.value.id);
-        isModify.value = true;
-        dialogVisible.value = true;
-    }
-}
-
-//修改簽核
-function doModify() {
-    Swal.fire({
-        text: "執行中......",
-        allowOutsideClick: false,
-        showConfirmButton: false,
-    });
-
-    let request = {
-        "id": singleLeave.value.id,  // 需要提供ID來進行修改
-        "leaveStatus": singleLeave.value.leaveStatus,
-        "startTime": singleLeave.value.startTime,
-        "endTime": singleLeave.value.endTime,
-        "leaveType": singleLeave.value.leaveType,
-        "leaveTypeName": singleLeave.value.leaveTypeName,
-        "employeeId": singleLeave.value.employeeId,
-        "employeeName": singleLeave.value.employeeName,
-        "deputyId": singleLeave.value.deputyId,
-        "deputyName": singleLeave.value.deputyName,
-        "teamLeaderId": singleLeave.value.teamLeaderId,
-        "permisionRemarks": singleLeave.value.permisionRemarks,
-        "permisionStatus": singleLeave.value.permisionStatus,
-        "auditTime": singleLeave.value.auditTime,
-        "reason": singleLeave.value.reason,
-        "actualLeaveHours": singleLeave.value.actualLeaveHours,
-        "specialLeaveHours": singleLeave.value.specialLeaveHours,
-        "createTime": singleLeave.value.createTime,
-        "updateTime": singleLeave.value.updateTime,
-        "validityPeriodStart": singleLeave.value.validityPeriodStart,
-        "validityPeriodEnd": singleLeave.value.validityPeriodEnd
-    };
-
-    axiosapi.put(`/leave/modify/${singleLeave.value.id}`, request).then(function (response) {
-        console.log("response", response);
-        if (response.data.success) {
-            Swal.fire({
-                icon: "success",
-                text: response.data.message,
-                showConfirmButton: false,
-            }).then(function (result) {
-                callQuery();
-
-                openZon.value = true;
-
-            });
-        } else {
-            Swal.fire({
-                icon: "warning",
-                text: response.data.message,
-            });
-        }
-    }).catch(function (error) {
-        console.log("error", error);
-        Swal.fire({
-            icon: "error",
-            text: "修改錯誤：" + error.message,
-        });
-    });
-    setTimeout(function () {
-        Swal.close();  //視窗關閉 
-    }, 1000);
-    dialogVisible.value = false;
-    isModify.value = false;
-}
-
 </script>
 
-<style scoped>
-.right-panel {
-    width: 68%;
-}
-
-.left-panel {
-    width: 20%;
-    padding: 40px;
-    background-color: #fff5eb;
-}
-
-.btn-close {
-    margin: 10px;
-}
-
-
-.btm-div:hover {
-    text-decoration: underline 2px solid #a33238;
-}
-
-.text-btm {
-    font-size: 1.2em;
-    font-weight: 900;
-}
-
-.table-td {
-    font-size: 0.8em;
-}
-
-.table-th {
-    color: #a33238;
-}
-
-div.col-10 {
-    padding: 0px 0px;
-    background-color: #fff5eb;
-    justify-content: center;
-    display: flex;
-}
-
-th,
-tr,
-td {
-    background-color: unset;
-    width: 100px;
-}
-
-.table-part {
-    width: 95%;
-    padding: 20px;
-}
-
-.table {
-    width: 95%;
-    margin: auto;
-    padding: 10px 10px;
-}
-
-.extra-menu {
-    width: 5%;
-    background-color: #a33238;
-
-}
-
+<style>
 .table-title {
     float: right;
     color: #a33238;
@@ -572,15 +354,41 @@ td {
     margin: 10px 0px;
 }
 
-.msg-title {
-    color: #a33238;
-    font-weight: 900;
-    margin: 10px 0px;
+.left-panel {
+    width: 30%;
+    padding: 40px;
+    background-color: #fff5eb;
 }
 
-.creat-title {
-    color: black;
-    font-weight: 900;
-    margin: 20px 20px;
+.right-panel {
+    width: 68%;
+}
+
+/* 表头背景颜色 */
+.table-head .table-th {
+    background-color: #a33238;
+    color: white;
+    /* 文字颜色 */
+}
+
+/* 表格数据背景颜色 */
+.table-body .table-td {
+    background-color: #fff5eb;
+    color: #a33238;
+    /* 文字颜色 */
+    padding: 12px;
+}
+
+/* 表格边框颜色 */
+.table {
+    border-collapse: collapse;
+}
+
+
+
+.table-th,
+.table-td {
+    padding: 8px;
+    border-bottom: 1px solid #a33238;
 }
 </style>
