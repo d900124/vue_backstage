@@ -1,6 +1,7 @@
 <template>
     <!-- 抬頭 -->
-    <div class="col-11" style="padding: 0px 0px;">
+
+    <div class="col-11" style="padding-top: 25px;">
         <h3 class="table-title">請假申請</h3>
     </div>
     <!-- 主容器 -->
@@ -364,13 +365,14 @@ function callQuery() {
 
 <style scoped>
 .right-panel {
-    width: 60%;
-    padding: 60px;
+    width: 65%;
+    padding: 30px;
 }
 
 .left-panel {
     width: 30%;
-    padding: 40px;
+    margin: 15px;
+    padding: 35px;
     background-color: #fff5eb;
     position: relative;
     /* 确保父容器是相对定位的 */
@@ -384,7 +386,7 @@ function callQuery() {
     position: absolute;
     right: 20px;
     /* 你可以根据需要调整右侧的距离 */
-    bottom: 20px;
+    bottom: 10px;
     /* 你可以根据需要调整底部的距离 */
     text-decoration: underline 2px solid transparent;
     transition: text-decoration 0.3s;
