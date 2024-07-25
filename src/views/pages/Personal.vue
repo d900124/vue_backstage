@@ -9,7 +9,7 @@
             <!-- 請假管理 -->
 
             <!-- 個人資料 & 考核 -->
-            <EmployeeDetail></EmployeeDetail>
+            <EmployeeDetail2></EmployeeDetail2>
         </div>
     </div>
 </template>
@@ -17,6 +17,7 @@
 <script setup>
 import AgendaTable from '@/components/AgendaTable.vue'
 import EmployeeDetail from '@/components/EmployeeDetail.vue';
+import EmployeeDetail2 from '@/components/EmployeeDetail2.vue';
 import Logout from '@/components/Logout.vue';
 
 </script>
