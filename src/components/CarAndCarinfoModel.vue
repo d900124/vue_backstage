@@ -403,6 +403,12 @@ function submitForm() {
     });
 
 
+   // Emit the combined data
+    emits('customInsert', {
+        additionalData: props.modelValue
+    });
+
+
 
 </script>
     
