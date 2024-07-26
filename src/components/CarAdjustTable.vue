@@ -983,6 +983,7 @@ function doModify() {
                 callFindByHQL(false);
                 itemClick(singleItem.value.id);
                 openZon.value=true;
+                //加入車輛價錢修改
                 
             });
         } else {
