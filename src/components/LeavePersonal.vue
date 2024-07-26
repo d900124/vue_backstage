@@ -1,8 +1,13 @@
 <template>
+<div class="col-12" style="height: 50px;"></div>
+<div class="col-1">&nbsp;</div>
+    <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;"></div>
     <!-- 抬頭 -->
-    <div class="col-11" style="padding-top: 25px;">
-        <h3 class="table-title">請假申請</h3>
+    <div class="col-2" style="padding: 0px 0px;display: flex; justify-content: flex-end;align-items:flex-end;">
+        <h3 class="table-title" id="personalInfo">請假申請</h3>
     </div>
+    <div class="col-1">&nbsp;</div>
+
     <!-- 主容器 -->
     <!-- 左邊的剩餘假別表格 -->
     <div class="left-panel" v-if="employeeInfo">
@@ -32,6 +37,7 @@
                 </tbody>
             </table>
         </div>
+
         <div class="col-5"
             style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
             <!-- 新增用按鈕 -->
@@ -41,6 +47,7 @@
             </div>
         </div>
     </div>
+
     <!-- 列表主體 -->
     <div class="table-partr right-panel" v-if="employeeInfo">
         <table class="table">
@@ -360,6 +367,7 @@ function callQuery() {
 .right-panel {
     width: 60%;
     padding: 60px;
+    margin-left: -20px; /* 根据需要调整这个值 */
 }
 
 .left-panel {
@@ -368,7 +376,7 @@ function callQuery() {
     padding: 35px;
     background-color: #fff5eb;
     position: relative;
-    /* 确保父容器是相对定位的 */
+    margin-left: 110px; /* 根据需要调整这个值 */
 }
 
 .btn-close {
