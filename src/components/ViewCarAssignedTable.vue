@@ -220,7 +220,7 @@ const router = useRouter()
 const total = ref(0) //總比數
 const current = ref(1) //目前頁碼
 const pages = ref(0) //分頁總數
-const rows = ref(1) //分頁資料顯示筆數 (ViewCarService 目前鎖定為1)
+const rows = ref(7) //分頁資料顯示筆數 
 
 //賞車顯示元件用的參數
 const items = ref([]);
@@ -287,8 +287,8 @@ function callViewCarSelect(doCreat) {
         current.value=1
         cleanViewCarFind();
     }
-    console.log("getViewCar",`/front/viewCar/selectAll?pageNumber=${current.value}`)
-    axiosapi.get(`/front/viewCar/selectAll?pageNumber=${current.value}`).then(function (responce) {  
+    console.log("getViewCar",`/front/viewCar/selectAll?pageNumber=${current.value}&max=${rows.value}`)
+    axiosapi.get(`/front/viewCar/selectAll?pageNumber=${current.value}&max=${rows.value}`).then(function (responce) {  
         items.value = responce.data.list;
         // items.value[0].dddd = "測試"
 
@@ -467,7 +467,7 @@ function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId){
                 //         type: 'success',
                 //     })
                 let requestCreate ={ 
-                        "teamLeaderId":5, //後續串接
+                        "teamLeaderId":employeeInfo.value.id, //後續串接
                         "employeeId":ViewCarSelseId,
                         "viewCarId":ViewCarId,
                         "assignedStatus":1
@@ -505,7 +505,7 @@ function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId){
     //原先沒有有單的情況
     }else if(OldViewCarAssignedId == -10){
         let requestCreate ={ 
-                        "teamLeaderId":5, //後續串接
+                        "teamLeaderId":employeeInfo.value.id, //後續串接
                         "employeeId":ViewCarSelseId,
                         "viewCarId":ViewCarId,
                         "assignedStatus":1
