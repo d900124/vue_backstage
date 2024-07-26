@@ -41,8 +41,8 @@
                         placeholder="指派員工"
                         size="small"
                         style="width: 100%;height: 100%"
-                        @change = "logoutAndCreateVCA(item.viewCarAssignedId,item.employeeId,item.id)"
-                        @click="vcaTableDoEmpFindAll();"
+                        @change = "logoutAndCreateVCA(item.viewCarAssignedId,item.employeeId,item.id);"
+                        @click="vcaTableDoEmpFindAll2(item.viewCarDate,item.viewTimeSection);getOldAgandaInfo(item.viewCarDate,item.viewTimeSection,item.employeeId)"
                         >
                         <el-option
                             v-for="Option in employeeIDOptions"
@@ -247,6 +247,9 @@ const findViewCarId  = ref(null);
 //修改賞車排業務用
 const isVKAModify = ref(false)
 
+//排業務串接Aganga
+const oldAgandId =ref(null)
+
 //下拉選單用屬性
 const employeeIDOptions=ref([])
 const teamleaderIDOptions=ref([])
@@ -430,6 +433,63 @@ function vcaTableDoEmpFindAll() {
     }) 
 }
 
+//員工查詢全部製作下拉選單(外加時段判斷)(判斷時段沒事才出選單)
+function vcaTableDoEmpFindAll2(date,time) {
+    let empcount = 0;
+    axiosapi.get("employee/count").then(function (responce){
+        empcount=responce.data.data;
+        console.log("empcount",empcount);
+    })
+
+    axiosapi.get("employee/all").then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
+        console.log("employee/all responce",responce.data);
+        const times = time.split('-');
+        let ckeckavailableTimeStr = `${date} ${times[0]}`;
+        let ckeckavailableTimeEnd = `${date} ${times[1]}`;
+        console.log("ckeckavailableTimeStr",ckeckavailableTimeStr);
+        console.log("ckeckavailableTimeEnd",ckeckavailableTimeEnd);
+        employeeIDOptions.value=[];
+        for(let i = 0;i<empcount;i++){
+            let idTimerequest={
+                "ckeckavailableTimeStr":ckeckavailableTimeStr,
+                "ckeckavailableTimeEnd":ckeckavailableTimeEnd,
+                "employeeId":responce.data.data[i].id,
+
+                "isPage":0,
+                "max":99999,
+                "dir":true,
+                "order":"id"
+            }
+            console.log("idTimerequest",idTimerequest);
+            axiosapi.post("/agenda/findByHQL",idTimerequest).then(function (rptime) {
+                console.log("time / ID",responce.data.data[i].id);
+                console.log("time / totalElement",rptime.data.totalElement);
+                if (rptime.data.totalElement==0) {
+                    employeeIDOptions.value.push({
+                        value:responce.data.data[i].id,
+                        label: responce.data.data[i].name})
+                }
+            }).catch(function (error) {
+                console.log("error",error);
+                Swal.fire({
+                    text: "查詢錯誤"+error.message,
+                    icon: "error"
+                });
+                
+            }) 
+
+            
+        }
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "員工查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
+}
+
 //主管下拉選單
 function vcaTableDoTeamleaderFindAll() {
     axiosapi.get("employee/teamLeaders").then(function (responce) {
@@ -467,7 +527,7 @@ function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId){
                 //         type: 'success',
                 //     })
                 let requestCreate ={ 
-                        "teamLeaderId":employeeInfo.value.id, //後續串接
+                        "teamLeaderId":employeeInfo.value.id, 
                         "employeeId":ViewCarSelseId,
                         "viewCarId":ViewCarId,
                         "assignedStatus":1
@@ -505,7 +565,7 @@ function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId){
     //原先沒有有單的情況
     }else if(OldViewCarAssignedId == -10){
         let requestCreate ={ 
-                        "teamLeaderId":employeeInfo.value.id, //後續串接
+                        "teamLeaderId":employeeInfo.value.id,
                         "employeeId":ViewCarSelseId,
                         "viewCarId":ViewCarId,
                         "assignedStatus":1
@@ -513,6 +573,19 @@ function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId){
                 axiosapi.post("/viewCarAssigned", requestCreate).then(function(response) {  
                     console.log("responseCreate", response);
                     if(response.data.success)  {
+                        //新建排程Aganda
+                        if (oldAgandId.value==null) {
+                            let newAgandaReQuest ={
+                                "employeeId": ViewCarSelseId,
+                                "businessPurpose":`賞車排程/單號:${ViewCarId}"`,
+                                "unavailableTimeStr":"",
+                                "unavailableTimeEnd":"",
+                                "unavailableStatus":2
+                            }
+                        }
+
+
+
                         ElMessage({
                             message: '賞車指派成功',
                             type: 'success',
@@ -529,6 +602,47 @@ function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId){
                     ElMessage.error('指派錯誤'+error.message)
                 });
     }
+}
+
+//取得點擊選擇框時的empID排程資料
+function getOldAgandaInfo(date,time,empId) {
+    const times = time.split('-');
+    let ckeckavailableTimeStr = `${date} ${times[0]}`;
+    let ckeckavailableTimeEnd = `${date} ${times[1]}`;
+    console.log("ckeckavailableTimeStr",ckeckavailableTimeStr);
+    console.log("ckeckavailableTimeEnd",ckeckavailableTimeEnd);
+
+    let oldAgandarequest={
+        "unavailableStatus":2,
+        "ckeckavailableTimeStr":ckeckavailableTimeStr,
+        "ckeckavailableTimeEnd":ckeckavailableTimeEnd,
+        "employeeId":empId,
+
+        "isPage":0,
+        "max":99999,
+        "dir":true,
+        "order":"id"
+    }
+    console.log("oldAgandarequest",oldAgandarequest);
+    axiosapi.post("/agenda/findByHQL",oldAgandarequest).then(function (rptime) {
+        console.log("oldAgand / totalElement",rptime.data.totalElement);
+        if (rptime.data.totalElement!=0) {
+            //要將舊的日程記錄下來
+            oldAgandId.value = rptime.data.data[0].id;
+            console.log("oldAgand",rptime.data.data);
+            console.log("oldAgandId有東西",oldAgandId.value);
+        }else{
+            oldAgandId.value =null;
+            console.log("oldAgandId沒東西",oldAgandId.value);
+        }
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+            text: "查詢oldAgand錯誤"+error.message,
+            icon: "error"
+        });
+        
+    }) 
 }
 </script>
     
