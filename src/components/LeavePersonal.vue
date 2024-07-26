@@ -37,7 +37,7 @@
             <!-- 新增用按鈕 -->
             <div class="btm-div" style="display: flex;" @click="openModal('insert')">
                 <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;" />
-                <el-button type='' link class="text-btm" style="color: #a33238;">新增簽核</el-button>
+                <el-button type='' link class="text-btm" style="color: #a33238;margin: 12px 0 0 0;">新增簽核</el-button>
             </div>
         </div>
     </div>
