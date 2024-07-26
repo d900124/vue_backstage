@@ -1,6 +1,6 @@
-<template>
+<template >
 <div>
-    <!-- <el-upload
+    <el-upload
     class="upload-demo"
     drag
     multiple
@@ -8,13 +8,14 @@
     :on-remove="handleRemove"
     :on-success="handleSuccess"
     list-type="picture-card"
-    action="http://localhost:8080/kajarta/image/create"
+    action="http://localhost:8080/kajarta/image/createImage"
     :auto-upload="false"
     :data="uploadData"
     ref="upload"
     >
     
     <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+
     <div class="el-upload__text">
       Drop file here or <em>click to upload</em>
     </div>
@@ -24,10 +25,10 @@
         jpg/png files with a size less than 500kb
       </div>
     </template>
-  </el-upload> -->
+  </el-upload>
 
 
-  <el-upload
+  <!-- <el-upload
     action="#"
     list-type="picture-card"
     :auto-upload="false"
@@ -67,7 +68,7 @@
 
   <el-dialog v-model="dialogVisible">
     <img w-full :src="dialogImageUrl" alt="Preview Image" />
-  </el-dialog>
+  </el-dialog> -->
 
   <!-- =======================圖片上傳區塊======================= -->
 
@@ -76,7 +77,10 @@
 
 
 
-
+  <div v-for="file in uploadedFiles" :key="file.uid">
+  <img :src="file.url" alt="Uploaded image" />
+  <p>{{ file.url }}</p> <!-- Debug URL -->
+</div>
 
 
 
@@ -278,13 +282,19 @@
   </div>
 </div>
 
+
+<div v-for="file in uploadedFiles" :key="file.uid">
+    <img :src="file.url" alt="Uploaded image" />
+</div>
   
+
 <button @click="submitForm">新增草稿</button>
 </template>
     
-<script setup >
+<script lang='ts' setup >
 import { ref } from 'vue'
-// import axios from 'axios'
+import axios from 'axios'
+import { UploadFilled } from '@element-plus/icons-vue'
 // import { Delete, Download, Plus, ZoomIn } from '@element-plus/icons-vue'
 // import  { UploadFile } from 'element-plus'
 
@@ -292,7 +302,7 @@ const props = defineProps(["modelValue"]);
 const emits = defineEmits(["customInsert","update:modelValue"]);
 
 const uploadData = ref({
-  images: [] 
+  carId: 1
 });
 
 function doInput(key,event) {
@@ -319,20 +329,29 @@ function doInput(key,event) {
 
 
 
-// const dialogImageUrl = ref('')
-// const dialogVisible = ref(false)
+const dialogImageUrl = ref('')
+const dialogVisible = ref(false)
 // const disabled = ref(false)
 // const fileList = ref([])
+const uploadedFiles = ref([])
 
-// const handleRemove = (file) => {
-//   fileList.value = fileList.value.filter(f => f.uid !== file.uid)
-//   console.log('Removed file:', file)
-// }
+const handleRemove = (file) => {
+  console.log('Removed file:', file)
+  uploadedFiles.value = uploadedFiles.value.filter(f => f.uid !== file.uid)
+}
 
-// const handlePictureCardPreview = (file) => {
-//   dialogImageUrl.value = file.url
-//   dialogVisible.value = true
-// }
+const handlePictureCardPreview = (file) => {
+  dialogImageUrl.value = file.url
+  dialogVisible.value = true
+  console.log("Preview file:", file);
+}
+
+const handleSuccess = (response, file) => {
+      // file.url = URL.createObjectURL(file.raw)
+      // console.log("File raw data:", file.raw);
+      console.log("File successfully uploaded:", file);
+      uploadedFiles.value.push(file);
+    }
 
 // const handleDownload = (file) => {
 //   console.log('Download file:', file)
@@ -341,56 +360,49 @@ function doInput(key,event) {
 
 
 
-// function submitForm() {
-  // const combinedData = {
-  //   ...props.modelValue,
-  //   images: uploadData.value.images.map(file => file.url)
-  // };
-
-  // // Emit the combined data
-  // emits('customInsert', combinedData);
 
 
+function submitForm() {
+    console.log("Uploaded Files Before Submit:", uploadedFiles.value);
 
-//   const formData = new FormData();
+    const formData = new FormData();
 
-//   // Add form fields to FormData
-//     Object.keys(props.modelValue).forEach(key => {
-//         formData.append(key, props.modelValue[key]);
-//     });
+    // 添加表单字段
+    Object.keys(props.modelValue).forEach(key => {
+        formData.append(key, props.modelValue[key]);
+    });
 
-//     // Add files to FormData
-//     uploadedFiles.value.forEach(file => {
-//         formData.append('images', file.raw, file.name); // Attach file.raw
-//     });
+    // 添加文件
+    uploadedFiles.value.forEach(file => {
+        formData.append('images', file.raw, file.name);
+    });
 
-//     console.log("Uploaded Files:", uploadedFiles.value);
+    // 调试输出
+    // for (let [key, value] of formData.entries()) {
+    //     console.log("formData",key, value);
+    // }
 
-
-//     for (let [key, value] of formData.entries()) {
-//     console.log(key, value);
-// }
-// console.log(formData);
-//     axios.post('http://localhost:8080/kajarta/image/create', formData,{
-//       headers:{
-//         'Content-Type': 'multipart/form-data'
-//       }
-//     }).then(function(response){
-//     console.log("response",response)
-//   }).catch(function(error) {
-//     console.log("error",error)
-//   })
-
-
-    // Emit the combined data
-    // emits('customInsert', {
-    //     additionalData: props.modelValue
-    // });
+    // 发送请求
+    axios.post('http://localhost:8080/kajarta/image/create', formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
+    .then(response => {
+        console.log("Response:", response);
+    })
+    .catch(error => {
+        console.log("Error:", error);
+    });
+}
 
 
-    
+   // Emit the combined data
+    emits('customInsert', {
+        additionalData: props.modelValue
+    });
 
-// }
+
 
 </script>
     
