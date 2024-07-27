@@ -32,6 +32,7 @@
     "sweetalert2": "^11.12.2",
     "vue": "^3.4.29",
     "vue-router": "^4.4.0",
+    "vue-upload-component": "^3.1.15",
     "vuex": "^4.1.0"
   },
   "devDependencies": {
