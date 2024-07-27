@@ -41,8 +41,8 @@
                         placeholder="指派員工"
                         size="small"
                         style="width: 100%;height: 100%"
-                        @change = "logoutAndCreateVCA(item.viewCarAssignedId,item.employeeId,item.id);"
                         @click="vcaTableDoEmpFindAll2(item.viewCarDate,item.viewTimeSection);getOldAgandaInfo(item.viewCarDate,item.viewTimeSection,item.employeeId)"
+                        @change = "logoutAndCreateVCA(item.viewCarAssignedId,item.employeeId,item.id,item.viewCarDate,item.viewTimeSection,item);"
                         >
                         <el-option
                             v-for="Option in employeeIDOptions"
@@ -330,7 +330,6 @@ function callViewCarSelect(doCreat) {
                 "order":"updateTime"  
             }
             axiosapi.post("/viewCarAssigned/findByHQL",request).then(function (responce) {
-                console.log("no單1");
                 console.log(responce.data.data);
                 if (responce.data.data.length==0) {
                     console.log("no單");
@@ -506,7 +505,7 @@ function vcaTableDoTeamleaderFindAll() {
 } 
 
 //指派(註銷同時新增)
-function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId){
+function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId,date,time,item){
     console.log("OldViewCarAssignedId",OldViewCarAssignedId);    
     console.log("ViewCarSelseId",ViewCarSelseId);  
     console.log("ViewCarId",ViewCarId);      
@@ -535,6 +534,59 @@ function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId){
                 axiosapi.post("/viewCarAssigned", requestCreate).then(function(response) {  
                     console.log("responseCreate", response);
                     if(response.data.success)  {
+                        //新建排程Aganda(如果有舊排程則刪)
+                        if (oldAgandId.value!=null) {
+                            axiosapi.delete(`/agenda/${oldAgandId.value}`).then(function(responseDeleteOldAgandId) {
+                                console.log("responseDeleteOldAgandId", responseDeleteOldAgandId);
+                                if(response.data.success)  {
+                                    ElMessage({
+                                    message: '排程刪除成功',
+                                    type: 'success',
+                                })
+                                } else {
+                                    ElMessage({
+                                        message: response.data.msg,
+                                        type: 'warning',
+                                    })
+                                }
+                            }).catch(function(error) {
+                                console.log("error", error);
+                                ElMessage.error('刪除排程錯誤'+error.message)
+                            });
+                        }
+
+                        //新建排程Aganda
+                        const times = time.split('-');
+                        let unavailableTimeStr = `${date} ${times[0]}`;
+                        let unavailableTimeEnd = `${date} ${times[1]}`;
+
+                        let newAgandaReQuest ={
+                            "employeeId": ViewCarSelseId,
+                            "businessPurpose":`賞車No.${ViewCarId} , 車輛No.${item.car} , 型號 : ${item.modelName} , 客戶 : ${item.customerName}`,
+                            "unavailableTimeStr":unavailableTimeStr,
+                            "unavailableTimeEnd":unavailableTimeEnd,
+                            "unavailableStatus":2
+                        }
+                        console.log("newAgandaReQuest", newAgandaReQuest);
+                        axiosapi.post("/agenda", newAgandaReQuest).then(function(responseAGD) {
+                            console.log("responseAGD", responseAGD);
+                            if(response.data.success)  {
+                                ElMessage({
+                                    message: '排程成功建立',
+                                    type: 'success',
+                                })
+                            } else {
+                                ElMessage({
+                                    message: response.data.msg,
+                                    type: 'warning',
+                                })
+                            }
+                        }).catch(function(error) {
+                            console.log("error", error);
+                            ElMessage.error('排程錯誤'+error.message)
+                        });
+
+
                         ElMessage({
                             message: '賞車指派成功',
                             type: 'success',
@@ -575,16 +627,36 @@ function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId){
                     if(response.data.success)  {
                         //新建排程Aganda
                         if (oldAgandId.value==null) {
+                            const times = time.split('-');
+                            let unavailableTimeStr = `${date} ${times[0]}`;
+                            let unavailableTimeEnd = `${date} ${times[1]}`;
+
                             let newAgandaReQuest ={
                                 "employeeId": ViewCarSelseId,
-                                "businessPurpose":`賞車排程/單號:${ViewCarId}"`,
-                                "unavailableTimeStr":"",
-                                "unavailableTimeEnd":"",
+                                "businessPurpose":`賞車No.${ViewCarId} , 車輛No.${item.car} , 型號 : ${item.modelName} , 客戶 : ${item.customerName}`,
+                                "unavailableTimeStr":unavailableTimeStr,
+                                "unavailableTimeEnd":unavailableTimeEnd,
                                 "unavailableStatus":2
                             }
+                            console.log("newAgandaReQuest", newAgandaReQuest);
+                            axiosapi.post("/agenda", newAgandaReQuest).then(function(responseAGD) {
+                                console.log("responseAGD", responseAGD);
+                                if(response.data.success)  {
+                                    ElMessage({
+                                        message: '排程成功建立',
+                                        type: 'success',
+                                    })
+                                } else {
+                                    ElMessage({
+                                        message: response.data.msg,
+                                        type: 'warning',
+                                    })
+                                }
+                            }).catch(function(error) {
+                                console.log("error", error);
+                                ElMessage.error('排程錯誤'+error.message)
+                            });
                         }
-
-
 
                         ElMessage({
                             message: '賞車指派成功',
