@@ -77,7 +77,7 @@
 
     <!-- 新增區塊 / 資料區-->
     <div v-if="openCreat" class="col-1"></div>
-    <div v-if="openCreat" class="col-5" style="height: 300px; background-color:rgb(245, 250, 250)  ;">
+    <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
 
         <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
             <el-divider border-style="dashed" style="margin: 0;" />
@@ -100,14 +100,11 @@
                     <el-option v-for="leader in teamLeaders" :key="leader.id" :label="leader.name" :value="leader.id" />
                 </el-select>
             </el-form-item>
-            <el-form-item label="帳號 :&nbsp;">
-                <el-input v-model="form.account" placeholder="請輸入帳號" size="small" />
-            </el-form-item>
 
         </el-form>
     </div>
 
-    <div v-if="openCreat" class="col-5" style="height: 300px; background-color:rgb(245, 250, 250)  ;">
+    <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
 
         <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
             <el-form-item label="性別 :&nbsp;">
@@ -131,9 +128,6 @@
                     <el-option v-for="branch in branches" :key="branch.value" :label="branch.label"
                         :value="branch.value" />
                 </el-select>
-            </el-form-item>
-            <el-form-item label="密碼 :&nbsp;">
-                <el-input v-model="form.password" placeholder="請輸入密碼" size="small" />
             </el-form-item>
 
         </el-form>
@@ -341,16 +335,14 @@ const branches = ref([
 ]);
 
 const form = ref({
-    accountType: '',
+    accountType: null,
     name: '',
     startDate: '',
-    teamLeaderId: '',
+    teamLeaderId: null,
     sex: '',
     phone: '',
     email: '',
-    branch: '',
-    account: '',
-    password: '',
+    branch: null
 });
 
 onMounted(() => {

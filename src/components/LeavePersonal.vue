@@ -1,6 +1,6 @@
 <template>
-<div class="col-12" style="height: 50px;"></div>
-<div class="col-1">&nbsp;</div>
+    <div class="col-12" style="height: 50px;"></div>
+    <div class="col-1">&nbsp;</div>
     <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;"></div>
     <!-- 抬頭 -->
     <div class="col-2" style="padding: 0px 0px;display: flex; justify-content: flex-end;align-items:flex-end;">
@@ -30,7 +30,7 @@
                         <th scope="row" class="table-td">病假</th>
                         <td class="table-td">{{ employeeInfo.sickLeaveHours }} 小時</td>
                     </tr>
-                    <tr>
+                    <tr v-if="employeeInfo.annualLeaveHours !== null">
                         <th scope="row" class="table-td">特休</th>
                         <td class="table-td">{{ employeeInfo.annualLeaveHours }} 小時</td>
                     </tr>
@@ -87,19 +87,19 @@
     <div class="col-1"></div>
 
     <!-- 新增區塊 / 抬頭-->
-    <div v-if="openCreat" style="height: 50px;"></div>
-    <div v-if="openCreat" class="col-1"></div>
-    <div v-if="openCreat" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openCreat = false">
+    <div v-if="openCreate" style="height: 50px;"></div>
+    <div v-if="openCreate" class="col-1"></div>
+    <div v-if="openCreate" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openCreate = false">
         <el-divider content-position="center">
             <button type="button" class="btn-close" aria-label="Close"></button>
             <h5 class="table-title">新增假單</h5>
         </el-divider>
     </div>
-    <div v-if="openCreat" class="col-1"></div>
+    <div v-if="openCreate" class="col-1"></div>
 
     <!-- 新增區塊 / 資料區-->
-    <div v-if="openCreat" class="col-1"></div>
-    <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
+    <div v-if="openCreate" class="col-1"></div>
+    <div v-if="openCreate" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
 
         <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
             <el-form-item label="申請員工 :&nbsp;">
@@ -108,28 +108,29 @@
 
             <el-divider border-style="dashed" style="margin: 0;" />
             <el-form-item label="假別 :&nbsp;">
-                <el-select v-model="creatTeamleaderIDValue" placeholder="Select" size="small">
-                    <el-option v-for="Option in creatTeamleaderIDOptions" :key="Option.value" :label="Option.label"
-                        :value="Option.value" />
+                <el-select v-model="form.leaveType" placeholder="Select" size="small">
+                    <el-option v-for="option in leaveTypeOptions" :key="option.value" :label="option.label"
+                        :value="option.value" />
                 </el-select>
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
 
             <el-form-item label="開始時間 :&nbsp;">
-                <el-date-picker v-model="startDate" type="datetime" placeholder="選擇開始時間" size="small"
-                    format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm" />
+                <input id="start-date" type="datetime-local" class="form-control" v-model="form.startTime"
+                    placeholder="選擇開始時間" />
             </el-form-item>
+
             <el-divider border-style="dashed" style="margin: 0;" />
 
             <el-form-item label="結束時間 :&nbsp;">
-                <el-date-picker v-model="endDate" type="datetime" placeholder="選擇結束時間" size="small"
-                    format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm" />
+                <input id="end-date" type="datetime-local" class="form-control" v-model="form.endTime"
+                    placeholder="選擇結束時間" />
             </el-form-item>
 
         </el-form>
     </div>
 
-    <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
+    <div v-if="openCreate" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
 
         <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
             <el-form-item label="&nbsp;">
@@ -138,35 +139,33 @@
             <el-divider border-style="dashed" style="margin: 0;" />
 
             <el-form-item label="請假時數 :&nbsp;">
-                <p style="margin: 0;"> 小時</p>
+                <el-input v-model="form.actualLeaveHours" type="text" size="small" rows="2" readonly />
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
 
             <el-form-item label="工作代理人 :&nbsp;">
-                <el-select v-model="creatTeamleaderIDValue" placeholder="Select" size="small">
-                    <el-option v-for="Option in creatTeamleaderIDOptions" :key="Option.value" :label="Option.label"
-                        :value="Option.value" />
+                <el-select v-model="form.deputyId" placeholder="Select" size="small">
                 </el-select>
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
             <el-form-item label="備註 :&nbsp;">
-                <el-input v-model="remarkValue" type="textarea" placeholder="請輸入備註" size="small" rows="2" />
+                <el-input v-model="form.reason" type="textarea" placeholder="請輸入備註" size="small" rows="2" />
             </el-form-item>
 
         </el-form>
     </div>
-    <div v-if="openCreat" class="col-1"></div>
-
+    <div v-if="openCreate" class="col-1"></div>
 
     <!-- 新增區塊 / 確認按鈕-->
-    <div v-if="openCreat" class="col-1"></div>
-    <div v-if="openCreat" class="col-5"
+    <div v-if="openCreate" class="col-1"></div>
+    <div v-if="openCreate" class="col-5"
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
-    <div v-if="openCreat" class="col-5"
+    <div v-if="openCreate" class="col-5"
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-        <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click="openDoModify">&nbsp確認新增&nbsp</el-button>
+        <el-button color="#a33238" :dark="isDark" style="margin: 20 0;"
+            @click="creatDdialogVisible = true">&nbsp確認新增&nbsp</el-button>
     </div>
-    <div v-if="openCreat" class="col-1"></div>
+    <div v-if="openCreate" class="col-1"></div>
 
 
     <!-- 下方詳細資料區 / 抬頭-->
@@ -212,7 +211,6 @@
                         <th scope="col" class="table-th">簽核時間</th>
                         <th scope="col" class="table-th">審核意見</th>
                         <th scope="col" class="table-th">簽核狀態</th>
-
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
@@ -220,13 +218,27 @@
                         <th scope="row" class="table-td" name="id">{{ singleLeave.reason }}</th>
                         <td class="table-td">{{ singleLeave.deputyName }}</td>
                         <td class="table-td">{{ singleLeave.auditTime }}</td>
-                        <td class="table-td">{{ singleLeave.permisionRemarks }}</td>
+                        <td class="table-td">{{ singleLeave.reason }}</td>
                         <td class="table-td">{{ getPermisionStatusText(singleLeave.permisionStatus) }}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
+    <!-- 確認新增用彈出視窗 -->
+    <el-dialog v-model="creatDdialogVisible" width="350" :show-close="false">
+        <h5 class="msg-title">確認新增 ?</h5>
+        <template #footer>
+            <div class="dialog-footer" style="display: flex;justify-content: center;">
+                <div>
+                    <el-button @click="creatDdialogVisible = false">否</el-button>
+                    <el-button type="primary" @click="doCreate" style="background-color: #a33238;border: #a33238;">
+                        是
+                    </el-button>
+                </div>
+            </div>
+        </template>
+    </el-dialog>
 </template>
 
 <script setup>
@@ -246,6 +258,32 @@ console.log('===>Employee info:', employeeInfo.value);
 const accountTypeName = computed(() => employeeInfo.value?.accountTypeName || '');
 console.log('Account Type Name:', accountTypeName.value);
 
+
+const form = ref({
+    leaveType: '',
+    startTime: '',
+    endTime: '',
+    actualLeaveHours: '',
+    deputyId: '3',
+    reason: '',
+});
+
+// 计算请假时数
+const leaveHours = computed(() => {
+    console.log("開始時間" + form.value.startTime)
+    if (form.value.startTime && form.value.endTime) {
+        console.log("開始時間" + form.value.startTime)
+        const start = new Date(form.value.startTime);
+        const end = new Date(form.value.endTime);
+        const diff = (end - start) / (1000 * 60 * 60); // difference in hours
+        return diff > 0 ? diff.toFixed(1) : '0.0';
+    }
+    return '0';
+});
+
+watch(leaveHours, (newValue) => {
+    form.value.actualLeaveHours = newValue;
+}, { immediate: true });
 onMounted(() => {
     const username = localStorage.getItem('username');
     if (username) {
@@ -267,15 +305,33 @@ const current = ref(1) //目前頁碼
 const pages = ref(0) //分頁總數
 const rows = ref(4) //分頁資料顯示筆數
 
+
+
 //下方詳細資料開啟用
 const openZon = ref(false)
 
 //下方新增資料開啟用
-const openCreat = ref(false)
+const openCreate = ref(false)
 
 //產品顯示leave元件用的參數
 const leaves = ref([]);
 const singleLeave = ref([])
+const leaveType = ref(null);
+
+const startTime = ref(null);
+const endTime = ref(null);
+
+const creatDdialogVisible = ref(false)  //新增
+
+const leaveTypeOptions = [
+    { value: 1, label: "特休" },
+    { value: 5, label: "事假" },
+    { value: 6, label: "半薪病假" },
+    { value: 7, label: "婚假" },
+    { value: 8, label: "生理假" },
+    { value: 9, label: "公假" },
+    { value: 10, label: "喪假" }
+];
 
 const getPermisionStatusText = (status) => {
     switch (status) {
@@ -304,12 +360,52 @@ onMounted(function () {
 })
 
 
+
+
 //單筆新增
 function openModal() {
     console.log("openModal");
-    openCreat.value = true;
+    openCreate.value = true;
+
 }
 
+//新增假單
+function doCreate() {
+    console.log("Form before submission:", form.value);
+    creatDdialogVisible.value = false;
+    Swal.fire({
+        text: "執行中......",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+    });
+    axiosapi.post("/leave/add", form.value)
+        .then(response => {
+            if (response.data.success) {
+                Swal.fire({
+                    icon: "success",
+                    text: response.data.msg,
+                    showConfirmButton: false,
+                }).then(() => {
+                    // TODO: 刷新列表或更新状态
+                    openZon.value = true; // 打开详细数据区域
+                });
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    text: response.data.msg,
+                });
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: "error",
+                text: "新增錯誤：" + error.message,
+            });
+        })
+        .finally(() => {
+            Swal.close();
+        });
+}
 
 //單筆查詢
 function leaveInfo(leaveId) {
@@ -339,7 +435,8 @@ function callQuery() {
     let request = {
         "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
         "pageSize": rows.value,
-        "employeeId": employeeId.value
+        "employeeId": employeeId.value,
+        "leaveStatus": 0, // 0為請假
     };
 
     axiosapi.post("/leave/query", request).then(function (response) {
@@ -367,7 +464,8 @@ function callQuery() {
 .right-panel {
     width: 60%;
     padding: 60px;
-    margin-left: -20px; /* 根据需要调整这个值 */
+    margin-left: -20px;
+    /* 根据需要调整这个值 */
 }
 
 .left-panel {
@@ -376,7 +474,8 @@ function callQuery() {
     padding: 35px;
     background-color: #fff5eb;
     position: relative;
-    margin-left: 110px; /* 根据需要调整这个值 */
+    margin-left: 110px;
+    /* 根据需要调整这个值 */
 }
 
 .btn-close {

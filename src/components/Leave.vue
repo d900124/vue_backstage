@@ -266,6 +266,7 @@ function callQuery() {
     console.log("callQuery - 當前頁碼:", current.value);
 
     let request = {
+        "leaveStatus": 0, // 0為請假
         "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
         "pageSize": rows.value
     };
