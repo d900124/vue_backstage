@@ -263,26 +263,30 @@ const form = ref({
     leaveType: '',
     startTime: '',
     endTime: '',
-    actualLeaveHours: '',
+    actualLeaveHours: 0,
     deputyId: '3',
     reason: '',
+    employeeId: employeeInfo.value.id
 });
 
 // 计算请假时数
-const leaveHours = computed(() => {
+let leaveHours = computed(() => {
     console.log("開始時間" + form.value.startTime)
+    console.log("開始時間type" + typeof form.value.startTime)
     if (form.value.startTime && form.value.endTime) {
         console.log("開始時間" + form.value.startTime)
         const start = new Date(form.value.startTime);
         const end = new Date(form.value.endTime);
         const diff = (end - start) / (1000 * 60 * 60); // difference in hours
-        return diff > 0 ? diff.toFixed(1) : '0.0';
+        return diff > 0 ? Math.ceil(diff) : 0;
     }
-    return '0';
+    return 0;
 });
 
 watch(leaveHours, (newValue) => {
     form.value.actualLeaveHours = newValue;
+    console.log("actualLeaveHours type" + typeof form.value.actualLeaveHours)
+
 }, { immediate: true });
 onMounted(() => {
     const username = localStorage.getItem('username');
@@ -371,6 +375,7 @@ function openModal() {
 
 //新增假單
 function doCreate() {
+    form.value.employeeId = employeeInfo.value.id;
     console.log("Form before submission:", form.value);
     creatDdialogVisible.value = false;
     Swal.fire({
