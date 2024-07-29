@@ -218,7 +218,7 @@
                         <th scope="row" class="table-td" name="id">{{ singleLeave.reason }}</th>
                         <td class="table-td">{{ singleLeave.deputyName }}</td>
                         <td class="table-td">{{ singleLeave.auditTime }}</td>
-                        <td class="table-td">{{ singleLeave.reason }}</td>
+                        <td class="table-td">{{ singleLeave.permisionRemarks }}</td>
                         <td class="table-td">{{ getPermisionStatusText(singleLeave.permisionStatus) }}</td>
                     </tr>
                 </tbody>
@@ -258,15 +258,55 @@ console.log('===>Employee info:', employeeInfo.value);
 const accountTypeName = computed(() => employeeInfo.value?.accountTypeName || '');
 console.log('Account Type Name:', accountTypeName.value);
 
+// 可选：调试数据
+watch(employeeInfo, (newValue) => {
+    console.log('Employee info updated:', newValue);
+});
+
+//用於重新導向 router.push
+const router = useRouter()
+
+//分頁用參數
+const total = ref(0) //總比數
+const current = ref(1) //目前頁碼
+const pages = ref(0) //分頁總數
+const rows = ref(4) //分頁資料顯示筆數
+
+const leaveTypeOptions = [
+    { value: 1, label: "特休" },
+    { value: 5, label: "事假" },
+    { value: 6, label: "半薪病假" },
+    { value: 7, label: "婚假" },
+    { value: 8, label: "生理假" },
+    { value: 9, label: "公假" },
+    { value: 10, label: "喪假" }
+];
+
+const getPermisionStatusText = (status) => {
+    switch (status) {
+        case 1:
+            return '簽核中';
+        case 2:
+            return '同意';
+        case 3:
+            return '拒絕';
+        default:
+            return '未知狀態';
+    }
+};
+
+
+
 
 const form = ref({
+    permisionStatus: 1,
+    leaveStatus: 0,
     leaveType: '',
     startTime: '',
     endTime: '',
     actualLeaveHours: 0,
     deputyId: '3',
-    reason: '',
-    employeeId: employeeInfo.value.id
+    reason: ''
 });
 
 // 计算请假时数
@@ -295,19 +335,6 @@ onMounted(() => {
     }
 });
 
-// 可选：调试数据
-watch(employeeInfo, (newValue) => {
-    console.log('Employee info updated:', newValue);
-});
-
-//用於重新導向 router.push
-const router = useRouter()
-
-//分頁用參數
-const total = ref(0) //總比數
-const current = ref(1) //目前頁碼
-const pages = ref(0) //分頁總數
-const rows = ref(4) //分頁資料顯示筆數
 
 
 
@@ -327,43 +354,10 @@ const endTime = ref(null);
 
 const creatDdialogVisible = ref(false)  //新增
 
-const leaveTypeOptions = [
-    { value: 1, label: "特休" },
-    { value: 5, label: "事假" },
-    { value: 6, label: "半薪病假" },
-    { value: 7, label: "婚假" },
-    { value: 8, label: "生理假" },
-    { value: 9, label: "公假" },
-    { value: 10, label: "喪假" }
-];
-
-const getPermisionStatusText = (status) => {
-    switch (status) {
-        case 1:
-            return '簽核中';
-        case 2:
-            return '同意';
-        case 3:
-            return '拒絕';
-        default:
-            return '未知狀態';
-    }
-};
-
-
-// 定義審核狀態選項
-const permissionStatuses = ref([
-    { value: 1, label: '簽核中' },
-    { value: 2, label: '同意' },
-    { value: 3, label: '拒絕' }
-]);
-
 
 onMounted(function () {
     callQuery();
 })
-
-
 
 
 //單筆新增
@@ -373,26 +367,37 @@ function openModal() {
 
 }
 
-//新增假單
 function doCreate() {
-    form.value.employeeId = employeeInfo.value.id;
-    console.log("Form before submission:", form.value);
+    // 创建一个新的请求对象，包含修改后的表单数据
+    let request = {
+        ...form.value,
+        employeeId: employeeInfo.value.id,
+        teamLeaderId: employeeInfo.value.teamLeaderId
+    };
+    
+    console.log("Form before submission:", request);
+    
     creatDdialogVisible.value = false;
     Swal.fire({
         text: "執行中......",
         allowOutsideClick: false,
         showConfirmButton: false,
     });
-    axiosapi.post("/leave/add", form.value)
+
+    axiosapi.post("/leave/add", request)
         .then(response => {
+            Swal.close(); // 关闭正在执行的提示
             if (response.data.success) {
                 Swal.fire({
                     icon: "success",
                     text: response.data.msg,
                     showConfirmButton: false,
+                    timer: 2000 // 消息显示时间为2秒
                 }).then(() => {
-                    // TODO: 刷新列表或更新状态
-                    openZon.value = true; // 打开详细数据区域
+                    // 刷新页面或更新状态
+                    window.location.reload(); // 刷新页面
+                    // 或者使用 Vue 的方法来更新页面状态，例如：
+                    // openZon.value = true; // 打开详细数据区域
                 });
             } else {
                 Swal.fire({
@@ -402,16 +407,13 @@ function doCreate() {
             }
         })
         .catch(error => {
+            Swal.close(); // 关闭正在执行的提示
             Swal.fire({
                 icon: "error",
                 text: "新增錯誤：" + error.message,
             });
-        })
-        .finally(() => {
-            Swal.close();
         });
 }
-
 //單筆查詢
 function leaveInfo(leaveId) {
     console.log(leaveId)
