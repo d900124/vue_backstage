@@ -1,5 +1,5 @@
 <template>
-    <div class="col-12" style="height: 50px;"></div>
+    <div class="col-12" style="height: 50px;"> </div>
     <div class="col-1">&nbsp;</div>
     <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;"></div>
     <!-- 抬頭 -->
@@ -94,7 +94,7 @@
                     <th scope="col" class="table-th">簽核狀態</th>
                 </tr>
             </thead>
-            <tbody class="table-group-divider">
+            <tbody class="table-group-divider" v-if="employeeInfo">
                 <tr v-for="leave in leaves" :key="leave.id" @click="leaveInfo(leave.id)">
                     <th scope="row" class="table-td">{{ leave.createTime }}</th>
                     <td class="table-td">{{ leave.leaveTypeName }} </td>
