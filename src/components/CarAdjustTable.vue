@@ -159,6 +159,8 @@
             </div>
         <div class="col-1"></div>
 
+    <transition-group  name="openCreatZone" mode="out-in"  tag="div">
+        <div v-if="openCreat" class="row">
 <!-- 新增區塊 / 抬頭-->
             <div v-if="openCreat" style="height: 50px;"></div>
             <div v-if="openCreat" class="col-1"></div>
@@ -267,8 +269,11 @@
                 <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click = "creatDdialogVisible=true" round>&nbsp確認新增&nbsp</el-button>
             </div>
             <div v-if="openCreat" class="col-1"></div>
+        </div>
+    
 
-
+    
+        <div v-if="openZon" class="row">
 <!-- 下方詳細資料區 / 抬頭-->
             <div v-if="openZon" style="height: 50px;"></div>
             <div v-if="openZon" class="col-1"></div>
@@ -389,6 +394,8 @@
                     />
             </div>
             <div v-if="openZon" class="col-1"></div>
+        </div>
+    </transition-group>
 
 <!-- 確認修改用彈出視窗 -->
     <el-dialog
@@ -1005,12 +1012,12 @@ function doModify() {
                                 "id":car.id, 
                                 "productionYear":car.productionYear,
                                 "milage":car.milage,
-                                "negotiable":car.negotiable,//修車失敗
+                                "negotiable":null,
                                 "conditionScore":car.conditionScore,
-                                "branch":car.branch,//修車失敗
+                                "branch":null,
                                 "state":car.state,
                                 "price":singleItem.value.floatingAmount,
-                                "launchDate":car.launchDate,//修車失敗
+                                "launchDate":null,
                                 "color":car.color,
                                 "remark":car.remark
                             }
@@ -1022,6 +1029,7 @@ function doModify() {
                                         message: '改車OK',
                                         type: 'success',
                                     })
+                                    itemClick(singleItem.value.id);
                                 } else {
                                     ElMessage({
                                         message: response.data.message,
@@ -1060,12 +1068,12 @@ function doModify() {
                                 "id":car.id, 
                                 "productionYear":car.productionYear,
                                 "milage":car.milage,
-                                "negotiable":car.negotiable,//修車失敗
+                                "negotiable":null,
                                 "conditionScore":car.conditionScore,
-                                "branch":car.branch,//修車失敗
+                                "branch":null,
                                 "state":2,
                                 "price":car.price,
-                                "launchDate":car.launchDate,//修車失敗
+                                "launchDate":null,
                                 "color":car.color,
                                 "remark":car.remark
                             }
@@ -1077,6 +1085,7 @@ function doModify() {
                                         message: '下架OK',
                                         type: 'success',
                                     })
+                                    itemClick(singleItem.value.id);
                                 } else {
                                     ElMessage({
                                         message: response.data.message,
@@ -1248,5 +1257,16 @@ th,tr,td{
     color: black;
     font-weight: 900;
     margin: 20px 20px;
+}
+
+.openCreatZone-enter-active,
+.openCreatZone-leave-active{
+    transition: opacity 1s,transform 1s;
+}
+
+.openCreatZone-enter-from,
+.openCreatZone-leave-to{
+    opacity: 0;
+    transform: translateY(-5%);
 }
 </style>
