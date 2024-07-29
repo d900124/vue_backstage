@@ -18,8 +18,10 @@
                         {{ employeeInfo.name }}
                     </tr>
                     <tr>
-                        <th class="table-th">可用剩餘假別時數</th>
-                    </tr>
+                        <!-- 彈窗 -->
+                    <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        可用剩餘假別時數
+                    </button></tr>
                 </thead>
                 <tbody class="table-body">
                     <tr>
@@ -37,6 +39,38 @@
                 </tbody>
             </table>
         </div>
+
+        <!-- 彈出視窗 -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel" style="color:#a33238; font-weight: bold; ">可用假別時數</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+                <tbody class="table-body">
+                    <tr>
+                        <th scope="row" class="table-td">事假</th>
+                        <td class="table-td">{{ employeeInfo.personalLeaveHours }} 小時</td>
+                        <td class="table-td">{{ singleLeave.name}}<br>{{ singleLeave.validityPeriodEnd }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="table-td">病假</th>
+                        <td class="table-td">{{ employeeInfo.sickLeaveHours }} 小時</td>
+                    </tr>
+                    <tr v-if="employeeInfo.annualLeaveHours !== null">
+                        <th scope="row" class="table-td">特休</th>
+                        <td class="table-td">{{ employeeInfo.annualLeaveHours }} 小時</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+      </div>
+    </div>
+  </div>
+</div>
 
         <div class="col-5"
             style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
@@ -248,6 +282,7 @@ import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
 
+
 //用於重新導向 router.push
 
 const store = useStore();
@@ -271,6 +306,7 @@ const total = ref(0) //總比數
 const current = ref(1) //目前頁碼
 const pages = ref(0) //分頁總數
 const rows = ref(4) //分頁資料顯示筆數
+
 
 const leaveTypeOptions = [
     { value: 1, label: "特休" },
@@ -306,7 +342,7 @@ const form = ref({
     endTime: '',
     actualLeaveHours: 0,
     deputyId: '3',
-    reason: ''
+    reason: '',
 });
 
 // 计算请假时数
@@ -346,7 +382,10 @@ const openCreate = ref(false)
 
 //產品顯示leave元件用的參數
 const leaves = ref([]);
-const singleLeave = ref([])
+const singleLeave = ref({
+    validityPeriodStart: '',
+  validityPeriodEnd: ''
+});
 const leaveType = ref(null);
 
 const startTime = ref(null);
@@ -416,20 +455,22 @@ function doCreate() {
 }
 //單筆查詢
 function leaveInfo(leaveId) {
-    console.log(leaveId)
-    axiosapi.get("/leave/info/" + leaveId).then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
-        console.log("responce", responce.data);
-        singleLeave.value = responce.data.data;
-        openZon.value = true
-
-    }).catch(function (error) {
-        console.log("error", error);
-        Swal.fire({
-            text: "查詢錯誤" + error.message,
-            icon: "error"
-        });
-        // router.push("/")
+  console.log(leaveId);
+  axios.get(`/leave/info/${leaveId}`)
+    .then(response => {
+      console.log('response', response.data);
+      singleLeave.value = response.data.data;
+      // 触发 Bootstrap 模态框显示
+      const modal = new bootstrap.Modal(document.getElementById('exampleModal'));
+      modal.show();
     })
+    .catch(error => {
+      console.log('error', error);
+      Swal.fire({
+        text: '查询错误: ' + error.message,
+        icon: 'error'
+      });
+    });
 }
 
 
@@ -468,6 +509,26 @@ function callQuery() {
 </script>
 
 <style scoped>
+.btn-custom {
+  background-color: #a33238; /* 设置背景颜色 */
+  color: #ffffff;            /* 设置字体颜色为白色 */
+  border: none;              /* 去掉按钮边框 */
+  height: 30px;              /* 设置按钮高度 */
+  font-size: 15px;           /* 设置字体大小 */
+  display: flex;             /* 使用 flex 布局 */
+  align-items: center;       /* 垂直居中对齐 */
+  justify-content: center;   /* 水平居中对齐 */
+  padding: 0 15px;           /* 添加内边距，使按钮有一定宽度 */
+}
+
+/* 调整模态框的垂直位置，使其居中显示 */
+.modal-dialog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(90% - 1rem); /* 避免顶部和底部的空白区域 */
+
+}
 .right-panel {
     width: 60%;
     padding: 60px;
