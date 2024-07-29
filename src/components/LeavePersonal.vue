@@ -51,10 +51,10 @@
       <div class="modal-body">
         <table class="table">
                 <tbody class="table-body">
-                    <tr>
-                        <th scope="row" class="table-td">事假</th>
+                    <tr >
+                        <th scope="row" class="table-td" >事假</th>
                         <td class="table-td">{{ employeeInfo.personalLeaveHours }} 小時</td>
-                        <td class="table-td">{{ singleLeave.name}}<br>{{ singleLeave.validityPeriodEnd }}</td>
+                        <td class="table-td" >{{ singleLeave.leaveStatus }}<br>{{ singleLeave.validityPeriodEnd }}</td>
                     </tr>
                     <tr>
                         <th scope="row" class="table-td">病假</th>
@@ -455,22 +455,20 @@ function doCreate() {
 }
 //單筆查詢
 function leaveInfo(leaveId) {
-  console.log(leaveId);
-  axios.get(`/leave/info/${leaveId}`)
-    .then(response => {
-      console.log('response', response.data);
-      singleLeave.value = response.data.data;
-      // 触发 Bootstrap 模态框显示
-      const modal = new bootstrap.Modal(document.getElementById('exampleModal'));
-      modal.show();
+    console.log(leaveId)
+    axiosapi.get("/leave/info/" + leaveId).then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
+        console.log("responce", responce.data);
+        singleLeave.value = responce.data.data;
+        openZon.value = true
+
+    }).catch(function (error) {
+        console.log("error", error);
+        Swal.fire({
+            text: "查詢錯誤" + error.message,
+            icon: "error"
+        });
+        // router.push("/")
     })
-    .catch(error => {
-      console.log('error', error);
-      Swal.fire({
-        text: '查询错误: ' + error.message,
-        icon: 'error'
-      });
-    });
 }
 
 
