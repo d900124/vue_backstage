@@ -178,8 +178,8 @@
             <el-divider border-style="dashed" style="margin: 0;" />
 
             <el-form-item label="工作代理人 :&nbsp;">
-                <!-- <el-select v-model="form.deputyId" placeholder="Select" size="small">
-                </el-select> -->
+                <el-select v-model="form.deputyId" placeholder="Select" size="small">
+                </el-select>
                 <!-- <el-select v-model="form.deputyId" placeholder="選擇代理人" size="small">
                     <el-option
                     v-for="employee in employees"
@@ -188,7 +188,8 @@
                     :value="employee.id">
                     </el-option>
                 </el-select> -->
-                <div v-if="employees.length === 0">加载中...</div>
+
+                <!-- <div v-if="employees.length === 0">加载中...</div>
                 <div v-else-if="employees.length > 0">
                 <el-select v-model="form.deputyId" placeholder="选择代理人" size="small">
                     <el-option
@@ -199,7 +200,7 @@
                     </el-option>
                 </el-select>
                 </div>
-                <div v-else>没有数据</div>
+                <div v-else>没有数据</div> -->
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
             <el-form-item label="備註 :&nbsp;">
@@ -440,7 +441,8 @@ function fetchEmployees() {
 function openModal() {
     console.log("openModal");
     openCreate.value = true;
-    fetchEmployees();ß
+    // fetchEmployees();
+    
     // 获取员工数据的 API 调用
     // axiosapi.get('/employee/all')
     //     .then(response => {
