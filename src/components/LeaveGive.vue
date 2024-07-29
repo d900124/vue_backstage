@@ -23,7 +23,7 @@
                     <tr>
                         <th scope="col" class="table-th">新增日期</th>
                         <th scope="col" class="table-th">員工</th>
-                        <th scope="col" class="table-th">假種</th>
+                        <th scope="col" class="table-th">假別</th>
                         <th scope="col" class="table-th">使用期限</th>
                         <th scope="col" class="table-th">共計時數</th>
                         <th scope="col" class="table-th">備註</th>
@@ -44,19 +44,119 @@
             <div>
             </div>
         </div>
-
-    </div>
-
-
-    <div class="col-11" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-        <!-- 分頁區塊 -->
-        <el-pagination style="margin: 10px 0px;" hide-on-single-page=true layout="total,prev, pager, next"
-            :total="total" :page-size="rows" v-model:current-page="current" @change="callQuery"></el-pagination>
-
-
     </div>
     <div class="col-1"></div>
 
+    <div class="col-1"></div>
+    <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
+        <!-- 新增用按鈕 -->
+        <div class="btm-div" style="display: flex;" @click="openModal('insert')">
+            <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;" />
+            <el-button type='' link class="text-btm" style="color: #a33238;">新增給假</el-button>
+        </div>
+    </div>
+
+    <div class="col-5"
+        style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; height: 50px;">
+        <!-- 分頁區塊 -->
+        <el-pagination style="margin: 10px 0px;" hide-on-single-page=true layout="total,prev, pager, next"
+            :total="total" :page-size="rows" v-model:current-page="current" @change="callQuery(false)"></el-pagination>
+    </div>
+    <div class="col-1"></div>
+
+    <!-- 新增區塊 / 抬頭-->
+    <div v-if="openCreate" style="height: 50px;"></div>
+    <div v-if="openCreate" class="col-1"></div>
+    <div v-if="openCreate" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openCreate = false">
+        <el-divider content-position="center">
+            <button type="button" class="btn-close" aria-label="Close"></button>
+            <h5 class="table-title">新增給假</h5>
+        </el-divider>
+    </div>
+    <div v-if="openCreate" class="col-1"></div>
+
+    <!-- 新增區塊 / 資料區-->
+    <div v-if="openCreate" class="col-1"></div>
+    <div v-if="openCreate" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
+
+        <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
+            <el-form-item label="員工 :&nbsp;">
+                <el-select v-model="employeeId" placeholder="Select" size="small">
+                    <el-option v-for="employee in employeeOptions" :key="employee.id" :label="employee.name"
+                        :value="employee.id" />
+                </el-select>
+            </el-form-item>
+            <el-divider border-style="dashed" style="margin: 0;" />
+            <el-form-item label="假別 :&nbsp;">
+                <el-select v-model="leaveType" placeholder="Select" size="small">
+                    <el-option v-for="option in leaveTypeOptions" :key="option.value" :label="option.label"
+                        :value="option.value" />
+                </el-select>
+            </el-form-item>
+            <el-divider border-style="dashed" style="margin: 0;" />
+
+            <el-form-item label="給假時數 :&nbsp;">
+                <el-input v-model="actualLeaveHours" type="text" size="small" />
+            </el-form-item>
+            <el-divider border-style="dashed" style="margin: 0;" />
+
+            <el-form-item label="&nbsp;">
+                <p style="margin: 0;">&nbsp;</p>
+            </el-form-item>
+
+        </el-form>
+    </div>
+
+    <div v-if="openCreate" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
+
+        <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
+            <el-form-item label="開始時間 :&nbsp;">
+                <input id="validity-period-start" type="datetime-local" class="form-control"
+                    v-model="validityPeriodStart" placeholder="選擇開始時間" />
+            </el-form-item>
+
+            <el-form-item label="結束時間 :&nbsp;">
+                <input id="validity-period-end" type="datetime-local" class="form-control" v-model="validityPeriodEnd"
+                    placeholder="選擇結束時間" />
+            </el-form-item>
+
+            <el-divider border-style="dashed" style="margin: 0;" />
+
+            <el-form-item label="備註 :&nbsp;">
+                <el-input v-model="permisionRemarks" type="textarea" placeholder="請輸入備註" size="small" rows="2" />
+            </el-form-item>
+            <el-divider border-style="dashed" style="margin: 0;" />
+
+        </el-form>
+    </div>
+    <div v-if="openCreate" class="col-1"></div>
+
+
+    <!-- 新增區塊 / 確認按鈕-->
+    <div v-if="openCreate" class="col-1"></div>
+    <div v-if="openCreate" class="col-5"
+        style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
+    <div v-if="openCreate" class="col-5"
+        style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
+        <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click="creatDdialogVisible = true"
+            round>&nbsp;確認新增&nbsp;</el-button>
+    </div>
+    <div v-if="openCreate" class="col-1"></div>
+
+    <!-- 確認新增用彈出視窗 -->
+    <el-dialog v-model="creatDdialogVisible" width="350" :show-close="false">
+        <h5 class="msg-title">確認新增 ?</h5>
+        <template #footer>
+            <div class="dialog-footer" style="display: flex;justify-content: center;">
+                <div>
+                    <el-button @click="creatDdialogVisible = false">否</el-button>
+                    <el-button type="primary" @click="doCreate" style="background-color: #a33238;border: #a33238;">
+                        是
+                    </el-button>
+                </div>
+            </div>
+        </template>
+    </el-dialog>
 
 
 
@@ -68,6 +168,10 @@ import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
 
+// 時間
+const validityPeriodStart = ref('');
+const validityPeriodEnd = ref('');
+
 //用於重新導向 router.push
 const router = useRouter()
 
@@ -78,26 +182,92 @@ const pages = ref(0) //分頁總數
 const rows = ref(4) //分頁資料顯示筆數
 
 
-
 //下方新增資料開啟用
-const openCreat = ref(false)
+const openCreate = ref(false)
 
 //產品顯示leave元件用的參數
 const leaves = ref([]);
 const singleLeave = ref([])
 
+const employeeId = ref(null);
 
+const leaveTypeOptions = [
+    { value: 1, label: "特休" },
+    { value: 5, label: "事假" },
+    { value: 6, label: "半薪病假" },
+    { value: 7, label: "婚假" },
+    { value: 8, label: "生理假" },
+    { value: 9, label: "公假" },
+    { value: 10, label: "喪假" }
+];
 
+const employeeOptions = ref([
+    { id: 1, name: 'Alice' },
+    { id: 2, name: 'Bob' },
+    { id: 3, name: 'Charlie' }
+]);
 
 onMounted(function () {
     callQuery();
 })
 
 
-//單筆新增
+//開啟新增區塊
 function openModal() {
     console.log("openModal");
-    openCreat.value = true;
+    openCreate.value = true;
+}
+
+//新增簽核
+function doCreate() {
+    creatDdialogVisible.value = false;
+    Swal.fire({
+        text: "執行中......",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+    });
+
+    let request = {
+        "employeeId": 3,
+        "leaveType": form.value.leaveType,
+        "actualLeaveHours": form.value.actualLeaveHours,
+        "validityPeriodStart": form.value.validityPeriodStart,
+        "validityPeriodEnd": form.value.validityPeriodEnd,
+        "permisionRemarks": form.value.permisionRemarks,
+        "leaveStatus": 1
+    }
+
+    axiosapi.post("/leave/add", request).then(function (response) {
+        console.log("response", response);
+        if (response.data.success) {
+            callQuery(true);
+            Swal.fire({
+                icon: "success",
+                text: response.data.msg,
+                showConfirmButton: false,
+            }).then(function (result) {
+
+                console.log("新增的物件", leaves.value[0]);
+                openCreate.value = false;
+                openZon.value = true;
+
+            });
+        } else {
+            Swal.fire({
+                icon: "warning",
+                text: response.data.msg,
+            });
+        }
+    }).catch(function (error) {
+        console.log("error", error);
+        Swal.fire({
+            icon: "error",
+            text: "新增錯誤：" + error.msg,
+        });
+    });
+    setTimeout(function () {
+        Swal.close();  //視窗關閉 
+    }, 1000);
 }
 
 
