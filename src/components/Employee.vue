@@ -248,6 +248,7 @@
         </div>
     </div>
     <div v-if="openZon" class="col-1"></div>
+    <!-- 下方詳細資料區 / 修改按鈕-->
     <div v-if="openZon" class="col-1"></div>
     <div v-if="openZon" class="col-5"
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
@@ -272,6 +273,20 @@
             </div>
         </template>
     </el-dialog>
+
+     <!-- 確認修改用彈出視窗 -->
+     <el-dialog v-model="dialogVisible" width="300" :show-close="false">
+        <h5 class="msg-title">確認修改 員工編號 {{ singleEmployee.id }} ?</h5>
+        <template #footer>
+            <div class="dialog-footer" style="justify-content: center;">
+                <el-button @click="dialogVisible = false; isModify = true">否</el-button>
+                <el-button type="primary" @click="doModify" style="background-color: #a33238;border: #a33238;">
+                    是
+                </el-button>
+            </div>
+        </template>
+    </el-dialog>
+
 
 
 </template>
@@ -322,8 +337,8 @@ const singleEmployee = ref({
 
 // export { teamLeaders }; // 导出 teamLeaders 变量
 
-//開啟修改用
-const isModify = ref(false)
+// 是否可以修改
+const isModify = ref(false);
 
 //確認修改彈出視窗用
 const dialogVisible = ref(false)
@@ -353,9 +368,9 @@ const form = ref({
     password: '',
 });
 
-onMounted(() => {
+onMounted(function () {
     callQuery();
-});
+})
 
 //單筆新增
 function openModal() {
@@ -463,14 +478,13 @@ function callQuery() {
         });
 }
 
-// 開啟確認修改視窗
+//開啟確認修改視窗
 function openDoModify() {
-    if (!isModify.value) {
-        console.log("開啟修改");
+    if (isModify.value == false) {
+        console.log("isModify.value", isModify.value);
+        console.log("修改員工 ID", singleEmployee.value.id);
         isModify.value = true;
-        dialogVisible.value = true; // 确保这里设置为 true 显示对话框
-    } else {
-        console.log("資料鎖定中，無法開啟修改");
+        dialogVisible.value = true;
     }
 }
 
@@ -487,7 +501,15 @@ function doModify() {
     });
 
     let request = {
-    }
+        "accountType": singleEmployee.value.accountType,
+        "name": singleEmployee.value.name,
+        "startDate": singleEmployee.value.startDate,
+        "teamLeaderId": singleEmployee.value.teamLeaderName,
+        "sex": singleEmployee.value.sex,
+        "phone": singleEmployee.value.phone,
+        "email": singleEmployee.value.email,
+        "branch": singleEmployee.value.branch
+    };
 
     console.log("request========>" + JSON.stringify(request))
     axiosapi.put(`/employee/modify/${singleEmployee.value.id}`, request).then(function (response) {
