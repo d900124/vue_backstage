@@ -450,6 +450,7 @@ function vcaTableDoEmpFindAll2(date,time) {
         employeeIDOptions.value=[];
         for(let i = 0;i<empcount;i++){
             let idTimerequest={
+                // 查詢中間時間點是否有排程
                 "ckeckavailableTimeStr":ckeckavailableTimeStr,
                 "ckeckavailableTimeEnd":ckeckavailableTimeEnd,
                 "employeeId":responce.data.data[i].id,
