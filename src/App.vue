@@ -5,7 +5,11 @@
             ></LeftSideMenu></el-aside> -->
         <el-main style=" width: auto; margin-left: 100px;">
             <dev class="container">
-                <RouterView></RouterView>
+                <RouterView v-slot="{Component, route}">
+                    <transition name="slide" mode="out-in"> 
+                        <component :is="Component" :key="route.path" ></component>
+                    </transition>
+                </RouterView>
             
             </dev>
         </el-main>
@@ -16,7 +20,17 @@
     <!-- <RouterView></RouterView> -->
 </template>
 
-<style scoped>
+<style >
+.slide-enter-active,
+.slide-leave-active{
+    transition: opacity 1s,transform 1s;
+}
+
+.slide-enter-from,
+.slide-leave-to{
+    opacity: 0;
+    transform: translateX(-5%);
+}
 </style>
 
 <script setup>

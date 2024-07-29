@@ -1,5 +1,5 @@
 <template>
-
+<section> 
     <div class="container text-center">
         <div class="row">
             <!-- 登出圖釘 -->
@@ -16,10 +16,9 @@
 
             <!-- 考核評比 -->
             <KpiTable></KpiTable>
-
-
         </div>
     </div>
+</section> 
 </template>
 
 <script setup>

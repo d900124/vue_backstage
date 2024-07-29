@@ -20,11 +20,11 @@
             </template>
             <a href="/pages/personal#agenda" style="all: unset;"><el-menu-item> - 工作排程</el-menu-item></a>
             <a href="#" style="all: unset;"><el-menu-item index="1-2"> - 請假管理</el-menu-item></a>
-            <a href="#" style="all: unset;"><el-menu-item index="1-3"> - 個人資料 & 考核</el-menu-item></a>
+            <a href="/pages/personal#personalInfo" style="all: unset;"><el-menu-item> - 個人資料 & 考核</el-menu-item></a>
 
         </el-sub-menu>
 
-        <el-sub-menu index="/pages/carMaintai">
+        <el-sub-menu index="/pages/carMaintain">
             <template #title>
 
                 <RouterLink :to="{ name: 'car-maintain-link' }" style="all: unset;"><el-icon><font-awesome-icon
@@ -34,7 +34,7 @@
                 </span>
 
             </template>
-            <a href="#" style="all: unset;"><el-menu-item index="2-1"> - 賞車清單</el-menu-item></a>
+            <a href="/pages/carMaintain#viewCarAssigned" style="all: unset;"><el-menu-item > - 賞車清單</el-menu-item></a>
             <a href="#" style="all: unset;"><el-menu-item index="2-2"> - 車輛總覽</el-menu-item></a>
         </el-sub-menu>
 
@@ -85,6 +85,7 @@ import { ElButton } from 'element-plus';
 import 'element-plus/dist/index.css';
 
 const router = useRouter();
+const isCollapse =ref(false);
 
 </script>
 

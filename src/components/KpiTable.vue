@@ -105,8 +105,8 @@
             <td class="table-td">{{item.seasonStrDayString.substring(0, 4)}} - {{item.seasonStrDayString.substring(5, 10)}}</td>
             <td class="table-td"><b style="color: red;font-weight: 900;">{{item.totalScore}}</b></td>
             <td class="table-td">{{item.salesScore}}</td>
-            <td v-if="!isKpiModify" class="table-td">{{item.teamLeaderRating}}</td>
-            <td v-if="isKpiModify" class="table-td">
+            <td v-if="(!isKpiModify)|(item.teamLeaderId!=employeeInfo.id)" class="table-td">{{item.teamLeaderRating}}</td>
+            <td v-if="(isKpiModify)&(item.teamLeaderId==employeeInfo.id)" class="table-td">
                 <el-input-number
                     v-model="item.teamLeaderRating"
                     size="small"
@@ -125,13 +125,14 @@
     </div>
     
     </div>
-    <div class="col-1"></div>
+    <div class="col-1"> </div>
 
     <div class="col-1"></div>
     <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
 <!-- KPI修改按鈕-->
         <div v-if="(findKpiYear=='2024')&&(findKpiSeasonStrDay=='-07-01')" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start; ">
         <el-switch
+            v-if="employeeInfo.accountType==4"
             v-model="isKpiModify"
             inline-prompt
             class="value5"
@@ -182,6 +183,7 @@
                     placeholder="員工姓名"
                     size="small"
                     @change = "current=1;callKpiFindByHQL(false)"
+                    @click="kpiTableDoEmpFindAll"
                     >
                     <el-option
                         v-for="Option in employeeIDOptions"
@@ -201,12 +203,13 @@
                     clearable
                     size="small"
                     @change = "current=1;callKpiFindByHQL(false)"
+                    @click = "kpiTableDoTeamleaderFindAll"
                     >
                     <el-option
                         v-for="Option in teamleaderIDOptions"
-                        :key="Option.value"
-                        :label="Option.label"
-                        :value="Option.value"
+                        :key="Option.id"
+                        :label="Option.name"
+                        :value="Option.id"
                     />
                 </el-select>
             </el-form-item>
@@ -287,13 +290,18 @@
                 </div>
     </el-drawer>
 
+<!-- <div>
+用户名:{{ employeeInfo.name || "" }} / 用户ID:{{ employeeInfo.id || "" }}  / 帳號:{{ employeeInfo.account || "" }} / 帳號分類:{{ employeeInfo.accountType || "" }}
+</div> -->
+
 </template>
     
 <script setup >
-import { onMounted,ref } from 'vue';
+import { computed, onMounted,ref } from 'vue';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
+import { useStore } from "vuex";
 
 
 //用於重新導向 router.push
@@ -340,17 +348,17 @@ const employeeTypeOptions=[
     { value: 0, label: '離職', }
 ]
 
-const employeeIDOptions=[
-    { value: 1, label: '職員1', },
-    { value: 2, label: '職員2', },
-    { value: 3, label: '職員3', },
-    { value: 4, label: '職員4', },
-    { value: 5, label: '職員5', }
-]
+const employeeIDOptions=ref([
+    // { value: 1, label: '職員1', },
+    // { value: 2, label: '職員2', },
+    // { value: 3, label: '職員3', },
+    // { value: 4, label: '職員4', },
+    // { value: 5, label: '職員5', }
+])
 
-const teamleaderIDOptions=[
-    { value: 5, label: '主管5', }
-]
+const teamleaderIDOptions=ref([
+    // { value: 5, label: '主管5', }
+])
 
 //分頁用參數
 const total = ref(0) //總比數
@@ -365,8 +373,28 @@ const singleItem= ref([])
 //修改用屬性
 const  isKpiModify = ref(false);
 
-onMounted(function () {
-    callKpiFindByHQL(false);
+//登錄資訊用
+const store = useStore();
+const isAuthenticated = computed(() => store.state.isAuthenticated);
+const employeeInfo = computed(() => store.state.employeeInfo.data || {});
+
+
+//登錄資訊用 使用 async 和 await 來等待 Vuex action 完成並更新
+const fetchEmployeeData = async () => {
+  const username = localStorage.getItem("username");
+  if (username) {
+    await store.dispatch("fetchEmployeeInfo", username);
+  }
+};
+
+onMounted(async () => {
+    await fetchEmployeeData();
+    if (employeeInfo.value.id) {
+        console.log("employeeInfo",employeeInfo.value)
+        callKpiFindByHQL(false);
+    }else {
+    console.warn('Employee info not loaded yet');
+  }
 })
 
 //清除查詢
@@ -439,6 +467,8 @@ function callKpiFindByHQL(doCreat) {
     let salesScoreMin = findSalesScoreMin.value="" ? 0 : findSalesScoreMin.value;
     let totalScoreMax = findTotalScoreMax.value="" ? 100 : findTotalScoreMax.value;
     let totalScoreMin = findTotalScoreMin.value="" ? 0 : findTotalScoreMin.value;
+    let branchId = findKpiEmployeeBranch.value="" ? null : findKpiEmployeeBranch.value;
+    if(findKpiEmployeeBranch.value==-1){branchId=null}
 
     let request ={ 
         "id":null,
@@ -452,6 +482,7 @@ function callKpiFindByHQL(doCreat) {
         "salesScoreMin":salesScoreMin, 
         "totalScoreMax":totalScoreMax,
         "totalScoreMin":totalScoreMin,
+        "branchId":branchId,
 
 
         "isPage":current.value-1,
@@ -512,6 +543,47 @@ function TeamLeaderRatingChange(item) {
         console.log("error", error);
         ElMessage.error('修改錯誤'+error.message)
     });
+}
+
+//員工查詢全部製作下拉選單
+function kpiTableDoEmpFindAll() {
+    let empcount = 0;
+    axiosapi.get("employee/count").then(function (responce){
+        empcount=responce.data.data;
+        console.log("empcount",empcount);
+    })
+
+    axiosapi.get("employee/all").then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
+        console.log("employee/all responce",responce.data);
+        employeeIDOptions.value=[];
+        for(let i = 0;i<empcount;i++){
+            employeeIDOptions.value.push({
+                        value:responce.data.data[i].id,
+                        label: responce.data.data[i].name})
+        }
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "員工查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
+}
+
+//主管下拉選單
+function kpiTableDoTeamleaderFindAll() {
+    axiosapi.get("employee/teamLeaders").then(function (responce) {
+        console.log("teamLeaders responce",responce.data);
+        teamleaderIDOptions.value=responce.data.data;
+}).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "主管查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
 }
     
 </script>

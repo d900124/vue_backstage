@@ -1,4 +1,5 @@
 <template>
+<section> 
     <div class="container text-center">
         <div class="row">
             <!-- 登出圖釘 -->
@@ -7,16 +8,19 @@
             <!-- 工作排程 -->
             <AgendaTable></AgendaTable>
             <!-- 請假管理 -->
+            <LeavePersonal></LeavePersonal>
 
             <!-- 個人資料 & 考核 -->
-            <EmployeeDetail></EmployeeDetail>
+            <EmployeeDetail2></EmployeeDetail2>
         </div>
     </div>
+</section> 
 </template>
 
 <script setup>
 import AgendaTable from '@/components/AgendaTable.vue'
-import EmployeeDetail from '@/components/EmployeeDetail.vue';
+import EmployeeDetail2 from '@/components/EmployeeDetail2.vue';
+import LeavePersonal from '@/components/LeavePersonal.vue';
 import Logout from '@/components/Logout.vue';
 
 </script>

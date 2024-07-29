@@ -7,7 +7,7 @@
             <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
                 
                     <el-select
-                        v-model="findbbb"
+                        v-model="findCarBrand"
                         clearable
                         placeholder="品牌"
                         size="small"
@@ -15,7 +15,7 @@
                         @change = "current=1;callFindByHQL(false)"
                         >
                         <el-option
-                            v-for="Option in xxxx"
+                            v-for="Option in carBrandOptions"
                             :key="Option.value"
                             :label="Option.label"
                             :value="Option.value"
@@ -30,6 +30,7 @@
                         size="small"
                         style="width: 130px;margin-right: 20px;"
                         @change = "current=1;callFindByHQL(false)"
+                        @click="cadTableDoEmpFindAll();"
                         >
                         <el-option
                             v-for="Option in employeeIDOptions"
@@ -116,8 +117,9 @@
                 <tbody class="table-group-divider">
                     <tr v-for="item in items" :key="item.id"  @click="itemClick(item.id)">
                     <th scope="row" class="table-td">{{item.id}}</th>
-                    <td class="table-td"></td>
-                    <td class="table-td">{{item.approvalTypeName}} {{item.floatingAmount}}</td>
+                    <td class="table-td">{{item.carBrand}}&nbsp;-&nbsp;{{item.carModelName}}</td>
+                    <td v-if="item.approvalType==1||item.approvalType==2" class="table-td">{{item.approvalTypeName}} 至 ${{item.floatingAmount}}</td>
+                    <td v-if="item.approvalType==3" class="table-td">{{item.approvalTypeName}} </td>
                     <td class="table-td">{{item.createTimeString}}</td>
                     <td class="table-td">{{item.employeeName}}</td>
                     <td class="table-td">{{item.approvalStatusName}}</td>
@@ -174,45 +176,35 @@
 
                 <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
                 <el-form-item label="申請員工 :&nbsp;">
-                    <p style="margin: 0;" >串接登入員工</p>
+                    <p style="margin: 0;" >{{employeeInfo.name}}</p>
                 </el-form-item>
 
                 <el-divider border-style="dashed" style="margin: 0;"/>
-                <el-form-item label="簽核主管 :&nbsp;">
+                <el-form-item label="簽核主管 :&nbsp;">{{employeeInfo.teamLeaderName}}</el-form-item>
+                <el-divider border-style="dashed" style="margin: 0;"/>
+
+                <el-form-item label="車輛編號 :&nbsp;">
+                <!--  串接查詢車輛方法 -->
                     <el-select
-                        v-model="creatTeamleaderIDValue"
-                        placeholder="Select"
-                        size="small"
-                        >
-                        <el-option
-                            v-for="Option in teamleaderIDOptions"
-                            :key="Option.value"
-                            :label="Option.label"
-                            :value="Option.value"
-                        />
+                            v-model="creatCarIDValue"
+                            placeholder="需修改之車輛編號"
+                            size="small"
+                            style="width: 200px;"
+                            @change = "creatFindCard"
+                            @click = "cadTableDoCarFindAll"
+                            >
+                            <el-option
+                                v-for="Option in carIdOptions"
+                                :key="Option.id"
+                                :label="`no.${Option.id}`"
+                                :value="Option.id"
+                            />
                     </el-select>
                 </el-form-item>
                 <el-divider border-style="dashed" style="margin: 0;"/>
 
-                <el-form-item label="修改車輛 :&nbsp;">
-                <el-input-number
-                    v-model="creatCarIDValue"
-                    :min="1"
-                    :max="10"
-                    size="small"
-                    controls-position="right"
-                />
-                </el-form-item>
-                <el-divider border-style="dashed" style="margin: 0;"/>
-
-                <el-form-item label="改後價格 :&nbsp;">
-                <el-input-number
-                    v-model="creatFloatingAmountValue"
-                    :min="1000"
-                    :max="100000000000000000"
-                    size="small"
-                    controls-position="right"
-                />
+                <el-form-item label="&nbsp;">
+                    <p style="margin: 0;" >&nbsp;</p>
                 </el-form-item>
 
                 </el-form>
@@ -221,18 +213,22 @@
             <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
 
                 <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
-                <el-form-item label="&nbsp;">
-                    <p style="margin: 0;" >&nbsp;</p>
-                </el-form-item>
-                <el-divider border-style="dashed" style="margin: 0;"/>
+                    
+                    <el-form-item label="當前價格 :&nbsp;">
+                        <p style="margin: 0;" >{{creatBaseCarPrice}}</p>
+                    </el-form-item>
+                    <el-divider border-style="dashed" style="margin: 0;"/>
 
-                <el-form-item label="&nbsp;">
-                    <p style="margin: 0;" >&nbsp;</p>
-                </el-form-item>
-                <el-divider border-style="dashed" style="margin: 0;"/>
-
-                <el-form-item label="簽核狀態 :&nbsp;">
-                    <p style="margin: 0;" >尚未簽核</p>
+                    <el-form-item label="批核價格 :&nbsp;">
+                <el-input-number
+                    v-model="creatFloatingAmountValue"
+                    :min="0"
+                    :max="100000000000000000"
+                    size="small"
+                    style="width: 200px;"
+                    controls-position="right"
+                    @change = "creatFindCard"
+                />
                 </el-form-item>
                 <el-divider border-style="dashed" style="margin: 0;"/>
 
@@ -241,6 +237,8 @@
                         v-model="creatApprovalTypeValue"
                         placeholder="Select"
                         size="small"
+                        style="width: 200px;"
+                        @change = "creatFindCard"
                         >
                         <el-option
                             v-for="Option in creatApprovalTypeOptions"
@@ -250,6 +248,12 @@
                         />
                     </el-select>
                 </el-form-item>
+                <el-divider border-style="dashed" style="margin: 0;"/>
+
+                <el-form-item label="簽核狀態 :&nbsp;">
+                    <p style="margin: 0;" >尚未簽核</p>
+                </el-form-item>
+                
 
                 </el-form>
                 </div>
@@ -260,7 +264,7 @@
             <div v-if="openCreat" class="col-1"></div>
             <div v-if="openCreat" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
             <div v-if="openCreat" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-                <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click = "creatDdialogVisible=true" >&nbsp確認新增&nbsp</el-button>
+                <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click = "creatDdialogVisible=true" round>&nbsp確認新增&nbsp</el-button>
             </div>
             <div v-if="openCreat" class="col-1"></div>
 
@@ -289,27 +293,27 @@
                     <th scope="col" class="table-th" >品牌型號</th>
                     <th scope="col" class="table-th" >品牌型號</th>
                     <th scope="col" class="table-th" >簽核需求</th>
-                    <th scope="col" class="table-th" >原始價錢</th>
-                    <th scope="col" class="table-th" >改後價錢</th>
+                    <th scope="col" class="table-th" >當前價錢</th>
+                    <th scope="col" class="table-th" >批核價錢</th>
                     </tr>
                     </thead>
                     <tbody class="table-group-divider">
                         <tr v-if="!isModify">
                         <th scope="row" class="table-td" name="id" >{{ singleItem.id }}</th>
                         <td class="table-td">{{singleItem.carId}}</td>
-                        <td class="table-td"></td>
-                        <td class="table-td"></td>
+                        <td class="table-td">{{singleItem.carBrand}}</td>
+                        <td class="table-td">{{singleItem.carModelName}}</td>
                         <td class="table-td">{{singleItem.approvalTypeName}}</td>
-                        <td class="table-td"></td>
+                        <td class="table-td">{{singleItem.carPrice}}</td>
                         <td class="table-td">{{singleItem.floatingAmount}}</td>
                         </tr>
                         <tr v-if="isModify">
                         <th scope="row" class="table-td" name="id" :value="singleItem.id">{{ singleItem.id }}</th>
                         <td class="table-td">{{singleItem.carId}}</td>
-                        <td class="table-td"></td>
-                        <td class="table-td"></td>
+                        <td class="table-td">{{singleItem.carBrand}}</td>
+                        <td class="table-td">{{singleItem.carModelName}}</td>
                         <td class="table-td">{{singleItem.approvalTypeName}}</td>
-                        <td class="table-td"></td>
+                        <td class="table-td">{{singleItem.carPrice}}</td>
                         <td class="table-td">{{singleItem.floatingAmount}}</td>
                         </tr>
                         
@@ -328,9 +332,9 @@
                     </thead>
                     <tbody class="table-group-divider">
                         <tr v-if="!isModify" >
-                            <th scope="row" class="table-td"></th>
+                            <th scope="row" class="table-td">{{singleItem.employeeId}}</th>
                             <td class="table-td">{{singleItem.employeeName}}</td>
-                        <td class="table-td"></td>
+                        <td class="table-td">{{singleItem.teamLeaderId}}</td>
                         <td class="table-td">{{singleItem.teamLeaderName}}</td>
                         <td class="table-td">{{singleItem.createTimeString}}</td>
                         <td class="table-td">{{singleItem.updateTimeString}}</td>
@@ -338,9 +342,9 @@
                         </tr>
 
                         <tr v-if="isModify" >
-                            <th scope="row" class="table-td"></th>
+                            <th scope="row" class="table-td">{{singleItem.employeeId}}</th>
                             <td class="table-td">{{singleItem.employeeName}}</td>
-                        <td class="table-td"></td>
+                        <td class="table-td">{{singleItem.teamLeaderId}}</td>
                         <td class="table-td">{{singleItem.teamLeaderName}}</td>
                         <td class="table-td">{{singleItem.createTimeString}}</td>
                         <td class="table-td">{{singleItem.updateTimeString}}</td>
@@ -372,7 +376,8 @@
             <div v-if="openZon" class="col-1"></div>
             <div v-if="openZon" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
             <div v-if="openZon" class="col-5" style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-                <el-switch
+                <el-switch 
+                    v-if="singleItem.approvalStatus===0&singleItem.teamLeaderId===employeeInfo.id"
                     v-model="isModify"
                     inline-prompt
                     class="value5"
@@ -440,6 +445,7 @@
                         placeholder="創建員工"
                         size="small"
                         @change = "current=1;callFindByHQL(false)"
+                        @click="cadTableDoEmpFindAll();"
                         >
                         <el-option
                             v-for="Option in employeeIDOptions"
@@ -459,12 +465,13 @@
                         clearable
                         size="small"
                         @change = "current=1;callFindByHQL(false)"
+                        @click = "cadTableDoTeamleaderFindAll"
                         >
                         <el-option
                             v-for="Option in teamleaderIDOptions"
-                            :key="Option.value"
-                            :label="Option.label"
-                            :value="Option.value"
+                            :key="Option.id"
+                            :label="Option.name"
+                            :value="Option.id"
                         />
                     </el-select>
                 </el-form-item>
@@ -477,12 +484,13 @@
                         clearable
                         size="small"
                         @change = "current=1;callFindByHQL(false)"
+                        @click = "cadTableDoCarFindAll"
                         >
                         <el-option
-                            v-for="Option in carIDOptions"
-                            :key="Option.value"
-                            :label="Option.label"
-                            :value="Option.value"
+                            v-for="Option in carIdOptions"
+                            :key="Option.id"
+                            :label="`no.${Option.id}`"
+                            :value="Option.id"
                         />
                     </el-select>
                 </el-form-item>
@@ -581,13 +589,19 @@
                         <el-button type='' link  style="color: #a33238; font-weight: 900;">清除查詢</el-button>
                     </div>
     </el-drawer>
+
+<!-- <div>
+用户名:{{ employeeInfo.name || "" }} / 用户ID:{{ employeeInfo.id || "" }}  / 帳號:{{ employeeInfo.account || "" }} / 帳號分類:{{ employeeInfo.accountType || "" }}
+</div> -->
+
 </template>
     
 <script setup >
-import { onMounted,ref } from 'vue';
+import { computed,onMounted,ref } from 'vue';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
+import { useStore } from "vuex";
 
 
 //用於重新導向 router.push
@@ -625,9 +639,8 @@ const creatDdialogVisible =ref(false)  //新增
 
 
 //新增用所有資料
+const creatBaseCarPrice= ref(null)
 const creatCarIDValue = ref(1)
-const creatEmployeeIDValue = ref(1)
-const creatTeamleaderIDValue = ref(5)
 const creatApprovalStatusValue = ref(0)
 const creatApprovalTypeValue = ref(1)
 const creatFloatingAmountValue = ref(1000000)
@@ -635,37 +648,20 @@ const creatFloatingAmountValue = ref(1000000)
 
 
 //所有下拉選單選項 - 後續串接方法
-const teamleaderIDOptions=[
-    {
-        value: 5,
-        label: '主管名 - emp5',
-    }
+const teamleaderIDOptions=ref([])
+const employeeIDOptions=ref([])
+const carIdOptions=ref([])
+const carBrandOptions=[
+    {value: 1,label: 'HONDA'},
+    {value: 2,label: 'TOYOTA'},
+    {value: 3,label: 'MAZDA'},
+    {value: 4,label: 'BENZ'},
+    {value: 5,label: 'PORSCHE'},
+    {value: 6,label: 'BMW'},
+    {value: 7,label: 'VOLKSWAGEN'},
+    {value: 8,label: 'NISSAN'},
+    {value: 9,label: 'SUBARU'}
 ]
-
-const employeeIDOptions=[
-    {
-        value: 1,
-        label: 'emp1',
-    },
-    {
-        value: 2,
-        label: 'emp2',
-    },
-    {
-        value: 3,
-        label: 'emp3',
-    },
-    {
-        value: 4,
-        label: 'emp4',
-    },
-    {
-        value: 5,
-        label: 'emp5',
-    }
-    
-]
-
 const creatApprovalTypeOptions=[
     {
         value: 1,
@@ -697,6 +693,7 @@ const approvalStatusOptions = [
 ]
 
 //查詢用-簡易
+const findCarBrand =ref(null)
 const findTeamLeaderId =ref(null)
 const findEmployeeId =ref(null)
 const findApprovalType =ref(null)
@@ -710,9 +707,29 @@ const findFloatingAmountMin = ref(null)
 const findCreateTime = ref([null, null])
 const findUpdateTime = ref([null, null])
 
+//登錄資訊用
+const store = useStore();
+const isAuthenticated = computed(() => store.state.isAuthenticated);
+const employeeInfo = computed(() => store.state.employeeInfo.data || {});
 
-onMounted(function () {
-    callFindByHQL(false);
+
+
+//登錄資訊用 使用 async 和 await 來等待 Vuex action 完成並更新
+const fetchEmployeeData = async () => {
+  const username = localStorage.getItem("username");
+  if (username) {
+    await store.dispatch("fetchEmployeeInfo", username);
+  }
+};
+
+onMounted(async () => {
+    await fetchEmployeeData();
+    if (employeeInfo.value.id) {
+        console.log("employeeInfo",employeeInfo.value)
+        callFindByHQL(false);
+    }else {
+    console.warn('Employee info not loaded yet');
+  }
 })
 
 
@@ -722,6 +739,7 @@ function cleanFind() {
     findEmployeeId.value = null;
     findApprovalType.value = null;
     findApprovalStatus.value = null;
+    findCarBrand.value = null;
 
     findCarId.value =null
     findFloatingAmountMax.value = null
@@ -773,10 +791,12 @@ function callFindByHQL(doCreat){
     }
     console.log("callFindByHQL - 當前頁碼:",current.value);
     
+    let brandId = findCarBrand.value=""?null:findCarBrand.value;
     let teamLeaderId = findTeamLeaderId.value="" ? null : findTeamLeaderId.value;
     let employeeId = findEmployeeId.value="" ? null : findEmployeeId.value;
     let approvalStatus = findApprovalStatus.value="" ? null : findApprovalStatus.value;
     let approvalType = findApprovalType.value="" ? null : findApprovalType.value;
+    let carId = findCarId.value=""?null:findCarId.value;
 
     // let carId = findCarId.value=""  ? null : findCarId.value;
     let floatingAmountMax = findFloatingAmountMax.value="" ? 99999999999999999999 : findFloatingAmountMax.value;
@@ -790,7 +810,7 @@ function callFindByHQL(doCreat){
         "id":null,
         "teamLeaderId":teamLeaderId,
         "employeeId": employeeId,
-        "carId":null,
+        "carId":carId,
         "approvalStatus":approvalStatus, 
         "approvalType":approvalType,
         "floatingAmountMax":floatingAmountMax, 
@@ -799,6 +819,7 @@ function callFindByHQL(doCreat){
         "createTimeEnd":createTimeEnd,
         "updateTimeStr":updateTimeStr,
         "updateTimeEnd":updateTimeEnd,
+        "brandId":brandId,
 
 
         "isPage":current.value-1,
@@ -841,9 +862,11 @@ function doCreat() {
     });
 
 
+
+
     let request ={  
-        "employeeId":creatEmployeeIDValue.value, 
-        "teamLeaderId":creatTeamleaderIDValue.value, 
+        "employeeId":employeeInfo.value.id, 
+        "teamLeaderId":employeeInfo.value.teamLeaderId, 
         "carId":creatCarIDValue.value,
         "approvalStatus":creatApprovalStatusValue.value, 
         "approvalType":creatApprovalTypeValue.value,
@@ -895,6 +918,44 @@ function openDoModify() {
     }
 }
 
+//新增簽核中-顯示原價-自動簽合需求
+function creatFindCard() {
+    if (creatApprovalTypeValue.value==3) {
+        creatFloatingAmountValue.value=0
+    }else{
+        axiosapi.get(`/car/find/${creatCarIDValue.value}`).then(function(response) {
+            console.log("response", response);
+            if(response.status==200)  {
+                ElMessage({
+                    message: '錨定修改',
+                    type: 'success',
+                })
+                let car = response.data.list 
+                console.log("car", car);
+                creatBaseCarPrice.value = response.data.list[0].price
+                // console.log("creatBaseCarPrice", creatBaseCarPrice.value);
+                // console.log("creatBaseCarPrice", creatBaseCarPrice.value);
+                // console.log("creatFloatingAmountValue", creatFloatingAmountValue.value);
+                if (creatBaseCarPrice.value>creatFloatingAmountValue.value) {
+                    creatApprovalTypeValue.value=1
+                }else if (creatBaseCarPrice.value<creatFloatingAmountValue.value) {
+                    creatApprovalTypeValue.value=2
+                }
+            } else {
+                ElMessage({
+                    message: response.data.message,
+                    type: 'warning',
+                })
+                creatBaseCarPrice.value = "--"
+            }
+        }).catch(function(error) {
+            console.log("error", error);
+            ElMessage.error('錨定錯誤'+error.message)
+            creatBaseCarPrice.value = "--"
+        });
+    }
+}
+
 //修改簽核
 function doModify() {
     Swal.fire({
@@ -905,11 +966,11 @@ function doModify() {
 
     let request ={ 
         "id":singleItem.value.id, 
-        "teamLeaderId":5,
-        "employeeId":1,
+        "teamLeaderId":employeeInfo.value.id,
+        "employeeId":singleItem.value.employeeId,
         "carId":singleItem.value.carId,
         "approvalStatus":approvalStatusValue.value,
-        "approvalType":1,
+        "approvalType":singleItem.value.approvalType,
         "floatingAmount":singleItem.value.floatingAmount
     }
 
@@ -924,7 +985,121 @@ function doModify() {
                 callFindByHQL(false);
                 itemClick(singleItem.value.id);
                 openZon.value=true;
+
+                if (approvalStatusValue.value==1 && singleItem.value.approvalType!=3) {
+                    
+                    
+                    //加入車輛價錢修改(漲價/降價)
+                    //先查車子資訊
+                    axiosapi.get(`/car/find/${singleItem.value.carId}`).then(function(response) {
+                        console.log("response", response);
+                        if(response.status==200)  {
+                            ElMessage({
+                                message: '查車OK',
+                                type: 'success',
+                            })
+                            let car = response.data.list[0]; 
+                            console.log("car", car);
+                            // 修改汽車資料
+                            let requestCar ={ 
+                                "id":car.id, 
+                                "productionYear":car.productionYear,
+                                "milage":car.milage,
+                                "negotiable":car.negotiable,//修車失敗
+                                "conditionScore":car.conditionScore,
+                                "branch":car.branch,//修車失敗
+                                "state":car.state,
+                                "price":singleItem.value.floatingAmount,
+                                "launchDate":car.launchDate,//修車失敗
+                                "color":car.color,
+                                "remark":car.remark
+                            }
+                            console.log("requestCar", requestCar);
+                            axiosapi.put(`/car/modify/${car.id}`,requestCar).then(function(response) {
+                                console.log("response", response);
+                                if(response.data.success)  {
+                                    ElMessage({
+                                        message: '改車OK',
+                                        type: 'success',
+                                    })
+                                } else {
+                                    ElMessage({
+                                        message: response.data.message,
+                                        type: 'warning',
+                                    })
+                                }
+                            }).catch(function(error) {
+                                console.log("error", error);
+                                ElMessage.error('改車錯誤'+error.message)
+                            });
+
+                        } else {
+                            ElMessage({
+                                message: response.data.message,
+                                type: 'warning',
+                            })
+                        }
+                    }).catch(function(error) {
+                        console.log("error", error);
+                        ElMessage.error('查車錯誤'+error.message)
+                    });
+                }else if (approvalStatusValue.value==1 && singleItem.value.approvalType==3) {
+                    //加入車輛價錢修改(下架)
+                    //先查車子資訊
+                    axiosapi.get(`/car/find/${singleItem.value.carId}`).then(function(response) {
+                        console.log("response", response);
+                        if(response.status==200)  {
+                            // ElMessage({
+                            //     message: '查車OK',
+                            //     type: 'success',
+                            // })
+                            let car = response.data.list[0]; 
+                            console.log("car", car);
+                            // 修改汽車資料
+                            let requestCar ={ 
+                                "id":car.id, 
+                                "productionYear":car.productionYear,
+                                "milage":car.milage,
+                                "negotiable":car.negotiable,//修車失敗
+                                "conditionScore":car.conditionScore,
+                                "branch":car.branch,//修車失敗
+                                "state":2,
+                                "price":car.price,
+                                "launchDate":car.launchDate,//修車失敗
+                                "color":car.color,
+                                "remark":car.remark
+                            }
+                            console.log("requestCar", requestCar);
+                            axiosapi.put(`/car/modify/${car.id}`,requestCar).then(function(response) {
+                                console.log("response", response);
+                                if(response.status==200)  {
+                                    ElMessage({
+                                        message: '下架OK',
+                                        type: 'success',
+                                    })
+                                } else {
+                                    ElMessage({
+                                        message: response.data.message,
+                                        type: 'warning',
+                                    })
+                                }
+                            }).catch(function(error) {
+                                console.log("error", error);
+                                ElMessage.error('改車錯誤'+error.message)
+                            });
+
+                        } else {
+                            ElMessage({
+                                message: response.data.message,
+                                type: 'warning',
+                            })
+                        }
+                    }).catch(function(error) {
+                        console.log("error", error);
+                        ElMessage.error('查車錯誤'+error.message)
+                    });
                 
+                }
             });
         } else {
             Swal.fire({
@@ -945,6 +1120,65 @@ function doModify() {
     dialogVisible.value = false;
     isModify.value = false;
 }
+
+
+//員工查詢全部製作下拉選單
+function cadTableDoEmpFindAll() {
+    let empcount = 0;
+    axiosapi.get("employee/count").then(function (responce){
+        empcount=responce.data.data;
+        console.log("empcount",empcount);
+    })
+
+    axiosapi.get("employee/all").then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
+        console.log("employee/all responce",responce.data);
+        employeeIDOptions.value=[];
+        for(let i = 0;i<empcount;i++){
+            employeeIDOptions.value.push({
+                        value:responce.data.data[i].id,
+                        label: responce.data.data[i].name})
+        }
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "員工查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
+}
+
+//主管下拉選單
+function cadTableDoTeamleaderFindAll() {
+    axiosapi.get("employee/teamLeaders").then(function (responce) {
+        console.log("teamLeaders responce",responce.data);
+        teamleaderIDOptions.value=responce.data.data;
+}).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "主管查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
+}
+
+//車輛拉選單
+function cadTableDoCarFindAll() {
+    axiosapi.get("car/findAll?pageNumber=1&sortOrder=DESC&max=999").then(function (responce) {
+        console.log("cars responce",responce.data);
+        carIdOptions.value=responce.data.list;
+}).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "汽車查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
+}
+
+
 
 </script>
     
