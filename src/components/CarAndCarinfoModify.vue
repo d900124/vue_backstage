@@ -1,5 +1,5 @@
 <template >
-  <!-- <CarImage :images="images"></CarImage> -->
+  <CarImage  :imageByCarIdDatas=imageByCarIdDatas></CarImage>
   <div>
         <table>
             <tr>
@@ -175,6 +175,7 @@ onMounted(function () {
     callCarinfoFind();
     callCarFind();
     callImageFind();
+    callImageFindByCarId();
 });
 
 function callCarFind() {
@@ -329,8 +330,35 @@ console.log(`File name: ${images.value[0].name}`);
     }
 
 // ===============顯示圖片===============
-    // import CarImage from '@/components/CarImage.vue';
+    import CarImage from './CarImage.vue';
+    const imageByCarIdDatas=ref([]);
+function print() {
+  console.log("安安2");
+}
 
+function callImageFindByCarId() {
+  axios.get(`${kajartaUrl}/image/getCarIdImage/1`)
+        .then(function (response) {
+            if (response && response.data) {
+                console.log("response", response);
+                imageByCarIdDatas.value = response.data.CarIdImageList;
+            } else {
+                console.error("Invalid response data structure:", response);
+            }
+
+            // setTimeout(function () {
+            //     Swal.close();
+            // }, 500);
+        })
+        .catch(function (error) {
+            console.error("Error fetching data:", error, response);
+            Swal.fire({
+                text: "查詢失敗：" + error.message,
+                icon: "error"
+            });
+        });
+}
+    
 
 
 
