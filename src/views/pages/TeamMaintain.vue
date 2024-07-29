@@ -10,14 +10,13 @@
 
                 <!-- 假單簽核 -->
                 <Leave></Leave>
-                <LeaveGive>
-                    <LeaveGive>
+                <LeaveGive></LeaveGive>
 
-                        <!-- 員工總覽 -->
-                        <Employee></Employee>
+                <!-- 員工總覽 -->
+                <Employee></Employee>
 
-                        <!-- 考核評比 -->
-                        <KpiTable></KpiTable>
+                <!-- 考核評比 -->
+                <KpiTable></KpiTable>
             </div>
         </div>
     </section>
