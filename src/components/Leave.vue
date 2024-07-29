@@ -46,18 +46,9 @@
         </div>
 
     </div>
-    <div class="col-1"></div>
 
-    <div class="col-1"></div>
-    <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
-        <!-- 新增用按鈕 -->
-        <div class="btm-div" style="display: flex;" @click="openModal('insert')">
-            <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;" />
-            <el-button type='' link class="text-btm" style="color: #a33238;">新增簽核</el-button>
-        </div>
-    </div>
 
-    <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
+    <div class="col-11" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
         <!-- 分頁區塊 -->
         <el-pagination style="margin: 10px 0px;" hide-on-single-page=true layout="total,prev, pager, next"
             :total="total" :page-size="rows" v-model:current-page="current" @change="callQuery"></el-pagination>
@@ -65,88 +56,6 @@
 
     </div>
     <div class="col-1"></div>
-
-    <!-- 新增區塊 / 抬頭-->
-    <div v-if="openCreat" style="height: 50px;"></div>
-    <div v-if="openCreat" class="col-1"></div>
-    <div v-if="openCreat" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openCreat = false">
-        <el-divider content-position="center">
-            <button type="button" class="btn-close" aria-label="Close"></button>
-            <h5 class="table-title">新增簽核</h5>
-        </el-divider>
-    </div>
-    <div v-if="openCreat" class="col-1"></div>
-
-    <!-- 新增區塊 / 資料區-->
-    <div v-if="openCreat" class="col-1"></div>
-    <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
-
-        <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
-            <el-form-item label="申請員工 :&nbsp;">
-                <p style="margin: 0;">串接登入員工</p>
-            </el-form-item>
-
-            <el-divider border-style="dashed" style="margin: 0;" />
-            <el-form-item label="簽核主管 :&nbsp;">
-                <el-select v-model="creatTeamleaderIDValue" placeholder="Select" size="small">
-                    <el-option v-for="Option in creatTeamleaderIDOptions" :key="Option.value" :label="Option.label"
-                        :value="Option.value" />
-                </el-select>
-            </el-form-item>
-            <el-divider border-style="dashed" style="margin: 0;" />
-
-            <el-form-item label="修改車輛 :&nbsp;">
-                <el-input-number v-model="creatCarIDValue" :min="1" :max="10" size="small" controls-position="right" />
-            </el-form-item>
-            <el-divider border-style="dashed" style="margin: 0;" />
-
-            <el-form-item label="改後價格 :&nbsp;">
-                <el-input-number v-model="creatFloatingAmountValue" :min="1000" :max="100000000000000000" size="small"
-                    controls-position="right" />
-            </el-form-item>
-
-        </el-form>
-    </div>
-
-    <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
-
-        <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
-            <el-form-item label="&nbsp;">
-                <p style="margin: 0;">&nbsp;</p>
-            </el-form-item>
-            <el-divider border-style="dashed" style="margin: 0;" />
-
-            <el-form-item label="&nbsp;">
-                <p style="margin: 0;">&nbsp;</p>
-            </el-form-item>
-            <el-divider border-style="dashed" style="margin: 0;" />
-
-            <el-form-item label="簽核狀態 :&nbsp;">
-                <p style="margin: 0;">尚未簽核</p>
-            </el-form-item>
-            <el-divider border-style="dashed" style="margin: 0;" />
-
-            <el-form-item label="簽核需求 :&nbsp;">
-                <el-select v-model="creatApprovalTypeValue" placeholder="Select" size="small">
-                    <el-option v-for="Option in creatApprovalTypeOptions" :key="Option.value" :label="Option.label"
-                        :value="Option.value" />
-                </el-select>
-            </el-form-item>
-
-        </el-form>
-    </div>
-    <div v-if="openCreat" class="col-1"></div>
-
-
-    <!-- 新增區塊 / 確認按鈕-->
-    <div v-if="openCreat" class="col-1"></div>
-    <div v-if="openCreat" class="col-5"
-        style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
-    <div v-if="openCreat" class="col-5"
-        style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-        <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click="openDoModify">&nbsp確認新增&nbsp</el-button>
-    </div>
-    <div v-if="openCreat" class="col-1"></div>
 
 
     <!-- 下方詳細資料區 / 抬頭-->
@@ -187,7 +96,8 @@
 
                     </tr>
                     <tr v-if="isModify">
-                        <th scope="row" class="table-td" name="id" :value="singleLeave.id">{{ singleLeave.createTime }}
+                        <th scope="row" class="table-td" name="id" :value="singleLeave.id">{{ singleLeave.createTime
+                            }}
                         </th>
                         <td class="table-td">{{ singleLeave.employeeName }}</td>
                         <td class="table-td">{{ singleLeave.leaveTypeName }} </td>

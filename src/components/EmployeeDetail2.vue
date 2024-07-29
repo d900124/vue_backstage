@@ -10,8 +10,8 @@
     <div class="col-1">&nbsp;</div>
 
 
-    <div class="col-1"style="padding: 0px 0px;"></div>
-    <div class="col-10"style="padding: 0px 0px;;display: flex">
+    <div class="col-1" style="padding: 0px 0px;"></div>
+    <div class="col-10" style="padding: 0px 0px;;display: flex">
         <!-- 列表主體 -->
         <div class="col-4" style="padding: 0px 0px;">
             <div class="infoBox" style="border: unset;width: 85%;margin-left: 8%" >
@@ -31,7 +31,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-4"style="padding: 0px 0px;height:100%">
+        <div class="col-4" style="padding: 0px 0px;height:100%">
             <div class="infoBox" >
                 <h4 class="infoTitle" >個人資料<br> - {{ employeeInfo.name }} -</h4>
                 <div class="infoTextBox" style=" bottom: 2%;">
@@ -53,7 +53,7 @@
             <img src="../../public/personal_photo.jpg" alt="employeeInfo.name" style="width: 100%;">
         </div>
     </div>
-    <div class="col-1"style="padding: 0px 0px;"></div>
+    <div class="col-1" style="padding: 0px 0px;"></div>
 
 
 <!-- 個人KPI詳情 -->

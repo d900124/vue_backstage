@@ -19,7 +19,6 @@
 
 <script setup>
 import AgendaTable from '@/components/AgendaTable.vue'
-import EmployeeDetail from '@/components/EmployeeDetail.vue';
 import EmployeeDetail2 from '@/components/EmployeeDetail2.vue';
 import LeavePersonal from '@/components/LeavePersonal.vue';
 import Logout from '@/components/Logout.vue';
