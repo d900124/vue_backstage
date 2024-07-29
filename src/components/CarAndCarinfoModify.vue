@@ -1,26 +1,5 @@
 <template >
-  <CarImage  :imageByCarIdDatas=imageByCarIdDatas></CarImage>
-  <div>
-        <table>
-            <tr>
-                <td>檔案：</td>
-                <td>
-                    <FileUpload class="btn btn-primary"	accept=".jpg,.png,.jpeg"
-                                input-id="images" input-name="images" v-model="images"
-                                :multiple="true">
-                        選擇檔案
-                    </FileUpload>
-                </td>
-                <td></td>
-            </tr>
-
-            <tr v-for="(image, index) in images" :key="image.id">
-                <td></td>
-                <td>{{ image.name }}</td>
-                <td><input type="button" value="刪除檔案" @click="deleteFile(file.id)"></td>
-            </tr>
-        </table>
-        </div>
+  <CarImage :imageByCarIdDatas=imageByCarIdDatas></CarImage>
   <!-- =======================圖片上傳區塊======================= -->
   <div v-for="imageData in imageDatas" :key="imageData.id" :imageData="imageData">
 <label>是否為清單小圖</label>
@@ -251,90 +230,10 @@ function callImageFind() {
         });
 }
 
-//圖片上傳code
-import FileUpload from 'vue-upload-component'
-import { faHouseMedicalCircleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { date } from 'quasar';
-
-    const images = ref([])
-    const isListPic = ref('')
-    const isMainPic = ref('')
-    const carId = ref('')
-
-    function validate(selected) {
-        console.log("selected", selected)
-        if (selected.length == 0) {
-            alert("請選擇檔案");
-            return false;
-        }
-        for (let i = 0; i < selected.length; i++) {
-            let uploadFile = selected[0];
-            if (uploadFile.size > 10000000) {
-                alert("檔案大小超出限制(10M)");
-                return false;
-            }
-        }
-        return true;
-    }
-    function domultiple() {
-        if (!validate(images.value)) {
-          images.value = [];
-            return;
-        }
-        // 利用File物件產生上傳用的HTML Form資料
-        let formData = new FormData();
-        for(let i = 0; i < images.value.length; i++) {
-            formData.append("images", images.value[i].file);
-        }
-        formData.append("isListPic", isListPic.value);
-        formData.append("isMainPic", isMainPic.value);
-        formData.append("carId", carId.value);
-        console.log("formData", formData);
-
-        for (const [key, value] of formData.entries()) {
-    console.log(`${key}: ${value}`);
-}
-console.log(`File name: ${images.value[0].name}`);
-    console.log(`File size: ${images.value[0].size} bytes`);
-    console.log(`File type: ${images.value[0].type}`);
-        //使用Axios上傳檔案
-        axios.post(`${kajartaUrl}/image/create`,formData)
-        .then(function (response) {
-            if (response && response.data) {
-                console.log("response", response);
-            } else {
-                console.error("Invalid response data structure:", response);
-            }
-
-            // setTimeout(function () {
-            //     Swal.close();
-            // }, 500);
-        })
-        .catch(function (error) {
-            console.error("Error fetching data:", error, response);
-            Swal.fire({
-                text: "新增失敗" + error.message,
-                icon: "error"
-            });
-        });
-    }
-
-    function deleteFile(id) {
-        for (let i = 0; i < images.value.length; i++) {
-            if (images.value[i].id === id) {
-              images.value.splice(i, 1);
-                break;
-            }
-        }
-        console.log("images.value", images.value);
-    }
-
 // ===============顯示圖片===============
     import CarImage from './CarImage.vue';
     const imageByCarIdDatas=ref([]);
-function print() {
-  console.log("安安2");
-}
+
 
 function callImageFindByCarId() {
   axios.get(`${kajartaUrl}/image/getCarIdImage/1`)

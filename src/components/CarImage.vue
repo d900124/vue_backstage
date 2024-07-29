@@ -143,12 +143,7 @@ console.log(`File name: ${images.value[0].name}`);
         .then(function (response) {
             if (response && response.data) {
                 console.log("response", response);
-                // emits('uploadImage');
-                const newImage = {
-                id: response.data.message
-                // 如果有其他属性，如URL，请在这里添加
-            };
-                imageByCarIdDatas.value.push(newImage);
+                location.reload();
             } else {
                 console.error("Invalid response data structure:", response);
             }
