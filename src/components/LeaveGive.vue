@@ -21,22 +21,22 @@
             <table class="table">
                 <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
-                        <th scope="col" class="table-th">申請時間</th>
-                        <th scope="col" class="table-th">申請人</th>
+                        <th scope="col" class="table-th">新增日期</th>
+                        <th scope="col" class="table-th">員工</th>
                         <th scope="col" class="table-th">假種</th>
-                        <th scope="col" class="table-th">請假時段</th>
-                        <th scope="col" class="table-th">工作代理人</th>
-                        <th scope="col" class="table-th">簽核狀態</th>
+                        <th scope="col" class="table-th">使用期限</th>
+                        <th scope="col" class="table-th">共計時數</th>
+                        <th scope="col" class="table-th">備註</th>
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
-                    <tr v-for="leave in leaves" :key="leave.id" @click="leaveInfo(leave.id)">
+                    <tr v-for="leave in leaves" :key="leave.id">
                         <th scope="row" class="table-td">{{ leave.createTime }}</th>
                         <td class="table-td">{{ leave.employeeName }} </td>
                         <td class="table-td">{{ leave.leaveTypeName }} </td>
-                        <td class="table-td">{{ leave.startTime }}<br>{{ leave.endTime }}</td>
-                        <td class="table-td">{{ leave.deputyName }}</td>
-                        <td class="table-td">{{ getPermisionStatusText(leave.permisionStatus) }}</td>
+                        <td class="table-td">{{ leave.validityPeriodStart }}<br>{{ leave.validityPeriodEnd }}</td>
+                        <td class="table-td">{{ leave.actualLeaveHours }}</td>
+                        <td class="table-td">{{ leave.permisionRemarks }}</td>
                     </tr>
                 </tbody>
 
@@ -58,119 +58,7 @@
     <div class="col-1"></div>
 
 
-    <!-- 下方詳細資料區 / 抬頭-->
-    <div v-if="openZon" style="height: 50px;"></div>
-    <div v-if="openZon" class="col-1"></div>
-    <div v-if="openZon" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openZon = false">
-        <el-divider content-position="center">
-            <button type="button" class="btn-close" aria-label="Close"></button>
-            <h5 class="table-title">員工編號 {{ singleLeave.employeeId }} --單筆詳細請假資料</h5>
-        </el-divider>
-    </div>
-    <div v-if="openZon" class="col-1"></div>
 
-    <!-- 下方詳細資料區 / 第一欄-->
-    <div v-if="openZon" class="col-1"></div>
-    <div v-if="openZon" class="col-10" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
-        <div class="table-responsive" style="padding:20px ;height: 250px; ">
-            <table class="table" style="width: 1000px; ">
-                <thead style="border-bottom: 2px solid #a33238;">
-                    <tr>
-                        <th scope="col" class="table-th">申請時間</th>
-                        <th scope="col" class="table-th">申請人</th>
-                        <th scope="col" class="table-th">假種</th>
-                        <th scope="col" class="table-th">請假時段</th>
-                        <th scope="col" class="table-th">總計時數</th>
-
-
-                    </tr>
-                </thead>
-                <tbody class="table-group-divider">
-                    <tr v-if="!isModify">
-                        <th scope="row" class="table-td" name="id">{{ singleLeave.createTime }}</th>
-                        <td class="table-td">{{ singleLeave.employeeName }}</td>
-                        <td class="table-td">{{ singleLeave.leaveTypeName }} </td>
-                        <td class="table-td">{{ singleLeave.startTime }}<br>{{ singleLeave.endTime }}</td>
-                        <td class="table-td">{{ singleLeave.actualLeaveHours }}</td>
-
-
-                    </tr>
-                    <tr v-if="isModify">
-                        <th scope="row" class="table-td" name="id" :value="singleLeave.id">{{ singleLeave.createTime
-                            }}
-                        </th>
-                        <td class="table-td">{{ singleLeave.employeeName }}</td>
-                        <td class="table-td">{{ singleLeave.leaveTypeName }} </td>
-                        <td class="table-td">{{ singleLeave.startTime }}<br>{{ singleLeave.endTime }}</td>
-                        <td class="table-td">{{ singleLeave.actualLeaveHours }}</td>
-                    </tr>
-                </tbody>
-                <div style="height: 20px;"></div>
-                <!-- 下方詳細資料區 / 第二欄-->
-                <thead style="border-bottom: 2px solid #a33238;">
-                    <tr>
-                        <th scope="col" class="table-th">請假備註</th>
-                        <th scope="col" class="table-th">工作代理人</th>
-                        <th scope="col" class="table-th">簽核時間</th>
-                        <th scope="col" class="table-th">審核意見</th>
-                        <th scope="col" class="table-th">簽核狀態</th>
-
-                    </tr>
-                </thead>
-                <tbody class="table-group-divider">
-                    <tr v-if="!isModify">
-                        <th scope="row" class="table-td" name="id">{{ singleLeave.reason }}</th>
-                        <td class="table-td">{{ singleLeave.deputyName }}</td>
-                        <td class="table-td">{{ singleLeave.auditTime }}</td>
-                        <td class="table-td">{{ singleLeave.permisionRemarks }}</td>
-                        <td class="table-td">{{ getPermisionStatusText(singleLeave.permisionStatus) }}</td>
-                    </tr>
-                    <tr v-if="isModify">
-                        <th scope="row" class="table-td" name="id">{{ singleLeave.reason }}</th>
-                        <td class="table-td">{{ singleLeave.deputyName }}</td>
-                        <td class="table-td">{{ singleLeave.auditTime }}</td>
-                        <td class="table-td"> <el-input v-model="singleLeave.permisionRemarks"
-                                placeholder="核可備註"></el-input></td>
-                        <td class="table-td">
-                            <el-select v-model="singleLeave.permisionStatus" placeholder="請選擇核可狀態">
-                                <el-option v-for="status in permissionStatuses" :key="status.value"
-                                    :label="status.label" :value="status.value" />
-                            </el-select>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-
-
-    </div>
-    <div v-if="openZon" class="col-1"></div>
-
-    <!-- 下方詳細資料區 / 修改按鈕-->
-    <div v-if="openZon" class="col-1"></div>
-    <div v-if="openZon" class="col-5"
-        style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
-    <div v-if="openZon" class="col-5"
-        style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-        <el-switch v-model="isModify" inline-prompt class="value5" size="large"
-            active-text="&nbsp;&nbsp;開啟修改&nbsp;&nbsp;" inactive-text="&nbsp;&nbsp;資料鎖定&nbsp;&nbsp;"
-            style="--el-switch-on-color: #a33238; -webkit-margin-start: 18px ;" @click="openDoModify" />
-    </div>
-    <div v-if="openZon" class="col-1"></div>
-
-    <!-- 確認修改用彈出視窗 -->
-    <el-dialog v-model="dialogVisible" width="300" :show-close="false">
-        <h5 class="msg-title">確認修改 假單編號 {{ singleLeave.id }} ?</h5>
-        <template #footer>
-            <div class="dialog-footer" style="justify-content: center;">
-                <el-button @click="dialogVisible = false; isModify = true">否</el-button>
-                <el-button type="primary" @click="doModify" style="background-color: #a33238;border: #a33238;">
-                    是
-                </el-button>
-            </div>
-        </template>
-    </el-dialog>
 
 </template>
 
@@ -189,8 +77,7 @@ const current = ref(1) //目前頁碼
 const pages = ref(0) //分頁總數
 const rows = ref(4) //分頁資料顯示筆數
 
-//下方詳細資料開啟用
-const openZon = ref(false)
+
 
 //下方新增資料開啟用
 const openCreat = ref(false)
@@ -199,33 +86,7 @@ const openCreat = ref(false)
 const leaves = ref([]);
 const singleLeave = ref([])
 
-// 是否可以修改
-const isModify = ref(false);
 
-//確認修改彈出視窗用
-const dialogVisible = ref(false)
-
-
-const getPermisionStatusText = (status) => {
-    switch (status) {
-        case 1:
-            return '簽核中';
-        case 2:
-            return '同意';
-        case 3:
-            return '拒絕';
-        default:
-            return '未知狀態';
-    }
-};
-
-
-// 定義審核狀態選項
-const permissionStatuses = ref([
-    { value: 1, label: '簽核中' },
-    { value: 2, label: '同意' },
-    { value: 3, label: '拒絕' }
-]);
 
 
 onMounted(function () {
@@ -266,9 +127,10 @@ function callQuery() {
     console.log("callQuery - 當前頁碼:", current.value);
 
     let request = {
-        "leaveStatus": 0, // 0為請假
+        "leaveStatus": 1, // 1為給假
         "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
-        "pageSize": rows.value
+        "pageSize": rows.value,
+        "createTime": singleLeave.value.createTime,
     };
 
     axiosapi.post("/leave/query", request).then(function (response) {
@@ -289,81 +151,6 @@ function callQuery() {
     });
 }
 
-
-//開啟確認修改視窗
-function openDoModify() {
-    if (isModify.value == false) {
-        console.log("isModify.value", isModify.value);
-        console.log("修改單號 ID", singleLeave.value.id);
-        isModify.value = true;
-        dialogVisible.value = true;
-    }
-}
-
-//修改簽核
-function doModify() {
-    Swal.fire({
-        text: "執行中......",
-        allowOutsideClick: false,
-        showConfirmButton: false,
-    });
-
-    let request = {
-        "id": singleLeave.value.id,  // 需要提供ID來進行修改
-        "leaveStatus": singleLeave.value.leaveStatus,
-        "startTime": singleLeave.value.startTime,
-        "endTime": singleLeave.value.endTime,
-        "leaveType": singleLeave.value.leaveType,
-        "leaveTypeName": singleLeave.value.leaveTypeName,
-        "employeeId": singleLeave.value.employeeId,
-        "employeeName": singleLeave.value.employeeName,
-        "deputyId": singleLeave.value.deputyId,
-        "deputyName": singleLeave.value.deputyName,
-        "teamLeaderId": singleLeave.value.teamLeaderId,
-        "permisionRemarks": singleLeave.value.permisionRemarks,
-        "permisionStatus": singleLeave.value.permisionStatus,
-        "auditTime": singleLeave.value.auditTime,
-        "reason": singleLeave.value.reason,
-        "actualLeaveHours": singleLeave.value.actualLeaveHours,
-        "specialLeaveHours": singleLeave.value.specialLeaveHours,
-        "createTime": singleLeave.value.createTime,
-        "updateTime": singleLeave.value.updateTime,
-        "validityPeriodStart": singleLeave.value.validityPeriodStart,
-        "validityPeriodEnd": singleLeave.value.validityPeriodEnd
-    };
-
-    axiosapi.put(`/leave/modify/${singleLeave.value.id}`, request).then(function (response) {
-        console.log("response", response);
-        if (response.data.success) {
-            Swal.fire({
-                icon: "success",
-                text: response.data.message,
-                showConfirmButton: false,
-            }).then(function (result) {
-                callQuery();
-
-                openZon.value = true;
-
-            });
-        } else {
-            Swal.fire({
-                icon: "warning",
-                text: response.data.message,
-            });
-        }
-    }).catch(function (error) {
-        console.log("error", error);
-        Swal.fire({
-            icon: "error",
-            text: "修改錯誤：" + error.message,
-        });
-    });
-    setTimeout(function () {
-        Swal.close();  //視窗關閉 
-    }, 1000);
-    dialogVisible.value = false;
-    isModify.value = false;
-}
 
 </script>
 
