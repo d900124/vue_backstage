@@ -10,6 +10,7 @@
 
             <!-- 假單簽核 -->
             <Leave></Leave>
+            <LeaveGive>
 
             <!-- 員工總覽 -->
             <Employee></Employee>
@@ -27,6 +28,7 @@ import KpiTable from '@/components/KpiTable.vue';
 import Leave from '@/components/Leave.vue';
 import EmployeeList from '@/components/Employee.vue';
 import Logout from '@/components/Logout.vue';
+import LeaveGive from '@/components/LeaveGive.vue';
 
 
 </script>
