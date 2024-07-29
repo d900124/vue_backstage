@@ -1,6 +1,7 @@
 <template>
-    <h3>Home</h3>
-    <input type="button" value="測試">
+<section>     
+    <!-- <h3>Home</h3>
+    <input type="button" value="測試"> -->
     <!-- <el-pagination
         v-model:current-page="currentPage3"
         v-model:page-size="pageSize3"
@@ -12,7 +13,7 @@
     ></el-pagination> -->
     <!-- 登入 -->
     <LoginPage></LoginPage>
-    
+</section>     
     
 
 </template>
