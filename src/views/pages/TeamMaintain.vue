@@ -1,25 +1,26 @@
 <template>
-<section> 
-    <div class="container text-center">
-        <div class="row">
-            <!-- 登出圖釘 -->
-            <Logout></Logout>
-            
-            <!-- 車輛調整簽核 -->
-            <CarAdjustTable></CarAdjustTable>
+    <section>
+        <div class="container text-center">
+            <div class="row">
+                <!-- 登出圖釘 -->
+                <Logout></Logout>
 
-            <!-- 假單簽核 -->
-            <Leave></Leave>
-            <LeaveGive>
+                <!-- 車輛調整簽核 -->
+                <CarAdjustTable></CarAdjustTable>
 
-            <!-- 員工總覽 -->
-            <Employee></Employee>
+                <!-- 假單簽核 -->
+                <Leave></Leave>
+                <LeaveGive>
+                    <LeaveGive>
 
-            <!-- 考核評比 -->
-            <KpiTable></KpiTable>
+                        <!-- 員工總覽 -->
+                        <Employee></Employee>
+
+                        <!-- 考核評比 -->
+                        <KpiTable></KpiTable>
+            </div>
         </div>
-    </div>
-</section> 
+    </section>
 </template>
 
 <script setup>
