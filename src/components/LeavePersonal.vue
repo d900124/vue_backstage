@@ -178,8 +178,28 @@
             <el-divider border-style="dashed" style="margin: 0;" />
 
             <el-form-item label="工作代理人 :&nbsp;">
-                <el-select v-model="form.deputyId" placeholder="Select" size="small">
+                <!-- <el-select v-model="form.deputyId" placeholder="Select" size="small">
+                </el-select> -->
+                <!-- <el-select v-model="form.deputyId" placeholder="選擇代理人" size="small">
+                    <el-option
+                    v-for="employee in employees"
+                    :key="employee.id"
+                    :label="employee.name"
+                    :value="employee.id">
+                    </el-option>
+                </el-select> -->
+                <div v-if="employees.length === 0">加载中...</div>
+                <div v-else-if="employees.length > 0">
+                <el-select v-model="form.deputyId" placeholder="选择代理人" size="small">
+                    <el-option
+                    v-for="employee in employees"
+                    :key="employee.id"
+                    :label="employee.name"
+                    :value="employee.id">
+                    </el-option>
                 </el-select>
+                </div>
+                <div v-else>没有数据</div>
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
             <el-form-item label="備註 :&nbsp;">
@@ -398,13 +418,43 @@ onMounted(function () {
     callQuery();
 })
 
+// 声明员工列表的响应式数据
+const employees = ref([]);
+function fetchEmployees() {
+    axiosapi.get('/employee/all')
+        .then(response => {
+            // 确保 response.data 是一个数组，并且每个对象都有 id 和 name
+            if (Array.isArray(response.data)) {
+                employees.value = response.data.filter(employee => employee && employee.id && employee.name);
+            }
 
+            // 假设你有一个 employees 的数据变量存储获取到的员工列表
+            console.log("response.data=======>"+JSON.stringify(employees.value));
+            // employees.value = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching employees:', error);
+        });
+    }
 //單筆新增
 function openModal() {
     console.log("openModal");
     openCreate.value = true;
-
+    fetchEmployees();ß
+    // 获取员工数据的 API 调用
+    // axiosapi.get('/employee/all')
+    //     .then(response => {
+    //         // 假设你有一个 employees 的数据变量存储获取到的员工列表
+    //         console.log("response.data=======>"+JSON.stringify(response.data));
+    //         employees.value = response.data;
+    //     })
+    //     .catch(error => {
+    //         console.error('Error fetching employees:', error);
+    //     });
 }
+// onMounted(() => {
+//       fetchEmployees();
+//     });
 
 function doCreate() {
     // 创建一个新的请求对象，包含修改后的表单数据
