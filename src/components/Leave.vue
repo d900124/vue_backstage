@@ -8,7 +8,7 @@
 
     <!-- 抬頭 -->
     <div class="col-5" style="padding: 0px 0px;">
-        <h3 class="table-title">假單簽核</h3>
+        <h3 class="table-title" id="leave">假單簽核</h3>
     </div>
     <div class="col-1"></div>
 
@@ -161,7 +161,7 @@
 
     <!-- 確認修改用彈出視窗 -->
     <el-dialog v-model="dialogVisible" width="300" :show-close="false">
-        <h5 class="msg-title">確認修改 簽核編號 {{ singleLeave.id }} ?</h5>
+        <h5 class="msg-title">確認修改 假單編號 {{ singleLeave.id }} ?</h5>
         <template #footer>
             <div class="dialog-footer" style="justify-content: center;">
                 <el-button @click="dialogVisible = false; isModify = true">否</el-button>

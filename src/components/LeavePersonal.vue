@@ -4,7 +4,7 @@
     <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;"></div>
     <!-- 抬頭 -->
     <div class="col-2" style="padding: 0px 0px;display: flex; justify-content: flex-end;align-items:flex-end;">
-        <h3 class="table-title" id="personalInfo">請假申請</h3>
+        <h3 class="table-title" id="leavePersonal">請假申請</h3>
     </div>
     <div class="col-1">&nbsp;</div>
 
@@ -197,7 +197,7 @@
     <div v-if="openCreate" class="col-5"
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
         <el-button color="#a33238" :dark="isDark" style="margin: 20 0;"
-            @click="creatDdialogVisible = true">&nbsp確認新增&nbsp</el-button>
+            @click="creatDdialogVisible = true">&nbsp;確認新增&nbsp;</el-button>
     </div>
     <div v-if="openCreate" class="col-1"></div>
 

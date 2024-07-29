@@ -19,7 +19,7 @@
 
             </template>
             <a href="/pages/personal#agenda" style="all: unset;"><el-menu-item> - 工作排程</el-menu-item></a>
-            <a href="#" style="all: unset;"><el-menu-item index="1-2"> - 請假管理</el-menu-item></a>
+            <a href="/pages/personal#leavePersonal" style="all: unset;"><el-menu-item> - 請假管理</el-menu-item></a>
             <a href="/pages/personal#personalInfo" style="all: unset;"><el-menu-item> - 個人資料 & 考核</el-menu-item></a>
 
         </el-sub-menu>
@@ -57,8 +57,8 @@
 
             </template>
             <a href="/pages/teamMaintain#carAdjust" style="all: unset;"><el-menu-item> - 車輛調整簽核</el-menu-item></a>
-            <a href="#" style="all: unset;"><el-menu-item index="4-2"> - 假單簽核 </el-menu-item></a>
-            <a href="#" style="all: unset;"><el-menu-item index="4-3"> - 員工總覽 </el-menu-item></a>
+            <a href="/pages/teamMaintain#leave" style="all: unset;"><el-menu-item > - 假單簽核 </el-menu-item></a>
+            <a href="/pages/teamMaintain#employee" style="all: unset;"><el-menu-item > - 員工總覽 </el-menu-item></a>
             <a href="/pages/teamMaintain#kpi" style="all: unset;"><el-menu-item> - 考核評比 </el-menu-item></a>
         </el-sub-menu>
 
