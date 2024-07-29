@@ -1,4 +1,5 @@
 <template>
+<section>     
     <div class="container text-center">
         <div class="row">
             <!-- 登出圖釘 -->
@@ -11,6 +12,7 @@
 
         </div>
     </div>
+</section>     
 </template>
 
 <script setup>

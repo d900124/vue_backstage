@@ -214,12 +214,12 @@
 
                 <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
                     
-                    <el-form-item label="原本價格 :&nbsp;">
+                    <el-form-item label="當前價格 :&nbsp;">
                         <p style="margin: 0;" >{{creatBaseCarPrice}}</p>
                     </el-form-item>
                     <el-divider border-style="dashed" style="margin: 0;"/>
 
-                    <el-form-item label="改後價格 :&nbsp;">
+                    <el-form-item label="批核價格 :&nbsp;">
                 <el-input-number
                     v-model="creatFloatingAmountValue"
                     :min="0"
@@ -293,8 +293,8 @@
                     <th scope="col" class="table-th" >品牌型號</th>
                     <th scope="col" class="table-th" >品牌型號</th>
                     <th scope="col" class="table-th" >簽核需求</th>
-                    <th scope="col" class="table-th" >原始價錢</th>
-                    <th scope="col" class="table-th" >改後價錢</th>
+                    <th scope="col" class="table-th" >當前價錢</th>
+                    <th scope="col" class="table-th" >批核價錢</th>
                     </tr>
                     </thead>
                     <tbody class="table-group-divider">
@@ -712,6 +712,8 @@ const store = useStore();
 const isAuthenticated = computed(() => store.state.isAuthenticated);
 const employeeInfo = computed(() => store.state.employeeInfo.data || {});
 
+
+
 //登錄資訊用 使用 async 和 await 來等待 Vuex action 完成並更新
 const fetchEmployeeData = async () => {
   const username = localStorage.getItem("username");
@@ -964,11 +966,11 @@ function doModify() {
 
     let request ={ 
         "id":singleItem.value.id, 
-        "teamLeaderId":5,
-        "employeeId":1,
+        "teamLeaderId":employeeInfo.value.id,
+        "employeeId":singleItem.value.employeeId,
         "carId":singleItem.value.carId,
         "approvalStatus":approvalStatusValue.value,
-        "approvalType":1,
+        "approvalType":singleItem.value.approvalType,
         "floatingAmount":singleItem.value.floatingAmount
     }
 
@@ -983,7 +985,121 @@ function doModify() {
                 callFindByHQL(false);
                 itemClick(singleItem.value.id);
                 openZon.value=true;
+
+                if (approvalStatusValue.value==1 && singleItem.value.approvalType!=3) {
+                    
+                    
+                    //加入車輛價錢修改(漲價/降價)
+                    //先查車子資訊
+                    axiosapi.get(`/car/find/${singleItem.value.carId}`).then(function(response) {
+                        console.log("response", response);
+                        if(response.status==200)  {
+                            ElMessage({
+                                message: '查車OK',
+                                type: 'success',
+                            })
+                            let car = response.data.list[0]; 
+                            console.log("car", car);
+                            // 修改汽車資料
+                            let requestCar ={ 
+                                "id":car.id, 
+                                "productionYear":car.productionYear,
+                                "milage":car.milage,
+                                "negotiable":car.negotiable,//修車失敗
+                                "conditionScore":car.conditionScore,
+                                "branch":car.branch,//修車失敗
+                                "state":car.state,
+                                "price":singleItem.value.floatingAmount,
+                                "launchDate":car.launchDate,//修車失敗
+                                "color":car.color,
+                                "remark":car.remark
+                            }
+                            console.log("requestCar", requestCar);
+                            axiosapi.put(`/car/modify/${car.id}`,requestCar).then(function(response) {
+                                console.log("response", response);
+                                if(response.data.success)  {
+                                    ElMessage({
+                                        message: '改車OK',
+                                        type: 'success',
+                                    })
+                                } else {
+                                    ElMessage({
+                                        message: response.data.message,
+                                        type: 'warning',
+                                    })
+                                }
+                            }).catch(function(error) {
+                                console.log("error", error);
+                                ElMessage.error('改車錯誤'+error.message)
+                            });
+
+                        } else {
+                            ElMessage({
+                                message: response.data.message,
+                                type: 'warning',
+                            })
+                        }
+                    }).catch(function(error) {
+                        console.log("error", error);
+                        ElMessage.error('查車錯誤'+error.message)
+                    });
+                }else if (approvalStatusValue.value==1 && singleItem.value.approvalType==3) {
+                    //加入車輛價錢修改(下架)
+                    //先查車子資訊
+                    axiosapi.get(`/car/find/${singleItem.value.carId}`).then(function(response) {
+                        console.log("response", response);
+                        if(response.status==200)  {
+                            // ElMessage({
+                            //     message: '查車OK',
+                            //     type: 'success',
+                            // })
+                            let car = response.data.list[0]; 
+                            console.log("car", car);
+                            // 修改汽車資料
+                            let requestCar ={ 
+                                "id":car.id, 
+                                "productionYear":car.productionYear,
+                                "milage":car.milage,
+                                "negotiable":car.negotiable,//修車失敗
+                                "conditionScore":car.conditionScore,
+                                "branch":car.branch,//修車失敗
+                                "state":2,
+                                "price":car.price,
+                                "launchDate":car.launchDate,//修車失敗
+                                "color":car.color,
+                                "remark":car.remark
+                            }
+                            console.log("requestCar", requestCar);
+                            axiosapi.put(`/car/modify/${car.id}`,requestCar).then(function(response) {
+                                console.log("response", response);
+                                if(response.status==200)  {
+                                    ElMessage({
+                                        message: '下架OK',
+                                        type: 'success',
+                                    })
+                                } else {
+                                    ElMessage({
+                                        message: response.data.message,
+                                        type: 'warning',
+                                    })
+                                }
+                            }).catch(function(error) {
+                                console.log("error", error);
+                                ElMessage.error('改車錯誤'+error.message)
+                            });
+
+                        } else {
+                            ElMessage({
+                                message: response.data.message,
+                                type: 'warning',
+                            })
+                        }
+                    }).catch(function(error) {
+                        console.log("error", error);
+                        ElMessage.error('查車錯誤'+error.message)
+                    });
                 
+                }
             });
         } else {
             Swal.fire({
