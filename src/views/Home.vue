@@ -1,19 +1,7 @@
 <template>
-<section>     
-    <!-- <h3>Home</h3>
-    <input type="button" value="測試"> -->
-    <!-- <el-pagination
-        v-model:current-page="currentPage3"
-        v-model:page-size="pageSize3"
-        :size="size"
-        :disabled="disabled"
-        :background="background"
-        layout="prev, pager, next, jumper"
-        :total="1000"
-    ></el-pagination> -->
-    <!-- 登入 -->
+
     <LoginPage></LoginPage>
-</section>     
+    
     
 
 </template>

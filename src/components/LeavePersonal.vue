@@ -40,6 +40,14 @@
                         <th scope="row" class="table-td">生理假</th>
                         <td class="table-td">{{ employeeInfo.menstrualLeaveHours }} 小時</td>
                     </tr>
+                    <tr v-if="employeeInfo.officialLeaveHours !== null">
+                        <th scope="row" class="table-td">公假</th>
+                        <td class="table-td">{{ employeeInfo.officialLeaveHours }} 小時</td>
+                    </tr>
+                    <tr v-if="employeeInfo.marriageLeaveHours !== null">
+                        <th scope="row" class="table-td">婚假</th>
+                        <td class="table-td">{{ employeeInfo.marriageLeaveHours }} 小時</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -154,15 +162,13 @@
             <el-divider border-style="dashed" style="margin: 0;" />
 
             <el-form-item label="開始時間 :&nbsp;">
-                <input id="start-date" type="datetime-local" class="form-control" v-model="form.startTime"
-                    placeholder="選擇開始時間" />
+                <input id="start-date" type="datetime-local" class="form-control" v-model="form.startTime" style="height:25px" />
             </el-form-item>
 
             <el-divider border-style="dashed" style="margin: 0;" />
 
             <el-form-item label="結束時間 :&nbsp;">
-                <input id="end-date" type="datetime-local" class="form-control" v-model="form.endTime"
-                    placeholder="選擇結束時間" />
+                <input id="end-date" type="datetime-local" class="form-control" v-model="form.endTime" style="height:25px"/>
             </el-form-item>
 
         </el-form>
@@ -184,7 +190,7 @@
         <el-select
             v-if="employeeInfo != null"
             v-model="findEmployeeId"
-            placeholder="請選擇工作代理人"
+            placeholder="Select"
             clearable
             size="small"
             style="width: 200px;"
@@ -541,6 +547,36 @@ function leaveInfo(leaveId) {
         });
         // router.push("/")
     })
+}
+// 多筆查詢
+function callQuery2() {
+    console.log("callQuery - 當前頁碼:", current.value);
+    const employeeId = computed(() => employeeInfo.value.id);
+    console.log('Employee ID:', employeeId.value);
+
+    let request = {
+        "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
+        "pageSize": rows.value,
+        "employeeId": employeeId.value,
+        "leaveStatus": 1, // 0為請假
+    };
+
+    axiosapi.post("/leave/query", request).then(function (response) {
+        leaves.value = response.data.data.content; // 获取查询到的数据列表
+        // 更新分页信息
+        total.value = response.data.data.totalElements; // 总条目数
+        pages.value = response.data.data.totalPages; // 总页数
+
+        console.log("leaves", response.data.data.content);
+        console.log("total", response.data.data.totalElements);
+        console.log("pages", response.data.data.totalPages);
+    }).catch(function (error) {
+        console.log("error", error);
+        Swal.fire({
+            text: "查詢錯誤：" + error.message,
+            icon: "error"
+        });
+    });
 }
 
 

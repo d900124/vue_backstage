@@ -84,7 +84,7 @@
                 <el-select
             v-if="employeeInfo != null"
             v-model="findEmployeeId"
-            placeholder="請選擇員工"
+            placeholder="Select"
             clearable
             size="small"
             style="width: 200px;"
@@ -123,12 +123,12 @@
         <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
             <el-form-item label="開始時間 :&nbsp;">
                 <input id="validity-period-start" type="datetime-local" class="form-control"
-                    v-model="validityPeriodStart" placeholder="選擇開始時間" />
+                    v-model="validityPeriodStart" style="height:25px" />
             </el-form-item>
 
             <el-form-item label="結束時間 :&nbsp;">
                 <input id="validity-period-end" type="datetime-local" class="form-control" v-model="validityPeriodEnd"
-                    placeholder="選擇結束時間" />
+                style="height:25px" />
             </el-form-item>
 
             <el-divider border-style="dashed" style="margin: 0;" />
