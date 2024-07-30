@@ -1,37 +1,37 @@
 <template>
-	<el-card class="card">
-		<div class="header-container">
-			<RouterLink :to="{ name: 'home-link' }" class="logo">
-				<el-icon class="logo-icon"><img src="/Kajarta_LOGO_02.svg"></el-icon>
-			</RouterLink>
-			<span class="header-text">員工登入</span>
-		</div>
-		<div class="card-content">
-		
-			<img src="/jeep.jpg" class="card-image">
-			<div class="form-container">
-				<form @submit.prevent="handleSubmit" class="form">
-					<br>
-					<br>
-					<br>
-					<p class="p-text">Life's tough,<br>but working for a living must go on.</p><br>
-					
-					<div class="form-group">
-						<label for="username">帳號:</label>
-						<input type="text" id="username" v-model="username" class="input-field" required>
-					</div>
-					<div class="form-group">
-						<label for="password">密碼:</label>
-						<input type="password" id="password" v-model="password" class="input-field" required>
-					</div>
-					<button type="submit" class="submit-button">登入</button>
-					<div v-if="loginMessage" class="alert alert-success mt-3">
-						{{ loginMessage }}
-					</div>
-				</form>
+	<div class="card-wrapper">
+		<el-card class="card">
+			<div class="header-container">
+				<RouterLink :to="{ name: 'home-link' }" class="logo">
+					<el-icon class="logo-icon"><img src="/Kajarta_LOGO_02.svg"></el-icon>
+				</RouterLink>
+				<span class="header-text">員工登入</span>
 			</div>
-		</div>
-	</el-card>
+			<div class="card-content">
+				<img src="/jeep.jpg" class="card-image">
+				<div class="form-container">
+					<form @submit.prevent="handleSubmit" class="form">
+						<br>
+						<br>
+						<br>
+						<p class="p-text">Life's tough,<br>but working for a living must go on.</p><br>
+						<div class="form-group">
+							<label for="username">帳號:</label>
+							<input type="text" id="username" v-model="username" class="input-field" required>
+						</div>
+						<div class="form-group">
+							<label for="password">密碼:</label>
+							<input type="password" id="password" v-model="password" class="input-field" required>
+						</div>
+						<button type="submit" class="submit-button">登入</button>
+						<div v-if="loginMessage" class="alert alert-success mt-3">
+							{{ loginMessage }}
+						</div>
+					</form>
+				</div>
+			</div>
+		</el-card>
+	</div>
 </template>
 
 <script setup>
@@ -102,14 +102,33 @@ const getEmployeeInfo = async (username) => {
 </script>
 
 <style scoped>
-.p-text{
+html, body {
+	height: 100%; /* 确保 HTML 和 Body 元素占满整个页面高度 */
+	width: 100%;
+	margin: 0; /* 去除默认的边距 */
+	padding: 0; /* 去除默认的内边距 */
+}
 
+.card-wrapper {
+	background-color: #fff5eb; /* 设置 .card 后面的背景颜色 */
+	position: absolute; /* 确保 .card-wrapper 填满整个视口 */
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex; /* 使用 Flexbox 以使子元素居中对齐 */
+	justify-content: center; /* 水平居中对齐子元素 */
+	align-items: center; /* 垂直居中对齐子元素 */
+	transform: scale(1.4); /* 放大比例 */
+	margin: 0; /* 去除默认的边距 */
+	padding: 0; /* 去除默认的内边距 */
+}
 
-	
-	
+.p-text {
 	width: 90%; /* 调整底线的长度 */
 	border-bottom: 1px solid #a33238;
 }
+
 .header-container {
 	display: flex;
 	align-items: center;
@@ -149,12 +168,12 @@ const getEmployeeInfo = async (username) => {
 }
 
 .card-image {
-	width: 50%;
+	width: 45%; /* 调整图片宽度以增加表单宽度 */
 	margin-right: 20px;
 }
 
 .form-container {
-	flex: 1;
+	flex: 2; /* 增加 flex 值以扩大表单宽度 */
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -162,7 +181,7 @@ const getEmployeeInfo = async (username) => {
 
 .form {
 	width: 100%;
-	max-width: 400px;
+	max-width: 500px; /* 增加表单的最大宽度 */
 }
 
 .form-group {
@@ -174,24 +193,28 @@ const getEmployeeInfo = async (username) => {
 }
 
 .input-field {
-	width: calc(100% - 100px);
-	/* 计算宽度以适应标签 */
+	width: calc(100% - 100px); /* 计算宽度以适应标签 */
 	padding: 8px;
 	border: none;
-	border-bottom: 1px solid #a33238;
-	/* 底線 */
+	border-bottom: 1px solid #a33238; /* 底線 */
 	background-color: transparent;
 }
 
 .submit-button {
 	width: 100%;
-	max-width: 300px;
+	max-width: 240px;
+	height: 35px; /* 设置按钮高度 */
 	padding: 10px;
 	border: none;
 	border-radius: 4px;
 	background-color: #a33238;
 	color: white;
 	cursor: pointer;
+	margin-top: 25px;
+	margin-left: 40px;
+	display: flex; /* 使用 Flexbox */
+	align-items: center; /* 垂直居中 */
+	justify-content: center; /* 水平居中 */
 }
 
 .submit-button:hover {

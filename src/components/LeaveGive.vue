@@ -331,7 +331,9 @@ function doCreate() {
         "validityPeriodStart": startDateString,
         "validityPeriodEnd": endDateString,
         "permisionRemarks": permisionRemarks.value,
-        "leaveStatus": 1
+        "leaveStatus": 1,
+        "teamLeaderId": 1,
+        "reason": ""
     };
 
     axiosapi.post("/leave/add", request)

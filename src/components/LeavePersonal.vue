@@ -36,6 +36,10 @@
                         <th scope="row" class="table-td">特休</th>
                         <td class="table-td">{{ employeeInfo.annualLeaveHours }} 小時</td>
                     </tr>
+                    <tr v-if="employeeInfo.menstrualLeaveHours !== null">
+                        <th scope="row" class="table-td">生理假</th>
+                        <td class="table-td">{{ employeeInfo.menstrualLeaveHours }} 小時</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
