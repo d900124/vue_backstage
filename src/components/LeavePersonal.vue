@@ -295,7 +295,6 @@ import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
 
 
-//用於重新導向 router.push
 
 const store = useStore();
 // 确保 employeeInfo 在页面加载时是一个初始值为空的对象，而不是 null 或 undefined。这样可以确保在模板渲染时不会出错
