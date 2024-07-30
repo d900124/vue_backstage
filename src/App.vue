@@ -1,8 +1,8 @@
 <template>
     <div class="common-layout" >
         <el-container style="height: 100%; ">
-        <el-aside style=" width: auto; box-shadow: 10px 0px 15px #ececec; overflow: hidden; position: fixed;"><LeftSideMenu 
-            ></LeftSideMenu></el-aside>
+        <!-- <el-aside style=" width: auto; box-shadow: 10px 0px 15px #ececec; overflow: hidden; position: fixed;"><LeftSideMenu 
+            ></LeftSideMenu></el-aside> -->
         <el-main style=" width: auto; margin-left: 100px;">
             <dev class="container">
                 <RouterView v-slot="{Component, route}">
@@ -15,9 +15,9 @@
         </el-main>
         </el-container>
     </div>
-    <!-- <LeftSideMenu></LeftSideMenu>
-<el-button type="primary">主要按鈕</el-button>
-    <RouterView></RouterView> -->
+    <!-- <LeftSideMenu></LeftSideMenu> -->
+<!-- <el-button type="primary">主要按鈕</el-button> -->
+    <!-- <RouterView></RouterView> -->
 </template>
 
 <style >

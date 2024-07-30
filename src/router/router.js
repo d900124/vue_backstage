@@ -6,6 +6,7 @@ import Home from '../views/Home.vue';
 import NotFound from "../views/NotFound.vue";
 import routerPages from "@/views/pages/router-pages";
 
+
 // 2. 定義網頁路由
 const routes = [
     { name: "home-link", path: "/", component: Home },
