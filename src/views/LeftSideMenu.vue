@@ -1,7 +1,7 @@
 <template>
     <el-menu default-active="2" class="el-menu-vertical-demo" :collapse="isCollapse" @open="handleOpen"
         @close="handleClose" background-color="#fff5eb" active-text-color="#a33238" unique-opened="true" router="true"
-        style="border :1px solid #fff5eb;">
+        style="border :1px solid #fff5eb;" v-if="employeeInfo!=null && employeeInfo.accountType!=null">
 
 
         <RouterLink :to="{ name: 'home-link' }" style="all: unset;">
@@ -9,7 +9,7 @@
         </RouterLink>
 
 
-        <el-sub-menu index="/pages/personal" style="margin-top: 50px;">
+        <el-sub-menu index="/pages/personal" style="margin-top: 50px;" >
             <template #title>
                 <RouterLink :to="{ name: 'personal-link' }" style="all: unset;"><el-icon><font-awesome-icon icon="user"
                             style="color: #a33238;" /></el-icon></RouterLink>
@@ -46,7 +46,7 @@
             </template>
         </el-menu-item>
 
-        <el-sub-menu index="/pages/teamMaintain">
+        <el-sub-menu index="/pages/teamMaintain" v-if="employeeInfo!==null &&employeeInfo.accountType==4">
             <template #title>
 
                 <RouterLink :to="{ name: 'team-maintain-link' }" style="all: unset;"><el-icon><font-awesome-icon
@@ -86,6 +86,19 @@ import 'element-plus/dist/index.css';
 
 const router = useRouter();
 const isCollapse =ref(false);
+
+const store = useStore();
+// 确保 employeeInfo 在页面加载时是一个初始值为空的对象，而不是 null 或 undefined。这样可以确保在模板渲染时不会出错
+const employeeInfo = computed(() => store.state.employeeInfo.data || {});
+console.log('===>Employee info:', employeeInfo);
+console.log('===>Employee info:', employeeInfo.value);
+const accountTypeName = computed(() => employeeInfo.value?.accountTypeName || '');
+console.log('Account Type Name:', accountTypeName.value);
+
+// 可选：调试数据
+watch(employeeInfo, (newValue) => {
+    console.log('Employee info updated:', newValue);
+});
 
 </script>
 

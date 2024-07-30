@@ -394,9 +394,9 @@ function doCreat() {
                     icon: "success",
                     text: response.data.msg,
                     showConfirmButton: false,
+                    timer: 1500 // 设置计时器，1.5秒后自动关闭
                 }).then(() => {
-                    // TODO: 刷新列表或更新状态
-                    openZon.value = true; // 打开详细数据区域
+                    window.location.reload(); // 刷新页面
                 });
             } else {
                 Swal.fire({
@@ -410,11 +410,9 @@ function doCreat() {
                 icon: "error",
                 text: "新增錯誤：" + error.message,
             });
-        })
-        .finally(() => {
-            Swal.close();
         });
 }
+
 
 
 // 獲取所有主管ID
@@ -432,6 +430,7 @@ function getAllTeamLeaders() {
         });
 }
 
+//單筆查詢
 function employeeClick(employeeId) {
     console.log("employeeId=" + employeeId);
     axiosapi.get("/employee/info/" + employeeId)
@@ -493,6 +492,7 @@ function closeInfo() {
     openZon.value = false
 }
 
+//修改
 function doModify() {
     Swal.fire({
         text: "執行中......",

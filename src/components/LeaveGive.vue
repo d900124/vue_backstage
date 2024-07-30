@@ -81,10 +81,21 @@
 
         <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
             <el-form-item label="員工 :&nbsp;">
-                <el-select v-model="employeeId" placeholder="Select" size="small">
-                    <el-option v-for="employee in employeeOptions" :key="employee.id" :label="employee.name"
-                        :value="employee.id" />
-                </el-select>
+                <el-select
+            v-if="employeeInfo != null"
+            v-model="findEmployeeId"
+            placeholder="Select"
+            clearable
+            size="small"
+            style="width: 200px;"
+        >
+            <el-option
+                v-for="option in allEmployees"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
+            />
+        </el-select>
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
             <el-form-item label="假別 :&nbsp;">
@@ -112,12 +123,12 @@
         <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
             <el-form-item label="開始時間 :&nbsp;">
                 <input id="validity-period-start" type="datetime-local" class="form-control"
-                    v-model="validityPeriodStart" placeholder="選擇開始時間" />
+                    v-model="validityPeriodStart" style="height:25px" />
             </el-form-item>
 
             <el-form-item label="結束時間 :&nbsp;">
                 <input id="validity-period-end" type="datetime-local" class="form-control" v-model="validityPeriodEnd"
-                    placeholder="選擇結束時間" />
+                style="height:25px" />
             </el-form-item>
 
             <el-divider border-style="dashed" style="margin: 0;" />
@@ -163,14 +174,26 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, watch, ref } from 'vue';
+import { useStore } from 'vuex';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
 
+const store = useStore();
+// 确保 employeeInfo 在页面加载时是一个初始值为空的对象，而不是 null 或 undefined。这样可以确保在模板渲染时不会出错
+const employeeInfo = computed(() => store.state.employeeInfo.data || {});
+console.log('===>Employee info:', employeeInfo);
+console.log('===>Employee info:', employeeInfo.value);
+const accountTypeName = computed(() => employeeInfo.value?.accountTypeName || '');
+console.log('Account Type Name:', accountTypeName.value);
+
+const creatDdialogVisible = ref(false)  //新增
+
 // 時間
 const validityPeriodStart = ref('');
 const validityPeriodEnd = ref('');
+
 
 //用於重新導向 router.push
 const router = useRouter()
@@ -188,8 +211,12 @@ const openCreate = ref(false)
 //產品顯示leave元件用的參數
 const leaves = ref([]);
 const singleLeave = ref([])
+//新增用
+const leaveType = ref('');
+const actualLeaveHours = ref('');
+const permisionRemarks = ref('');
 
-const employeeId = ref(null);
+
 
 const leaveTypeOptions = [
     { value: 1, label: "特休" },
@@ -201,16 +228,77 @@ const leaveTypeOptions = [
     { value: 10, label: "喪假" }
 ];
 
-const employeeOptions = ref([
-    { id: 1, name: 'Alice' },
-    { id: 2, name: 'Bob' },
-    { id: 3, name: 'Charlie' }
-]);
+// 在组件挂载时或 employeeInfo 变化时调用 findAllEmployee
+onMounted(() => {
+    if (employeeInfo.value) {
+        findAllEmployee();
+    }
+});
+
+watch(employeeInfo, (newValue) => {
+    if (newValue) {
+        findAllEmployee();
+    }
+});
+
+// 监控 employeeInfo 的变化，并在其加载完成后执行 callQuery
+watch(employeeInfo, (newValue) => {
+    if (newValue) {
+        callQuery();
+    }
+});
+
+// 在组件挂载时执行 callQuery（如果 employeeInfo 已经有值）
+onMounted(() => {
+    if (employeeInfo.value) {
+        callQuery();
+    }
+});
+
+// 假定从某处获取 employeeInfo 的数据，这里用 setTimeout 模拟异步获取数据
+setTimeout(() => {
+    employeeInfo.value = {
+        id: employeeInfo.id, // 示例数据，请根据实际情况调整
+        accountType: employeeInfo.accountType
+    };
+}, 1000);
+
+//查詢全部員工
+const allEmployees=ref([]);
+const findEmployeeId = ref('');
+
 
 onMounted(function () {
     callQuery();
 })
 
+//員工查詢全部製作下拉選單
+function findAllEmployee() {
+    axiosapi.get('/employee/all')
+        .then(response => {
+            console.log('allEmployees', response.data);
+            allEmployees.value = response.data.data.map(employee => ({
+                value: employee.id,
+                label: employee.name
+            }));
+        })
+        .catch(error => {
+            console.log('error', error);
+            Swal.fire({
+                text: '获取员工列表错误：' + error.message,
+                icon: 'error'
+            });
+        });
+}
+
+function formatDateTime(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
 
 //開啟新增區塊
 function openModal() {
@@ -218,56 +306,62 @@ function openModal() {
     openCreate.value = true;
 }
 
-//新增簽核
 function doCreate() {
     creatDdialogVisible.value = false;
+
+    // 将输入的时间字符串转换为 Date 对象
+    const startDate = new Date(validityPeriodStart.value);
+    const endDate = new Date(validityPeriodEnd.value);
+
+    // 格式化日期时间为字符串
+    const startDateString = formatDateTime(startDate);
+    const endDateString = formatDateTime(endDate);
+
+    // 显示 "执行中......" 弹窗
     Swal.fire({
-        text: "執行中......",
+        text: "执行中......",
         allowOutsideClick: false,
         showConfirmButton: false,
     });
 
     let request = {
-        "employeeId": 3,
-        "leaveType": form.value.leaveType,
-        "actualLeaveHours": form.value.actualLeaveHours,
-        "validityPeriodStart": form.value.validityPeriodStart,
-        "validityPeriodEnd": form.value.validityPeriodEnd,
-        "permisionRemarks": form.value.permisionRemarks,
-        "leaveStatus": 1
-    }
+        "employeeId": findEmployeeId.value,
+        "leaveType": leaveType.value,
+        "actualLeaveHours": actualLeaveHours.value,
+        "validityPeriodStart": startDateString,
+        "validityPeriodEnd": endDateString,
+        "permisionRemarks": permisionRemarks.value,
+        "leaveStatus": 1,
+        "teamLeaderId": 1,
+        "reason": ""
+    };
 
-    axiosapi.post("/leave/add", request).then(function (response) {
-        console.log("response", response);
-        if (response.data.success) {
-            callQuery(true);
+    axiosapi.post("/leave/add", request)
+        .then(function (response) {
+            Swal.close();
+            if (response.data.success) {
+                callQuery(true);
+                Swal.fire({
+                    icon: "success",
+                    text: response.data.msg,
+                    showConfirmButton: false,
+                }).then(function () {
+                    openCreate.value = false;
+                });
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    text: response.data.msg,
+                });
+            }
+        })
+        .catch(function (error) {
+            Swal.close();
             Swal.fire({
-                icon: "success",
-                text: response.data.msg,
-                showConfirmButton: false,
-            }).then(function (result) {
-
-                console.log("新增的物件", leaves.value[0]);
-                openCreate.value = false;
-                openZon.value = true;
-
+                icon: "error",
+                text: "新增错误：" + (error.response?.data?.msg || '未知错误'),
             });
-        } else {
-            Swal.fire({
-                icon: "warning",
-                text: response.data.msg,
-            });
-        }
-    }).catch(function (error) {
-        console.log("error", error);
-        Swal.fire({
-            icon: "error",
-            text: "新增錯誤：" + error.msg,
         });
-    });
-    setTimeout(function () {
-        Swal.close();  //視窗關閉 
-    }, 1000);
 }
 
 
