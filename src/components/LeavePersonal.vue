@@ -177,20 +177,19 @@
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
             <el-form-item label="工作代理人 :&nbsp;">
-                <el-select
-            v-if="employeeInfo!=null &&employeeInfo.accountType==4"
+        <el-select
+            v-if="employeeInfo != null"
             v-model="findEmployeeId"
             placeholder="請選擇工作代理人"
             clearable
             size="small"
             style="width: 200px;"
-            @click="findAllEmployee();"
-            >
+        >
             <el-option
-                v-for="Option in allEmployees"
-                :key="Option.value"
-                :label="Option.label"
-                :value="Option.value"
+                v-for="option in allEmployees"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
             />
         </el-select>
     </el-form-item>
@@ -306,6 +305,8 @@ console.log('===>Employee info:', employeeInfo.value);
 const accountTypeName = computed(() => employeeInfo.value?.accountTypeName || '');
 console.log('Account Type Name:', accountTypeName.value);
 
+
+
 // 可选：调试数据
 watch(employeeInfo, (newValue) => {
     console.log('Employee info updated:', newValue);
@@ -321,7 +322,8 @@ const pages = ref(0) //分頁總數
 const rows = ref(4) //分頁資料顯示筆數
 
 //查詢全部員工
-const allEmployees=ref([])
+const allEmployees=ref([]);
+const findEmployeeId = ref('');
 
 
 const leaveTypeOptions = [
@@ -416,30 +418,35 @@ onMounted(function () {
 
 //員工查詢全部製作下拉選單
 function findAllEmployee() {
-    let empcount = 0;
-    axiosapi.get("employee/count").then(function (responce){
-        empcount=responce.data.data;
-        console.log("empcount",empcount);
-    })
-
-    axiosapi.get("employee/all").then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
-        console.log("employee/all responce",responce.data);
-        allEmployees.value=[];
-        for(let i = 0;i<empcount;i++){
-            allEmployees.value.push({
-                        value:responce.data.data[i].id,
-                        label: responce.data.data[i].name})
-        }
-    }).catch(function (error) {
-        console.log("error",error);
-        Swal.fire({
-                text: "員工查詢錯誤"+error.message,
-                icon: "error"
+    axiosapi.get('/employee/all')
+        .then(response => {
+            console.log('allEmployees', response.data);
+            allEmployees.value = response.data.data.map(employee => ({
+                value: employee.id,
+                label: employee.name
+            }));
+        })
+        .catch(error => {
+            console.log('error', error);
+            Swal.fire({
+                text: '获取员工列表错误：' + error.message,
+                icon: 'error'
             });
-        // router.push("/")
-    }) 
+        });
 }
 
+// 在组件挂载时或 employeeInfo 变化时调用 findAllEmployee
+onMounted(() => {
+    if (employeeInfo.value) {
+        findAllEmployee();
+    }
+});
+
+watch(employeeInfo, (newValue) => {
+    if (newValue) {
+        findAllEmployee();
+    }
+});
 //單筆新增
 function openModal() {
     console.log("openModal");
