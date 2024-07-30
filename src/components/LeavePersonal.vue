@@ -307,10 +307,31 @@ console.log('Account Type Name:', accountTypeName.value);
 
 
 
-// 可选：调试数据
+
+
+
+// 监控 employeeInfo 的变化，并在其加载完成后执行 callQuery
 watch(employeeInfo, (newValue) => {
-    console.log('Employee info updated:', newValue);
+    if (newValue) {
+        callQuery();
+    }
 });
+
+// 在组件挂载时执行 callQuery（如果 employeeInfo 已经有值）
+onMounted(() => {
+    if (employeeInfo.value) {
+        callQuery();
+    }
+});
+
+// 假定从某处获取 employeeInfo 的数据，这里用 setTimeout 模拟异步获取数据
+setTimeout(() => {
+    employeeInfo.value = {
+        id: employeeInfo.id, // 示例数据，请根据实际情况调整
+        accountType: employeeInfo.accountType
+    };
+}, 1000);
+
 
 //用於重新導向 router.push
 const router = useRouter()
@@ -447,26 +468,12 @@ watch(employeeInfo, (newValue) => {
         findAllEmployee();
     }
 });
+
 //單筆新增
 function openModal() {
     console.log("openModal");
     openCreate.value = true;
-    // fetchEmployees();
-    
-    // 获取员工数据的 API 调用
-    // axiosapi.get('/employee/all')
-    //     .then(response => {
-    //         // 假设你有一个 employees 的数据变量存储获取到的员工列表
-    //         console.log("response.data=======>"+JSON.stringify(response.data));
-    //         employees.value = response.data;
-    //     })
-    //     .catch(error => {
-    //         console.error('Error fetching employees:', error);
-    //     });
 }
-// onMounted(() => {
-//       fetchEmployees();
-//     });
 
 function doCreate() {
     // 创建一个新的请求对象，包含修改后的表单数据
@@ -564,7 +571,6 @@ function callQuery() {
         });
     });
 }
-
 
 </script>
 
