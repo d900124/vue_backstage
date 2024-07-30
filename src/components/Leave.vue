@@ -343,7 +343,8 @@ function doModify() {
                 callQuery();
 
                 openZon.value = true;
-
+            // 在成功消息显示后刷新页面
+            window.location.reload();
             });
         } else {
             Swal.fire({
