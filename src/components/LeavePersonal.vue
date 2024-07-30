@@ -71,10 +71,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="leaveTwo in leavesTwo" :key="leaveTwo.id">
+            <tr v-for="leaveTwo in leavesTwo" :key="leaveTwo.id" >
               <th scope="row" class="table-td">{{ leaveTwo.leaveTypeName }}</th>
               <td class="table-td">{{ leaveTwo.validityPeriodStart }}  -  {{ leaveTwo.validityPeriodEnd }}</td>
-              <td class="table-td">{{ employeeInfo. }}</td>
+              <td class="table-td">{{ getRemainingHours(leaveTwo.leaveTypeName) }}</td>
             </tr>
           </tbody>
         </table>
@@ -356,14 +356,38 @@ const findEmployeeId = ref('');
 
 
 const leaveTypeOptions = [
-    { value: 1, label: "特休" },
-    { value: 5, label: "事假" },
-    { value: 6, label: "半薪病假" },
-    { value: 7, label: "婚假" },
-    { value: 8, label: "生理假" },
-    { value: 9, label: "公假" },
-    { value: 10, label: "喪假" }
+  { value: 1, label: "特休" },
+  { value: 5, label: "事假" },
+  { value: 6, label: "半薪病假" },
+  { value: 7, label: "婚假" },
+  { value: 8, label: "生理假" },
+  { value: 9, label: "公假" },
+  { value: 10, label: "喪假" }
 ];
+
+
+
+// 根据假别名称获取剩余时数
+const getRemainingHours = (leaveTypeName) => {
+  switch (leaveTypeName) {
+    case "特休":
+      return employeeInfo.value.annualLeaveHours;
+    case "事假":
+      return employeeInfo.value.personalLeaveHours;
+    case "半薪病假":
+      return employeeInfo.value.sickLeaveHours;
+    case "婚假":
+      return employeeInfo.value.marriageLeaveHours;
+    case "生理假":
+      return employeeInfo.value.menstrualLeaveHours;
+    case "公假":
+      return employeeInfo.value.officialLeaveHours;
+    case "喪假":
+      return employeeInfo.value.bereavementLeaveHours;
+    default:
+      return 0;
+  }
+};
 
 const getPermisionStatusText = (status) => {
     switch (status) {
