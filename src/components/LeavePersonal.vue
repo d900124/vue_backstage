@@ -440,24 +440,6 @@ function findAllEmployee() {
     }) 
 }
 
-// 声明员工列表的响应式数据
-// const employees = ref([]);
-// function fetchEmployees() {
-//     axiosapi.get('/employee/all')
-//         .then(response => {
-//             // 确保 response.data 是一个数组，并且每个对象都有 id 和 name
-//             if (Array.isArray(response.data)) {
-//                 employees.value = response.data.filter(employee => employee && employee.id && employee.name);
-//             }
-
-//             // 假设你有一个 employees 的数据变量存储获取到的员工列表
-//             console.log("response.data=======>"+JSON.stringify(employees.value));
-//             // employees.value = response.data;
-//         })
-//         .catch(error => {
-//           console.error('Error fetching employees:', error);
-//         });
-//     }
 //單筆新增
 function openModal() {
     console.log("openModal");

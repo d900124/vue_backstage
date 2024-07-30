@@ -504,7 +504,7 @@ function doModify() {
         "accountType": singleEmployee.value.accountType,
         "name": singleEmployee.value.name,
         "startDate": singleEmployee.value.startDate,
-        "teamLeaderId": singleEmployee.value.teamLeaderName,
+        "teamLeaderName": singleEmployee.value.teamLeaderName,
         "sex": singleEmployee.value.sex,
         "phone": singleEmployee.value.phone,
         "email": singleEmployee.value.email,
