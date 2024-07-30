@@ -176,32 +176,24 @@
                 <el-input v-model="form.actualLeaveHours" type="text" size="small" rows="2" readonly />
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
-
             <el-form-item label="工作代理人 :&nbsp;">
-                <el-select v-model="form.deputyId" placeholder="Select" size="small">
-                </el-select>
-                <!-- <el-select v-model="form.deputyId" placeholder="選擇代理人" size="small">
-                    <el-option
-                    v-for="employee in employees"
-                    :key="employee.id"
-                    :label="employee.name"
-                    :value="employee.id">
-                    </el-option>
-                </el-select> -->
-
-                <!-- <div v-if="employees.length === 0">加载中...</div>
-                <div v-else-if="employees.length > 0">
-                <el-select v-model="form.deputyId" placeholder="选择代理人" size="small">
-                    <el-option
-                    v-for="employee in employees"
-                    :key="employee.id"
-                    :label="employee.name"
-                    :value="employee.id">
-                    </el-option>
-                </el-select>
-                </div>
-                <div v-else>没有数据</div> -->
-            </el-form-item>
+                <el-select
+            v-if="employeeInfo!=null &&employeeInfo.accountType==4"
+            v-model="findEmployeeId"
+            placeholder="請選擇工作代理人"
+            clearable
+            size="small"
+            style="width: 200px;"
+            @click="findAllEmployee();"
+            >
+            <el-option
+                v-for="Option in allEmployees"
+                :key="Option.value"
+                :label="Option.label"
+                :value="Option.value"
+            />
+        </el-select>
+    </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
             <el-form-item label="備註 :&nbsp;">
                 <el-input v-model="form.reason" type="textarea" placeholder="請輸入備註" size="small" rows="2" />
@@ -328,6 +320,9 @@ const current = ref(1) //目前頁碼
 const pages = ref(0) //分頁總數
 const rows = ref(4) //分頁資料顯示筆數
 
+//查詢全部員工
+const allEmployees=ref([])
+
 
 const leaveTypeOptions = [
     { value: 1, label: "特休" },
@@ -419,24 +414,50 @@ onMounted(function () {
     callQuery();
 })
 
-// 声明员工列表的响应式数据
-const employees = ref([]);
-function fetchEmployees() {
-    axiosapi.get('/employee/all')
-        .then(response => {
-            // 确保 response.data 是一个数组，并且每个对象都有 id 和 name
-            if (Array.isArray(response.data)) {
-                employees.value = response.data.filter(employee => employee && employee.id && employee.name);
-            }
+//員工查詢全部製作下拉選單
+function findAllEmployee() {
+    let empcount = 0;
+    axiosapi.get("employee/count").then(function (responce){
+        empcount=responce.data.data;
+        console.log("empcount",empcount);
+    })
 
-            // 假设你有一个 employees 的数据变量存储获取到的员工列表
-            console.log("response.data=======>"+JSON.stringify(employees.value));
-            // employees.value = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching employees:', error);
-        });
-    }
+    axiosapi.get("employee/all").then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
+        console.log("employee/all responce",responce.data);
+        allEmployees.value=[];
+        for(let i = 0;i<empcount;i++){
+            allEmployees.value.push({
+                        value:responce.data.data[i].id,
+                        label: responce.data.data[i].name})
+        }
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "員工查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
+}
+
+// 声明员工列表的响应式数据
+// const employees = ref([]);
+// function fetchEmployees() {
+//     axiosapi.get('/employee/all')
+//         .then(response => {
+//             // 确保 response.data 是一个数组，并且每个对象都有 id 和 name
+//             if (Array.isArray(response.data)) {
+//                 employees.value = response.data.filter(employee => employee && employee.id && employee.name);
+//             }
+
+//             // 假设你有一个 employees 的数据变量存储获取到的员工列表
+//             console.log("response.data=======>"+JSON.stringify(employees.value));
+//             // employees.value = response.data;
+//         })
+//         .catch(error => {
+//           console.error('Error fetching employees:', error);
+//         });
+//     }
 //單筆新增
 function openModal() {
     console.log("openModal");
