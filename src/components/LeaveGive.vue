@@ -1,6 +1,5 @@
 <template>
-    <!-- https://getbootstrap.com/docs/5.2/content/tables/#table-group-dividers 表單部分 -->
-    <!-- https://element-plus.org/zh-CN/component/config-provider.html  頁碼 -->
+    <div class="col-12" style="height: 50px;"></div>
 
     <div class="col-1"></div>
     <!-- 多選下拉選單(簡易搜尋) -->

@@ -508,15 +508,111 @@ function openModal() {
 }
 
 function doCreate() {
+    // 获取实际请假小时数（假设从表单中获取）
+    let actualLeaveHours = Number(form.value.actualLeaveHours); // 确保转换为数字
+
+    // 验证实际请假小时数是否合理
+    if (actualLeaveHours <= 0) {
+        Swal.fire({
+            icon: "error",
+            text: "請假時數必須大於0",
+            showConfirmButton: true
+        });
+        return; 
+    }
+
     // 创建一个新的请求对象，包含修改后的表单数据
     let request = {
         ...form.value,
         employeeId: employeeInfo.value.id,
         teamLeaderId: employeeInfo.value.teamLeaderId
     };
-    
-    console.log("Form before submission:", request);
-    
+
+    // 从 employeeInfo 中获取假别小时数并转换为数字
+    let personalLeaveHours = Number(employeeInfo.value.personalLeaveHours);
+    let sickLeaveHours = Number(employeeInfo.value.sickLeaveHours);
+    let annualLeaveHours = Number(employeeInfo.value.annualLeaveHours);
+    let menstrualLeaveHours = Number(employeeInfo.value.menstrualLeaveHours);
+    let officialLeaveHours = Number(employeeInfo.value.officialLeaveHours);
+    let marriageLeaveHours = Number(employeeInfo.value.marriageLeaveHours);
+
+    let leaveType = String(form.value.leaveType); // 将 leaveType 转换为字符串
+    let insufficientLeave = false; // 在使用前定义和初始化
+    let errorMessage = ""; // 定义并初始化 errorMessage 变量
+
+    // 打印调试信息
+    console.log("实际请假小时数:", actualLeaveHours);
+    console.log("员工假别数据:", {
+        personalLeaveHours,
+        sickLeaveHours,
+        annualLeaveHours,
+        menstrualLeaveHours,
+        officialLeaveHours,
+        marriageLeaveHours,
+    });
+    console.log("選取的假別", leaveType);
+    creatDdialogVisible.value = false;
+    // 验证假别小时数
+    switch (leaveType) {
+        case '1': // 年假
+            if (actualLeaveHours > annualLeaveHours) {
+                insufficientLeave = true;
+                errorMessage = "年假剩餘時數不足。";
+            }
+            break;
+        case '5': // 事假
+            if (actualLeaveHours > personalLeaveHours) {
+                insufficientLeave = true;
+                errorMessage = "可用事假剩餘時數不足。";
+            }
+            break;
+        case '6': // 病假
+            if (actualLeaveHours > sickLeaveHours) {
+                insufficientLeave = true;
+                errorMessage = "可用病假剩餘時數不足。";
+            }
+            break;
+        case '7': // 婚假
+            if (actualLeaveHours > marriageLeaveHours) {
+                insufficientLeave = true;
+                errorMessage = "婚假小时数不足。";
+            }
+            break;
+        case '8': // 生理假
+            if (actualLeaveHours > menstrualLeaveHours) {
+                insufficientLeave = true;
+                errorMessage = "生理假小时数不足。";
+            }
+            break;
+        case '9': // 公假
+            if (actualLeaveHours > officialLeaveHours) {
+                insufficientLeave = true;
+                errorMessage = "公假小时数不足。";
+            }
+            break;
+        default:
+            Swal.fire({
+                icon: "error",
+                text: "無此假別",
+                showConfirmButton: true
+            });
+            return;
+    }
+
+    if (insufficientLeave) {
+        // 先显示 SweetAlert 消息
+        Swal.fire({
+            icon: "error",
+            text: errorMessage,
+            showConfirmButton: true
+        }).then(() => {
+            // 关闭对话框
+            creatDdialogVisible.value = false;
+        });
+        return; 
+    }
+
+    // 关闭对话框和显示 "正在执行" 提示
     creatDdialogVisible.value = false;
     Swal.fire({
         text: "執行中......",
@@ -524,6 +620,7 @@ function doCreate() {
         showConfirmButton: false,
     });
 
+    // 发送请求
     axiosapi.post("/leave/add", request)
         .then(response => {
             Swal.close(); // 关闭正在执行的提示
@@ -535,9 +632,7 @@ function doCreate() {
                     timer: 2000 // 消息显示时间为2秒
                 }).then(() => {
                     // 刷新页面或更新状态
-                    window.location.reload(); // 刷新页面
-                    // 或者使用 Vue 的方法来更新页面状态，例如：
-                    // openZon.value = true; // 打开详细数据区域
+                    openZon.value = true; // 打开详细数据区域
                 });
             } else {
                 Swal.fire({
@@ -554,6 +649,7 @@ function doCreate() {
             });
         });
 }
+
 
 //單筆查詢
 function leaveInfo(leaveId) {
@@ -585,7 +681,6 @@ function callQueryTwo() {
         "pageSize": rows.value,
         "employeeId": employeeId.value,
         "leaveStatus": 1, // 1 为给假
-       
     };
 
     axiosapi.post("/leave/query", request)
