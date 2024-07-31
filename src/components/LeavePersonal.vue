@@ -1,10 +1,11 @@
 <template>
-<div class="col-12" style="height: 50px;"></div>
-<div class="col-1">&nbsp;</div>
+    <div class="col-12" style="height: 50px;"> </div>
+    <div class="col-1">&nbsp;</div>
     <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;"></div>
     <!-- 抬頭 -->
+    
     <div class="col-2" style="padding: 0px 0px;display: flex; justify-content: flex-end;align-items:flex-end;">
-        <h3 class="table-title" id="personalInfo">請假申請</h3>
+        <h3 class="table-title" id="leavePersonal">請假申請</h3>
     </div>
     <div class="col-1">&nbsp;</div>
 
@@ -18,8 +19,10 @@
                         {{ employeeInfo.name }}
                     </tr>
                     <tr>
-                        <th class="table-th">可用剩餘假別時數</th>
-                    </tr>
+                        <!-- 彈窗 -->
+                    <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="callQueryTwo">
+                        可用剩餘假別時數
+                    </button></tr>
                 </thead>
                 <tbody class="table-body">
                     <tr>
@@ -30,13 +33,55 @@
                         <th scope="row" class="table-td">病假</th>
                         <td class="table-td">{{ employeeInfo.sickLeaveHours }} 小時</td>
                     </tr>
-                    <tr>
+                    <tr v-if="employeeInfo.annualLeaveHours !== null">
                         <th scope="row" class="table-td">特休</th>
                         <td class="table-td">{{ employeeInfo.annualLeaveHours }} 小時</td>
+                    </tr>
+                    <tr v-if="employeeInfo.menstrualLeaveHours !== null">
+                        <th scope="row" class="table-td">生理假</th>
+                        <td class="table-td">{{ employeeInfo.menstrualLeaveHours }} 小時</td>
+                    </tr>
+                    <tr v-if="employeeInfo.officialLeaveHours !== null">
+                        <th scope="row" class="table-td">公假</th>
+                        <td class="table-td">{{ employeeInfo.officialLeaveHours }} 小時</td>
+                    </tr>
+                    <tr v-if="employeeInfo.marriageLeaveHours !== null">
+                        <th scope="row" class="table-td">婚假</th>
+                        <td class="table-td">{{ employeeInfo.marriageLeaveHours }} 小時</td>
                     </tr>
                 </tbody>
             </table>
         </div>
+
+<!-- 彈出視窗 -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" v-if="employeeInfo">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title " id="exampleModalLabel" style="color:#a33238; font-weight: bold; margin-left:325px;">可用假別時數</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <table class="table" style="margin-left:0px;">
+          <thead>
+            <tr>
+              <th style="color: #a33238;">假別</th>
+              <th style="color: #a33238;">使用期限</th>
+              <th style="color: #a33238;">可用時數</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="leaveTwo in leavesTwo" :key="leaveTwo.id" >
+              <th scope="row" class="table-td">{{ leaveTwo.leaveTypeName }}</th>
+              <td class="table-td">{{ leaveTwo.validityPeriodStart }}  -  {{ leaveTwo.validityPeriodEnd }}</td>
+              <td class="table-td">{{ getRemainingHours(leaveTwo.leaveTypeName) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 
         <div class="col-5"
             style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
@@ -60,7 +105,7 @@
                     <th scope="col" class="table-th">簽核狀態</th>
                 </tr>
             </thead>
-            <tbody class="table-group-divider">
+            <tbody class="table-group-divider" v-if="employeeInfo">
                 <tr v-for="leave in leaves" :key="leave.id" @click="leaveInfo(leave.id)">
                     <th scope="row" class="table-td">{{ leave.createTime }}</th>
                     <td class="table-td">{{ leave.leaveTypeName }} </td>
@@ -87,19 +132,19 @@
     <div class="col-1"></div>
 
     <!-- 新增區塊 / 抬頭-->
-    <div v-if="openCreat" style="height: 50px;"></div>
-    <div v-if="openCreat" class="col-1"></div>
-    <div v-if="openCreat" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openCreat = false">
+    <div v-if="openCreate" style="height: 50px;"></div>
+    <div v-if="openCreate" class="col-1"></div>
+    <div v-if="openCreate" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openCreate = false">
         <el-divider content-position="center">
             <button type="button" class="btn-close" aria-label="Close"></button>
             <h5 class="table-title">新增假單</h5>
         </el-divider>
     </div>
-    <div v-if="openCreat" class="col-1"></div>
+    <div v-if="openCreate" class="col-1"></div>
 
     <!-- 新增區塊 / 資料區-->
-    <div v-if="openCreat" class="col-1"></div>
-    <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
+    <div v-if="openCreate" class="col-1"></div>
+    <div v-if="openCreate" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
 
         <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
             <el-form-item label="申請員工 :&nbsp;">
@@ -108,28 +153,27 @@
 
             <el-divider border-style="dashed" style="margin: 0;" />
             <el-form-item label="假別 :&nbsp;">
-                <el-select v-model="creatTeamleaderIDValue" placeholder="Select" size="small">
-                    <el-option v-for="Option in creatTeamleaderIDOptions" :key="Option.value" :label="Option.label"
-                        :value="Option.value" />
+                <el-select v-model="form.leaveType" placeholder="Select" size="small">
+                    <el-option v-for="option in leaveTypeOptions" :key="option.value" :label="option.label"
+                        :value="option.value" />
                 </el-select>
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
 
             <el-form-item label="開始時間 :&nbsp;">
-                <el-date-picker v-model="startDate" type="datetime" placeholder="選擇開始時間" size="small"
-                    format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm" />
+                <input id="start-date" type="datetime-local" class="form-control" v-model="form.startTime" style="height:25px" />
             </el-form-item>
+
             <el-divider border-style="dashed" style="margin: 0;" />
 
             <el-form-item label="結束時間 :&nbsp;">
-                <el-date-picker v-model="endDate" type="datetime" placeholder="選擇結束時間" size="small"
-                    format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm" />
+                <input id="end-date" type="datetime-local" class="form-control" v-model="form.endTime" style="height:25px"/>
             </el-form-item>
 
         </el-form>
     </div>
 
-    <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
+    <div v-if="openCreate" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
 
         <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
             <el-form-item label="&nbsp;">
@@ -138,35 +182,45 @@
             <el-divider border-style="dashed" style="margin: 0;" />
 
             <el-form-item label="請假時數 :&nbsp;">
-                <p style="margin: 0;"> 小時</p>
+                <el-input v-model="form.actualLeaveHours" type="text" size="small" rows="2" readonly />
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
-
             <el-form-item label="工作代理人 :&nbsp;">
-                <el-select v-model="creatTeamleaderIDValue" placeholder="Select" size="small">
-                    <el-option v-for="Option in creatTeamleaderIDOptions" :key="Option.value" :label="Option.label"
-                        :value="Option.value" />
-                </el-select>
-            </el-form-item>
+        <el-select
+            v-if="employeeInfo != null"
+            v-model="findEmployeeId"
+            placeholder="Select"
+            clearable
+            size="small"
+            style="width: 200px;"
+        >
+            <el-option
+                v-for="option in allEmployees"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
+            />
+        </el-select>
+    </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
             <el-form-item label="備註 :&nbsp;">
-                <el-input v-model="remarkValue" type="textarea" placeholder="請輸入備註" size="small" rows="2" />
+                <el-input v-model="form.reason" type="textarea" placeholder="請輸入備註" size="small" rows="2" />
             </el-form-item>
 
         </el-form>
     </div>
-    <div v-if="openCreat" class="col-1"></div>
-
+    <div v-if="openCreate" class="col-1"></div>
 
     <!-- 新增區塊 / 確認按鈕-->
-    <div v-if="openCreat" class="col-1"></div>
-    <div v-if="openCreat" class="col-5"
+    <div v-if="openCreate" class="col-1"></div>
+    <div v-if="openCreate" class="col-5"
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
-    <div v-if="openCreat" class="col-5"
+    <div v-if="openCreate" class="col-5"
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-        <el-button color="#a33238" :dark="isDark" style="margin: 20 0;" @click="openDoModify">&nbsp確認新增&nbsp</el-button>
+        <el-button color="#a33238" :dark="isDark" style="margin: 20 0;"
+            @click="creatDdialogVisible = true">&nbsp;確認新增&nbsp;</el-button>
     </div>
-    <div v-if="openCreat" class="col-1"></div>
+    <div v-if="openCreate" class="col-1"></div>
 
 
     <!-- 下方詳細資料區 / 抬頭-->
@@ -212,7 +266,6 @@
                         <th scope="col" class="table-th">簽核時間</th>
                         <th scope="col" class="table-th">審核意見</th>
                         <th scope="col" class="table-th">簽核狀態</th>
-
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
@@ -227,6 +280,20 @@
             </table>
         </div>
     </div>
+    <!-- 確認新增用彈出視窗 -->
+    <el-dialog v-model="creatDdialogVisible" width="350" :show-close="false">
+        <h5 class="msg-title">確認新增 ?</h5>
+        <template #footer>
+            <div class="dialog-footer" style="display: flex;justify-content: center;">
+                <div>
+                    <el-button @click="creatDdialogVisible = false">否</el-button>
+                    <el-button type="primary" @click="doCreate" style="background-color: #a33238;border: #a33238;">
+                        是
+                    </el-button>
+                </div>
+            </div>
+        </template>
+    </el-dialog>
 </template>
 
 <script setup>
@@ -236,7 +303,7 @@ import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
 
-//用於重新導向 router.push
+
 
 const store = useStore();
 // 确保 employeeInfo 在页面加载时是一个初始值为空的对象，而不是 null 或 undefined。这样可以确保在模板渲染时不会出错
@@ -246,17 +313,33 @@ console.log('===>Employee info:', employeeInfo.value);
 const accountTypeName = computed(() => employeeInfo.value?.accountTypeName || '');
 console.log('Account Type Name:', accountTypeName.value);
 
-onMounted(() => {
-    const username = localStorage.getItem('username');
-    if (username) {
-        store.dispatch('fetchEmployeeInfo', username);
+
+
+// 监控 employeeInfo 的变化，并在其加载完成后执行 callQuery
+watch(employeeInfo, (newValue) => {
+    if (newValue) {
+        callQuery();
+        callQueryTwo();
     }
 });
 
-// 可选：调试数据
-watch(employeeInfo, (newValue) => {
-    console.log('Employee info updated:', newValue);
+// 在组件挂载时执行 callQuery（如果 employeeInfo 已经有值）
+onMounted(() => {
+    if (employeeInfo.value) {
+        callQuery();
+        callQueryTwo();
+        
+    }
 });
+
+// 假定从某处获取 employeeInfo 的数据，这里用 setTimeout 模拟异步获取数据
+setTimeout(() => {
+    employeeInfo.value = {
+        id: employeeInfo.id, // 示例数据，请根据实际情况调整
+        accountType: employeeInfo.accountType
+    };
+}, 1000);
+
 
 //用於重新導向 router.push
 const router = useRouter()
@@ -267,15 +350,44 @@ const current = ref(1) //目前頁碼
 const pages = ref(0) //分頁總數
 const rows = ref(4) //分頁資料顯示筆數
 
-//下方詳細資料開啟用
-const openZon = ref(false)
+//查詢全部員工
+const allEmployees=ref([]);
+const findEmployeeId = ref('');
 
-//下方新增資料開啟用
-const openCreat = ref(false)
 
-//產品顯示leave元件用的參數
-const leaves = ref([]);
-const singleLeave = ref([])
+const leaveTypeOptions = [
+  { value: 1, label: "特休" },
+  { value: 5, label: "事假" },
+  { value: 6, label: "半薪病假" },
+  { value: 7, label: "婚假" },
+  { value: 8, label: "生理假" },
+  { value: 9, label: "公假" },
+  { value: 10, label: "喪假" }
+];
+
+
+
+// 根据假别名称获取剩余时数
+const getRemainingHours = (leaveTypeName) => {
+  switch (leaveTypeName) {
+    case "特休":
+      return employeeInfo.value.annualLeaveHours;
+    case "事假":
+      return employeeInfo.value.personalLeaveHours;
+    case "半薪病假":
+      return employeeInfo.value.sickLeaveHours;
+    case "婚假":
+      return employeeInfo.value.marriageLeaveHours;
+    case "生理假":
+      return employeeInfo.value.menstrualLeaveHours;
+    case "公假":
+      return employeeInfo.value.officialLeaveHours;
+    case "喪假":
+      return employeeInfo.value.bereavementLeaveHours;
+    default:
+      return 0;
+  }
+};
 
 const getPermisionStatusText = (status) => {
     switch (status) {
@@ -291,25 +403,157 @@ const getPermisionStatusText = (status) => {
 };
 
 
-// 定義審核狀態選項
-const permissionStatuses = ref([
-    { value: 1, label: '簽核中' },
-    { value: 2, label: '同意' },
-    { value: 3, label: '拒絕' }
-]);
+
+
+const form = ref({
+    permisionStatus: 1,
+    leaveStatus: 0,
+    leaveType: '',
+    startTime: '',
+    endTime: '',
+    actualLeaveHours: 0,
+    deputyId: '3',
+    reason: '',
+});
+
+// 计算请假时数
+let leaveHours = computed(() => {
+    console.log("開始時間" + form.value.startTime)
+    console.log("開始時間type" + typeof form.value.startTime)
+    if (form.value.startTime && form.value.endTime) {
+        console.log("開始時間" + form.value.startTime)
+        const start = new Date(form.value.startTime);
+        const end = new Date(form.value.endTime);
+        const diff = (end - start) / (1000 * 60 * 60); // difference in hours
+        return diff > 0 ? Math.ceil(diff) : 0;
+    }
+    return 0;
+});
+
+watch(leaveHours, (newValue) => {
+    form.value.actualLeaveHours = newValue;
+    console.log("actualLeaveHours type" + typeof form.value.actualLeaveHours)
+
+}, { immediate: true });
+onMounted(() => {
+    const username = localStorage.getItem('username');
+    if (username) {
+        store.dispatch('fetchEmployeeInfo', username);
+    }
+});
+
+
+
+
+//下方詳細資料開啟用
+const openZon = ref(false)
+
+//下方新增資料開啟用
+const openCreate = ref(false)
+
+//產品顯示leave元件用的參數
+const leaves = ref([]);
+const singleLeave = ref([]);
+const leavesTwo = ref([]);
+
+const leaveType = ref(null);
+
+const startTime = ref(null);
+const endTime = ref(null);
+
+const creatDdialogVisible = ref(false)  //新增
 
 
 onMounted(function () {
     callQuery();
+    callQueryTwo();
 })
 
+//員工查詢全部製作下拉選單
+function findAllEmployee() {
+    axiosapi.get('/employee/all')
+        .then(response => {
+            console.log('allEmployees', response.data);
+            allEmployees.value = response.data.data.map(employee => ({
+                value: employee.id,
+                label: employee.name
+            }));
+        })
+        .catch(error => {
+            console.log('error', error);
+            Swal.fire({
+                text: '获取员工列表错误：' + error.message,
+                icon: 'error'
+            });
+        });
+}
+
+// 在组件挂载时或 employeeInfo 变化时调用 findAllEmployee
+onMounted(() => {
+    if (employeeInfo.value) {
+        findAllEmployee();
+    }
+});
+
+watch(employeeInfo, (newValue) => {
+    if (newValue) {
+        findAllEmployee();
+    }
+});
 
 //單筆新增
 function openModal() {
     console.log("openModal");
-    openCreat.value = true;
+    openCreate.value = true;
 }
 
+function doCreate() {
+    // 创建一个新的请求对象，包含修改后的表单数据
+    let request = {
+        ...form.value,
+        employeeId: employeeInfo.value.id,
+        teamLeaderId: employeeInfo.value.teamLeaderId
+    };
+    
+    console.log("Form before submission:", request);
+    
+    creatDdialogVisible.value = false;
+    Swal.fire({
+        text: "執行中......",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+    });
+
+    axiosapi.post("/leave/add", request)
+        .then(response => {
+            Swal.close(); // 关闭正在执行的提示
+            if (response.data.success) {
+                Swal.fire({
+                    icon: "success",
+                    text: response.data.msg,
+                    showConfirmButton: false,
+                    timer: 2000 // 消息显示时间为2秒
+                }).then(() => {
+                    // 刷新页面或更新状态
+                    window.location.reload(); // 刷新页面
+                    // 或者使用 Vue 的方法来更新页面状态，例如：
+                    // openZon.value = true; // 打开详细数据区域
+                });
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    text: response.data.msg,
+                });
+            }
+        })
+        .catch(error => {
+            Swal.close(); // 关闭正在执行的提示
+            Swal.fire({
+                icon: "error",
+                text: "新增錯誤：" + error.message,
+            });
+        });
+}
 
 //單筆查詢
 function leaveInfo(leaveId) {
@@ -330,6 +574,44 @@ function leaveInfo(leaveId) {
 }
 
 
+function callQueryTwo() {
+    console.log("callQuery - 当前页码:", current.value);
+
+    const employeeId = computed(() => employeeInfo.value.id);
+    console.log('Employee ID:', employeeId);
+
+    let request = {
+        "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
+        "pageSize": rows.value,
+        "employeeId": employeeId.value,
+        "leaveStatus": 1, // 1 为给假
+       
+    };
+
+    axiosapi.post("/leave/query", request)
+        .then(function (response) {
+            // 获取查询到的数据列表
+            leavesTwo.value = response.data.data.content; // 获取查询到的数据列表
+        // 更新分页信息
+        total.value = response.data.data.totalElements; // 总条目数
+        pages.value = response.data.data.totalPages; // 总页数
+
+        console.log("leavesTwo", response.data.data.content);
+        console.log("total", response.data.data.totalElements);
+        console.log("pages", response.data.data.totalPages);
+
+            console.log("leavesTwo", response.data.data);
+        })
+        .catch(function (error) {
+            console.log("error", error);
+            Swal.fire({
+                text: "查询错误：" + (error.response?.data?.message || error.message),
+                icon: "error"
+            });
+        });
+}
+
+
 // 多筆查詢
 function callQuery() {
     console.log("callQuery - 當前頁碼:", current.value);
@@ -339,7 +621,8 @@ function callQuery() {
     let request = {
         "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
         "pageSize": rows.value,
-        "employeeId": employeeId.value
+        "employeeId": employeeId.value,
+        "leaveStatus": 0, // 0為請假
     };
 
     axiosapi.post("/leave/query", request).then(function (response) {
@@ -360,14 +643,34 @@ function callQuery() {
     });
 }
 
-
 </script>
 
 <style scoped>
+.btn-custom {
+  background-color: #a33238; /* 设置背景颜色 */
+  color: #ffffff;            /* 设置字体颜色为白色 */
+  border: none;              /* 去掉按钮边框 */
+  height: 30px;              /* 设置按钮高度 */
+  font-size: 15px;           /* 设置字体大小 */
+  display: flex;             /* 使用 flex 布局 */
+  align-items: center;       /* 垂直居中对齐 */
+  justify-content: center;   /* 水平居中对齐 */
+  padding: 0 15px;           /* 添加内边距，使按钮有一定宽度 */
+}
+
+/* 调整模态框的垂直位置，使其居中显示 */
+.modal-dialog {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(90% - 1rem); /* 避免顶部和底部的空白区域 */
+
+}
 .right-panel {
     width: 60%;
     padding: 60px;
-    margin-left: -20px; /* 根据需要调整这个值 */
+    margin-left: -20px;
+    /* 根据需要调整这个值 */
 }
 
 .left-panel {
@@ -376,7 +679,8 @@ function callQuery() {
     padding: 35px;
     background-color: #fff5eb;
     position: relative;
-    margin-left: 110px; /* 根据需要调整这个值 */
+    margin-left: 110px;
+    /* 根据需要调整这个值 */
 }
 
 .btn-close {

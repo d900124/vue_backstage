@@ -165,7 +165,7 @@
 
     <!-- 確認修改用彈出視窗 -->
     <el-dialog v-model="dialogVisible" width="300" :show-close="false">
-        <h5 class="msg-title">確認修改 簽核編號 {{ singleCustomer.id }} ?</h5>
+        <h5 class="msg-title">確認修改 客戶編號 {{ singleCustomer.id }} ?</h5>
         <template #footer>
             <div class="dialog-footer" style="justify-content: center;">
                 <el-button @click="dialogVisible = false; isModify = true">否</el-button>

@@ -8,7 +8,7 @@
 
     <!-- 抬頭 -->
     <div class="col-5" style="padding: 0px 0px;">
-        <h3 class="table-title">假單簽核</h3>
+        <h3 class="table-title" id="leave">假單簽核</h3>
     </div>
     <div class="col-1"></div>
 
@@ -64,7 +64,7 @@
     <div v-if="openZon" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openZon = false">
         <el-divider content-position="center">
             <button type="button" class="btn-close" aria-label="Close"></button>
-            <h5 class="table-title">員工編號 {{ singleLeave.employeeId }} --單筆詳細請假資料</h5>
+            <h5 class="table-title" id="leaveAgenda">員工編號 {{ singleLeave.employeeId }} --單筆詳細請假資料</h5>
         </el-divider>
     </div>
     <div v-if="openZon" class="col-1"></div>
@@ -161,7 +161,7 @@
 
     <!-- 確認修改用彈出視窗 -->
     <el-dialog v-model="dialogVisible" width="300" :show-close="false">
-        <h5 class="msg-title">確認修改 簽核編號 {{ singleLeave.id }} ?</h5>
+        <h5 class="msg-title">確認修改 假單編號 {{ singleLeave.id }} ?</h5>
         <template #footer>
             <div class="dialog-footer" style="justify-content: center;">
                 <el-button @click="dialogVisible = false; isModify = true">否</el-button>
@@ -266,6 +266,7 @@ function callQuery() {
     console.log("callQuery - 當前頁碼:", current.value);
 
     let request = {
+        "leaveStatus": 0, // 0為請假
         "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
         "pageSize": rows.value
     };
@@ -299,7 +300,6 @@ function openDoModify() {
     }
 }
 
-//修改簽核
 function doModify() {
     Swal.fire({
         text: "執行中......",
@@ -308,7 +308,7 @@ function doModify() {
     });
 
     let request = {
-        "id": singleLeave.value.id,  // 需要提供ID來進行修改
+        "id": singleLeave.value.id,
         "leaveStatus": singleLeave.value.leaveStatus,
         "startTime": singleLeave.value.startTime,
         "endTime": singleLeave.value.endTime,
@@ -331,37 +331,86 @@ function doModify() {
         "validityPeriodEnd": singleLeave.value.validityPeriodEnd
     };
 
-    axiosapi.put(`/leave/modify/${singleLeave.value.id}`, request).then(function (response) {
-        console.log("response", response);
-        if (response.data.success) {
-            Swal.fire({
-                icon: "success",
-                text: response.data.message,
-                showConfirmButton: false,
-            }).then(function (result) {
-                callQuery();
+    axiosapi.put(`/leave/modify/${singleLeave.value.id}`, request)
+        .then(function (response) {
+            console.log("response", response);
+            if (response.data.success) {
+                Swal.fire({
+                    icon: "success",
+                    text: response.data.message,
+                    showConfirmButton: false,
+                }).then(function () {
+                    callQuery();
 
-                openZon.value = true;
+                    const startTime = singleLeave.value.startTime+":00";
+                    const endTime = singleLeave.value.endTime+":00";
+                    console.log("startDate",singleLeave.value.startDate);
+                    console.log(1111111,startTime ,endTime);
+                    if (startTime && endTime) {
+                        console.log(2222222222222222222222222222222);
+                        const formattedStartTime = `${startTime}:00`;
+                        const formattedEndTime = `${endTime}:00`;
 
-            });
-        } else {
+                        const unavailableTimeStr = `${startTime}`;
+                        const unavailableTimeEnd = `${endTime}`;
+                        console.log("開始時間",unavailableTimeStr)
+                        console.log("開始時間",unavailableTimeStr)
+                        console.log("開始時間",unavailableTimeStr)
+
+                        let newAgendaRequest = {
+                            "employeeId": singleLeave.value.employeeId,
+                            "businessPurpose": `員工:${singleLeave.value.employeeName} , 假別:${singleLeave.value.leaveTypeName}`,
+                            "unavailableTimeStr":unavailableTimeStr,
+                            "unavailableTimeEnd":unavailableTimeEnd,
+                            "unavailableStatus": 1
+                        };
+
+                        console.log("newAgendaRequest", newAgendaRequest);
+                        axiosapi.post("/agenda", newAgendaRequest)
+                            .then(function (responseAGD) {
+                                console.log("responseAGD", responseAGD);
+                                if (responseAGD.data.success) {
+                                    ElMessage({
+                                        message: '排程成功建立',
+                                        type: 'success',
+                                    });
+                                } else {
+                                    ElMessage({
+                                        message: responseAGD.data.msg,
+                                        type: 'warning',
+                                    });
+                                }
+                            })
+                            .catch(function (error) {
+                                console.log("error", error);
+                                ElMessage.error('排程錯誤' + error.message);
+                            });
+                    } else {
+                        console.error('startTime or endTime is undefined or null');
+                    }
+
+                    openZon.value = true;
+                    // window.location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    text: response.data.message,
+                });
+            }
+        })
+        .catch(function (error) {
+            console.log("error", error);
             Swal.fire({
-                icon: "warning",
-                text: response.data.message,
+                icon: "error",
+                text: "修改錯誤：" + error.message,
             });
-        }
-    }).catch(function (error) {
-        console.log("error", error);
-        Swal.fire({
-            icon: "error",
-            text: "修改錯誤：" + error.message,
+        })
+        .finally(function () {
+            Swal.close();  // 关闭加载视窗
+            dialogVisible.value = false;
+            isModify.value = false;
         });
-    });
-    setTimeout(function () {
-        Swal.close();  //視窗關閉 
-    }, 1000);
-    dialogVisible.value = false;
-    isModify.value = false;
 }
 
 </script>

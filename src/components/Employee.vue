@@ -6,7 +6,7 @@
 
     <!-- 標題區域 -->
     <div class="col-5" style="padding: 0px 0px;">
-        <h3 class="table-title">員工總覽</h3>
+        <h3 class="table-title" id="employee">員工總覽</h3>
     </div>
 
     <div class="col-1"></div>
@@ -77,7 +77,7 @@
 
     <!-- 新增區塊 / 資料區-->
     <div v-if="openCreat" class="col-1"></div>
-    <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
+    <div v-if="openCreat" class="col-5" style="height: 300px; background-color:rgb(245, 250, 250)  ;">
 
         <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
             <el-divider border-style="dashed" style="margin: 0;" />
@@ -100,11 +100,14 @@
                     <el-option v-for="leader in teamLeaders" :key="leader.id" :label="leader.name" :value="leader.id" />
                 </el-select>
             </el-form-item>
+            <el-form-item label="帳號 :&nbsp;">
+                <el-input v-model="form.account" placeholder="請輸入帳號" size="small" />
+            </el-form-item>
 
         </el-form>
     </div>
 
-    <div v-if="openCreat" class="col-5" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
+    <div v-if="openCreat" class="col-5" style="height: 300px; background-color:rgb(245, 250, 250)  ;">
 
         <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
             <el-form-item label="性別 :&nbsp;">
@@ -129,6 +132,9 @@
                         :value="branch.value" />
                 </el-select>
             </el-form-item>
+            <el-form-item label="密碼 :&nbsp;">
+                <el-input v-model="form.password" placeholder="請輸入密碼" size="small" />
+            </el-form-item>
 
         </el-form>
     </div>
@@ -142,7 +148,7 @@
     <div v-if="openCreat" class="col-5"
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
         <el-button color="#a33238" :dark="isDark" style="margin: 20 0;"
-            @click="creatDdialogVisible = true">&nbsp確認新增&nbsp</el-button>
+            @click="creatDdialogVisible = true">&nbsp;確認新增&nbsp;</el-button>
     </div>
     <div v-if="openCreat" class="col-1"></div>
 
@@ -242,6 +248,7 @@
         </div>
     </div>
     <div v-if="openZon" class="col-1"></div>
+    <!-- 下方詳細資料區 / 修改按鈕-->
     <div v-if="openZon" class="col-1"></div>
     <div v-if="openZon" class="col-5"
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
@@ -266,6 +273,20 @@
             </div>
         </template>
     </el-dialog>
+
+     <!-- 確認修改用彈出視窗 -->
+     <el-dialog v-model="dialogVisible" width="300" :show-close="false">
+        <h5 class="msg-title">確認修改 員工編號 {{ singleEmployee.id }} ?</h5>
+        <template #footer>
+            <div class="dialog-footer" style="justify-content: center;">
+                <el-button @click="dialogVisible = false; isModify = true">否</el-button>
+                <el-button type="primary" @click="doModify" style="background-color: #a33238;border: #a33238;">
+                    是
+                </el-button>
+            </div>
+        </template>
+    </el-dialog>
+
 
 
 </template>
@@ -316,8 +337,8 @@ const singleEmployee = ref({
 
 // export { teamLeaders }; // 导出 teamLeaders 变量
 
-//開啟修改用
-const isModify = ref(false)
+// 是否可以修改
+const isModify = ref(false);
 
 //確認修改彈出視窗用
 const dialogVisible = ref(false)
@@ -335,19 +356,21 @@ const branches = ref([
 ]);
 
 const form = ref({
-    accountType: null,
+    accountType: '',
     name: '',
     startDate: '',
-    teamLeaderId: null,
+    teamLeaderId: '',
     sex: '',
     phone: '',
     email: '',
-    branch: null
+    branch: '',
+    account: '',
+    password: '',
 });
 
-onMounted(() => {
+onMounted(function () {
     callQuery();
-});
+})
 
 //單筆新增
 function openModal() {
@@ -371,9 +394,9 @@ function doCreat() {
                     icon: "success",
                     text: response.data.msg,
                     showConfirmButton: false,
+                    timer: 1500 // 设置计时器，1.5秒后自动关闭
                 }).then(() => {
-                    // TODO: 刷新列表或更新状态
-                    openZon.value = true; // 打开详细数据区域
+                    window.location.reload(); // 刷新页面
                 });
             } else {
                 Swal.fire({
@@ -387,11 +410,9 @@ function doCreat() {
                 icon: "error",
                 text: "新增錯誤：" + error.message,
             });
-        })
-        .finally(() => {
-            Swal.close();
         });
 }
+
 
 
 // 獲取所有主管ID
@@ -409,6 +430,7 @@ function getAllTeamLeaders() {
         });
 }
 
+//單筆查詢
 function employeeClick(employeeId) {
     console.log("employeeId=" + employeeId);
     axiosapi.get("/employee/info/" + employeeId)
@@ -455,14 +477,13 @@ function callQuery() {
         });
 }
 
-// 開啟確認修改視窗
+//開啟確認修改視窗
 function openDoModify() {
-    if (!isModify.value) {
-        console.log("開啟修改");
+    if (isModify.value == false) {
+        console.log("isModify.value", isModify.value);
+        console.log("修改員工 ID", singleEmployee.value.id);
         isModify.value = true;
-        dialogVisible.value = true; // 确保这里设置为 true 显示对话框
-    } else {
-        console.log("資料鎖定中，無法開啟修改");
+        dialogVisible.value = true;
     }
 }
 
@@ -471,6 +492,7 @@ function closeInfo() {
     openZon.value = false
 }
 
+//修改
 function doModify() {
     Swal.fire({
         text: "執行中......",
@@ -479,7 +501,15 @@ function doModify() {
     });
 
     let request = {
-    }
+        "accountType": singleEmployee.value.accountType,
+        "name": singleEmployee.value.name,
+        "startDate": singleEmployee.value.startDate,
+        "teamLeaderName": singleEmployee.value.teamLeaderName,
+        "sex": singleEmployee.value.sex,
+        "phone": singleEmployee.value.phone,
+        "email": singleEmployee.value.email,
+        "branch": singleEmployee.value.branch
+    };
 
     console.log("request========>" + JSON.stringify(request))
     axiosapi.put(`/employee/modify/${singleEmployee.value.id}`, request).then(function (response) {
