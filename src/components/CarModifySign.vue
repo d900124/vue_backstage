@@ -6,7 +6,7 @@
                     </div>
                     <div class="col-1"></div>
 <!-- 下拉選單(簡易搜尋)只有外觀先別碰 -->
-            <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
+            
                 
                     <el-select
                         v-model="findCarBrand"
@@ -78,8 +78,39 @@
                     </el-select>
                     <!-- 車輛列表 -->
 
-     
+                <div class="table-part">
+                <table class="table">
+                <thead style="border-bottom: 2px solid #a33238;">
+                    <tr>
+                    <th scope="col" class="table-th" >ID</th>
+                    <th scope="col" class="table-th" >品牌 - 型號</th>
+                    <th scope="col" class="table-th" >價格</th>
+                    <th scope="col" class="table-th" >銷售員</th>
+                    <th scope="col" class="table-th" >更新時間</th>
+                    <th scope="col" class="table-th" >狀態</th>
+                    </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                    <tr v-for="item in items" :key="item.id"  @click="itemClick(item.id)">
+                    <th scope="row" class="table-td">{{item.id}}</th>
+                    <td class="table-td">{{item.carBrand}}&nbsp;-&nbsp;{{item.carModelName}}</td>
+                    <td v-if="item.approvalType==1||item.approvalType==2" class="table-td">{{item.approvalTypeName}} 至 ${{item.floatingAmount}}</td>
+                    <td v-if="item.approvalType==3" class="table-td">{{item.approvalTypeName}} </td>
+                    <td class="table-td">{{item.createTimeString}}</td>
+                    <td class="table-td">{{item.employeeName}}</td>
+                    <td class="table-td">{{item.approvalStatusName}}</td>
+                    </tr>
+                    
+                </tbody>
+                </table>
+                <div>
+                </div>
             </div>
+            
+        
+
+     
+            
 
 
         
