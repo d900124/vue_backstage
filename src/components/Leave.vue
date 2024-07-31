@@ -64,7 +64,7 @@
     <div v-if="openZon" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="openZon = false">
         <el-divider content-position="center">
             <button type="button" class="btn-close" aria-label="Close"></button>
-            <h5 class="table-title">員工編號 {{ singleLeave.employeeId }} --單筆詳細請假資料</h5>
+            <h5 class="table-title" id="leaveAgenda">員工編號 {{ singleLeave.employeeId }} --單筆詳細請假資料</h5>
         </el-divider>
     </div>
     <div v-if="openZon" class="col-1"></div>
@@ -300,7 +300,6 @@ function openDoModify() {
     }
 }
 
-//修改簽核
 function doModify() {
     Swal.fire({
         text: "執行中......",
@@ -309,7 +308,7 @@ function doModify() {
     });
 
     let request = {
-        "id": singleLeave.value.id,  // 需要提供ID來進行修改
+        "id": singleLeave.value.id,
         "leaveStatus": singleLeave.value.leaveStatus,
         "startTime": singleLeave.value.startTime,
         "endTime": singleLeave.value.endTime,
@@ -332,38 +331,86 @@ function doModify() {
         "validityPeriodEnd": singleLeave.value.validityPeriodEnd
     };
 
-    axiosapi.put(`/leave/modify/${singleLeave.value.id}`, request).then(function (response) {
-        console.log("response", response);
-        if (response.data.success) {
-            Swal.fire({
-                icon: "success",
-                text: response.data.message,
-                showConfirmButton: false,
-            }).then(function (result) {
-                callQuery();
+    axiosapi.put(`/leave/modify/${singleLeave.value.id}`, request)
+        .then(function (response) {
+            console.log("response", response);
+            if (response.data.success) {
+                Swal.fire({
+                    icon: "success",
+                    text: response.data.message,
+                    showConfirmButton: false,
+                }).then(function () {
+                    callQuery();
 
-                openZon.value = true;
-            // 在成功消息显示后刷新页面
-            window.location.reload();
-            });
-        } else {
+                    const startTime = singleLeave.value.startTime+":00";
+                    const endTime = singleLeave.value.endTime+":00";
+                    console.log("startDate",singleLeave.value.startDate);
+                    console.log(1111111,startTime ,endTime);
+                    if (startTime && endTime) {
+                        console.log(2222222222222222222222222222222);
+                        const formattedStartTime = `${startTime}:00`;
+                        const formattedEndTime = `${endTime}:00`;
+
+                        const unavailableTimeStr = `${startTime}`;
+                        const unavailableTimeEnd = `${endTime}`;
+                        console.log("開始時間",unavailableTimeStr)
+                        console.log("開始時間",unavailableTimeStr)
+                        console.log("開始時間",unavailableTimeStr)
+
+                        let newAgendaRequest = {
+                            "employeeId": singleLeave.value.employeeId,
+                            "businessPurpose": `員工:${singleLeave.value.employeeName} , 假別:${singleLeave.value.leaveTypeName}`,
+                            "unavailableTimeStr":unavailableTimeStr,
+                            "unavailableTimeEnd":unavailableTimeEnd,
+                            "unavailableStatus": 1
+                        };
+
+                        console.log("newAgendaRequest", newAgendaRequest);
+                        axiosapi.post("/agenda", newAgendaRequest)
+                            .then(function (responseAGD) {
+                                console.log("responseAGD", responseAGD);
+                                if (responseAGD.data.success) {
+                                    ElMessage({
+                                        message: '排程成功建立',
+                                        type: 'success',
+                                    });
+                                } else {
+                                    ElMessage({
+                                        message: responseAGD.data.msg,
+                                        type: 'warning',
+                                    });
+                                }
+                            })
+                            .catch(function (error) {
+                                console.log("error", error);
+                                ElMessage.error('排程錯誤' + error.message);
+                            });
+                    } else {
+                        console.error('startTime or endTime is undefined or null');
+                    }
+
+                    openZon.value = true;
+                    // window.location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    text: response.data.message,
+                });
+            }
+        })
+        .catch(function (error) {
+            console.log("error", error);
             Swal.fire({
-                icon: "warning",
-                text: response.data.message,
+                icon: "error",
+                text: "修改錯誤：" + error.message,
             });
-        }
-    }).catch(function (error) {
-        console.log("error", error);
-        Swal.fire({
-            icon: "error",
-            text: "修改錯誤：" + error.message,
+        })
+        .finally(function () {
+            Swal.close();  // 关闭加载视窗
+            dialogVisible.value = false;
+            isModify.value = false;
         });
-    });
-    setTimeout(function () {
-        Swal.close();  //視窗關閉 
-    }, 1000);
-    dialogVisible.value = false;
-    isModify.value = false;
 }
 
 </script>
