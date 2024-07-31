@@ -53,6 +53,7 @@
         @change="doInput('carinfoId',$event)" 
         required
         >
+        <option value="" disabled>選擇你要的車型</option>
       <option
       v-for="carinfoData in carinfoDatas"
         :key="carinfoData.id"
