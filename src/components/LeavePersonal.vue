@@ -49,6 +49,10 @@
                         <th scope="row" class="table-td">婚假</th>
                         <td class="table-td">{{ employeeInfo.marriageLeaveHours }} 小時</td>
                     </tr>
+                    <tr v-if="employeeInfo.bereavementLeaveHours !== null">
+                        <th scope="row" class="table-td">喪假</th>
+                        <td class="table-td">{{ employeeInfo.bereavementLeaveHours }} 小時</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -456,10 +460,6 @@ const leaves = ref([]);
 const singleLeave = ref([]);
 const leavesTwo = ref([]);
 
-const leaveType = ref(null);
-
-const startTime = ref(null);
-const endTime = ref(null);
 
 const creatDdialogVisible = ref(false)  //新增
 
@@ -575,19 +575,25 @@ function doCreate() {
         case '7': // 婚假
             if (actualLeaveHours > marriageLeaveHours) {
                 insufficientLeave = true;
-                errorMessage = "婚假小时数不足。";
+                errorMessage = "可用婚假剩餘時數不足。";
             }
             break;
         case '8': // 生理假
             if (actualLeaveHours > menstrualLeaveHours) {
                 insufficientLeave = true;
-                errorMessage = "生理假小时数不足。";
+                errorMessage = "可用生理假剩餘時數不足。";
             }
             break;
         case '9': // 公假
             if (actualLeaveHours > officialLeaveHours) {
                 insufficientLeave = true;
-                errorMessage = "公假小时数不足。";
+                errorMessage = "可用公假剩餘時數不足";
+            }
+            break;
+        case '10': 
+            if (actualLeaveHours > bereavementLeaveHours) {
+                insufficientLeave = true;
+                errorMessage = "可用喪假剩餘時數不足";
             }
             break;
         default:
