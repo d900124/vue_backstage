@@ -300,7 +300,7 @@ function openDoModify() {
     }
 }
 
-function doModify() {
+async function doModify() {
     Swal.fire({
         text: "執行中......",
         allowOutsideClick: false,
@@ -331,92 +331,94 @@ function doModify() {
         "validityPeriodEnd": singleLeave.value.validityPeriodEnd
     };
 
-    axiosapi.put(`/leave/modify/${singleLeave.value.id}`, request)
-        .then(function (response) {
-            console.log("response", response);
-            if (response.data.success) {
-                Swal.fire({
-                    icon: "success",
-                    text: response.data.message,
-                    showConfirmButton: false,
-                }).then(function () {
-                    callQuery();
+    const startTimeStr = singleLeave.value.startTime;
+    const endTimeStr = singleLeave.value.endTime;
+    const permisionStatus = singleLeave.value.permisionStatus; // 2為同意假單 3為拒絕假單
 
-                    
-                    const startTimeStr = singleLeave.value.startTime;
-                    const endTimeStr = singleLeave.value.endTime;
+    if (startTimeStr && endTimeStr) {
+        const startDate = new Date(`${startTimeStr}:00`);
+        const endDate = new Date(`${endTimeStr}:00`);
 
-                    if (startTimeStr && endTimeStr) {
-                        
-                        const startDate = new Date(`${startTimeStr}:00`);
-                        const endDate = new Date(`${endTimeStr}:00`);
+        startDate.setSeconds(startDate.getSeconds() + 1);
+        endDate.setSeconds(endDate.getSeconds() - 1);
 
-                        
-                        startDate.setSeconds(startDate.getSeconds() + 1);
-                        endDate.setSeconds(endDate.getSeconds() - 1);
+        // 加8小时
+        startDate.setHours(startDate.getHours() + 8);
+        endDate.setHours(endDate.getHours() + 8);
 
-                
-                        const adjustedStartTime = startDate.toISOString().slice(0, 19).replace('T', ' ');
-                        const adjustedEndTime = endDate.toISOString().slice(0, 19).replace('T', ' ');
+        const adjustedStartTime = startDate.toISOString().slice(0, 19).replace('T', ' ');
+        const adjustedEndTime = endDate.toISOString().slice(0, 19).replace('T', ' ');
 
-                        console.log("adjustedStartTime", adjustedStartTime);
-                        console.log("adjustedEndTime", adjustedEndTime);
+        let newAgendaRequest = {
+            "employeeId": singleLeave.value.employeeId,
+            "businessPurpose": `員工:${singleLeave.value.employeeName} , 假別:${singleLeave.value.leaveTypeName} ,
+             單號:${singleLeave.value.id}`,
+            "unavailableTimeStr": adjustedStartTime,
+            "unavailableTimeEnd": adjustedEndTime,
+            "unavailableStatus": 1
+        };
 
-                        let newAgendaRequest = {
-                            "employeeId": singleLeave.value.employeeId,
-                            "businessPurpose": `員工:${singleLeave.value.employeeName} , 假別:${singleLeave.value.leaveTypeName}`,
-                            "unavailableTimeStr": adjustedStartTime,
-                            "unavailableTimeEnd": adjustedEndTime,
-                            "unavailableStatus": 1
-                        };
+        try {
+            if (permisionStatus == 2) {
+                // 只有在权限状态是“同意”时才创建排程
+                const agendaResponse = await axiosapi.post("/agenda", newAgendaRequest);
 
-                        console.log("newAgendaRequest", newAgendaRequest);
-                        axiosapi.post("/agenda", newAgendaRequest)
-                            .then(function (responseAGD) {
-                                console.log("responseAGD", responseAGD);
-                                if (responseAGD.data.success) {
-                                    ElMessage({
-                                        message: '排程成功建立',
-                                        type: 'success',
-                                    });
-                                } else {
-                                    ElMessage({
-                                        message: responseAGD.data.msg,
-                                        type: 'warning',
-                                    });
-                                }
-                            })
-                            .catch(function (error) {
-                                console.log("error", error);
-                                ElMessage.error('排程錯誤' + error.message);
-                            });
-                    } else {
-                        console.error('startTime or endTime is undefined or null');
-                    }
+                if (!agendaResponse.data.success) {
+                    throw new Error(agendaResponse.data.msg);
+                }
 
-                    openZon.value = true;
-                    // window.location.reload();
-                });
-            } else {
-                Swal.fire({
-                    icon: "warning",
-                    text: response.data.message,
-                });
+                // 如果排程创建成功，再执行请假修改
+                const modifyResponse = await axiosapi.put(`/leave/modify/${singleLeave.value.id}`, request);
+
+                if (modifyResponse.data.success) {
+                    Swal.fire({
+                        icon: "success",
+                        text: '審核與員工排程建立成功',
+                        showConfirmButton: true
+                    });
+                } else {
+                    throw new Error(modifyResponse.data.message);
+                }
+            } else if (permisionStatus == 3) {
+                // 如果权限状态是“拒绝”，只执行请假修改请求
+                const modifyResponse = await axiosapi.put(`/leave/modify/${singleLeave.value.id}`, request);
+
+                if (modifyResponse.data.success) {
+                    Swal.fire({
+                        icon: "success",
+                        text: '修改審核成功',
+                        showConfirmButton: true
+                    });
+                } else {
+                    throw new Error(modifyResponse.data.message);
+                }
             }
-        })
-        .catch(function (error) {
+            await callQuery();
+            await leaveInfo(singleLeave.value.id);
+            openZon.value = true;
+        } catch (error) {
             console.log("error", error);
             Swal.fire({
                 icon: "error",
-                text: "修改錯誤：" + error.message,
+                text: "操作錯誤：" + error.message,
+                showConfirmButton: true
             });
-        })
-        .finally(function () {
-            Swal.close();  // 关闭加载视窗
-            dialogVisible.value = false;
-            isModify.value = false;
+        }
+    } else {
+        console.error('startTime or endTime is undefined or null');
+        Swal.fire({
+            icon: "error",
+            text: "時段錯誤",
+            showConfirmButton: true
         });
+    }
+    await leaveInfo(singleLeave.value.id);
+    dialogVisible.value = false;
+    isModify.value = false;
 }
+
+
+
 
 </script>
 
