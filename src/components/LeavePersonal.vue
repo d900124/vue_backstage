@@ -3,6 +3,7 @@
     <div class="col-1">&nbsp;</div>
     <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;"></div>
     <!-- 抬頭 -->
+    
     <div class="col-2" style="padding: 0px 0px;display: flex; justify-content: flex-end;align-items:flex-end;">
         <h3 class="table-title" id="leavePersonal">請假申請</h3>
     </div>
@@ -19,7 +20,7 @@
                     </tr>
                     <tr>
                         <!-- 彈窗 -->
-                    <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="callQueryTwo">
                         可用剩餘假別時數
                     </button></tr>
                 </thead>
@@ -52,33 +53,31 @@
             </table>
         </div>
 
-        <!-- 彈出視窗 -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- 彈出視窗 -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" v-if="employeeInfo">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel" style="color:#a33238; font-weight: bold; ">可用假別時數</h5>
+        <div class="modal-header">
+        <h5 class="modal-title " id="exampleModalLabel" style="color:#a33238; font-weight: bold; margin-left:325px;">可用假別時數</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <table class="table">
-                <tbody class="table-body">
-                    <tr >
-                        <th scope="row" class="table-td" >事假</th>
-                        <td class="table-td">{{ employeeInfo.personalLeaveHours }} 小時</td>
-                        <td class="table-td" >{{ singleLeave.leaveStatus }}<br>{{ singleLeave.validityPeriodEnd }}</td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="table-td">病假</th>
-                        <td class="table-td">{{ employeeInfo.sickLeaveHours }} 小時</td>
-                    </tr>
-                    <tr v-if="employeeInfo.annualLeaveHours !== null">
-                        <th scope="row" class="table-td">特休</th>
-                        <td class="table-td">{{ employeeInfo.annualLeaveHours }} 小時</td>
-                    </tr>
-                </tbody>
-            </table>
-            
+        <table class="table" style="margin-left:0px;">
+          <thead>
+            <tr>
+              <th style="color: #a33238;">假別</th>
+              <th style="color: #a33238;">使用期限</th>
+              <th style="color: #a33238;">可用時數</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="leaveTwo in leavesTwo" :key="leaveTwo.id" >
+              <th scope="row" class="table-td">{{ leaveTwo.leaveTypeName }}</th>
+              <td class="table-td">{{ leaveTwo.validityPeriodStart }}  -  {{ leaveTwo.validityPeriodEnd }}</td>
+              <td class="table-td">{{ getRemainingHours(leaveTwo.leaveTypeName) }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -316,13 +315,11 @@ console.log('Account Type Name:', accountTypeName.value);
 
 
 
-
-
-
 // 监控 employeeInfo 的变化，并在其加载完成后执行 callQuery
 watch(employeeInfo, (newValue) => {
     if (newValue) {
         callQuery();
+        callQueryTwo();
     }
 });
 
@@ -330,6 +327,8 @@ watch(employeeInfo, (newValue) => {
 onMounted(() => {
     if (employeeInfo.value) {
         callQuery();
+        callQueryTwo();
+        
     }
 });
 
@@ -357,14 +356,38 @@ const findEmployeeId = ref('');
 
 
 const leaveTypeOptions = [
-    { value: 1, label: "特休" },
-    { value: 5, label: "事假" },
-    { value: 6, label: "半薪病假" },
-    { value: 7, label: "婚假" },
-    { value: 8, label: "生理假" },
-    { value: 9, label: "公假" },
-    { value: 10, label: "喪假" }
+  { value: 1, label: "特休" },
+  { value: 5, label: "事假" },
+  { value: 6, label: "半薪病假" },
+  { value: 7, label: "婚假" },
+  { value: 8, label: "生理假" },
+  { value: 9, label: "公假" },
+  { value: 10, label: "喪假" }
 ];
+
+
+
+// 根据假别名称获取剩余时数
+const getRemainingHours = (leaveTypeName) => {
+  switch (leaveTypeName) {
+    case "特休":
+      return employeeInfo.value.annualLeaveHours;
+    case "事假":
+      return employeeInfo.value.personalLeaveHours;
+    case "半薪病假":
+      return employeeInfo.value.sickLeaveHours;
+    case "婚假":
+      return employeeInfo.value.marriageLeaveHours;
+    case "生理假":
+      return employeeInfo.value.menstrualLeaveHours;
+    case "公假":
+      return employeeInfo.value.officialLeaveHours;
+    case "喪假":
+      return employeeInfo.value.bereavementLeaveHours;
+    default:
+      return 0;
+  }
+};
 
 const getPermisionStatusText = (status) => {
     switch (status) {
@@ -430,10 +453,9 @@ const openCreate = ref(false)
 
 //產品顯示leave元件用的參數
 const leaves = ref([]);
-const singleLeave = ref({
-    validityPeriodStart: '',
-  validityPeriodEnd: ''
-});
+const singleLeave = ref([]);
+const leavesTwo = ref([]);
+
 const leaveType = ref(null);
 
 const startTime = ref(null);
@@ -444,6 +466,7 @@ const creatDdialogVisible = ref(false)  //新增
 
 onMounted(function () {
     callQuery();
+    callQueryTwo();
 })
 
 //員工查詢全部製作下拉選單
@@ -531,6 +554,7 @@ function doCreate() {
             });
         });
 }
+
 //單筆查詢
 function leaveInfo(leaveId) {
     console.log(leaveId)
@@ -548,35 +572,43 @@ function leaveInfo(leaveId) {
         // router.push("/")
     })
 }
-// 多筆查詢
-function callQuery2() {
-    console.log("callQuery - 當前頁碼:", current.value);
+
+
+function callQueryTwo() {
+    console.log("callQuery - 当前页码:", current.value);
+
     const employeeId = computed(() => employeeInfo.value.id);
-    console.log('Employee ID:', employeeId.value);
+    console.log('Employee ID:', employeeId);
 
     let request = {
         "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
         "pageSize": rows.value,
         "employeeId": employeeId.value,
-        "leaveStatus": 1, // 0為請假
+        "leaveStatus": 1, // 1 为给假
+       
     };
 
-    axiosapi.post("/leave/query", request).then(function (response) {
-        leaves.value = response.data.data.content; // 获取查询到的数据列表
+    axiosapi.post("/leave/query", request)
+        .then(function (response) {
+            // 获取查询到的数据列表
+            leavesTwo.value = response.data.data.content; // 获取查询到的数据列表
         // 更新分页信息
         total.value = response.data.data.totalElements; // 总条目数
         pages.value = response.data.data.totalPages; // 总页数
 
-        console.log("leaves", response.data.data.content);
+        console.log("leavesTwo", response.data.data.content);
         console.log("total", response.data.data.totalElements);
         console.log("pages", response.data.data.totalPages);
-    }).catch(function (error) {
-        console.log("error", error);
-        Swal.fire({
-            text: "查詢錯誤：" + error.message,
-            icon: "error"
+
+            console.log("leavesTwo", response.data.data);
+        })
+        .catch(function (error) {
+            console.log("error", error);
+            Swal.fire({
+                text: "查询错误：" + (error.response?.data?.message || error.message),
+                icon: "error"
+            });
         });
-    });
 }
 
 
