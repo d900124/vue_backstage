@@ -4,17 +4,33 @@
 
     <div class="col-1"></div>
     <!-- 多選下拉選單(簡易搜尋) -->
-    <div class="col-5" style="padding: 0px 0px;"></div>
+    <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
+        <el-select
+      v-model="findAccountType"
+      clearable
+      placeholder="帳號分類"
+      size="small"
+      style="width: 130px; margin-right: 20px; background-color: red; "
+      @change="current=1;callFindByHQL(false)"
+    
+    >
+      <el-option
+        v-for="Option in leaveTypeOptions"
+        :key="Option.value"
+        :label="Option.label"
+        :value="Option.value"
+      />
+    </el-select>
+                </div>
 
     <!-- 抬頭 -->
-    <div class="col-5" style="padding: 0px 0px;">
+    <div class="col-2" style="padding: 0px 0px;">
         <h3 class="table-title">客戶總覽</h3>
     </div>
     <div class="col-1"></div>
 
     <div class="col-1"></div>
     <div class="col-10">
-        <!-- 彈出式複雜搜尋 -->
         <div class="extra-menu"></div>
         <!-- 列表主體 -->
         <div class="table-part">
@@ -221,7 +237,10 @@ const isModify = ref(false);
 //確認修改彈出視窗用
 const dialogVisible = ref(false)
 
-
+const leaveTypeOptions=[
+    {value: 1,label: '一般會員'},
+    {value: 2,label: '會員賣家'},
+]
 
 onMounted(function () {
     callQuery();
@@ -341,6 +360,11 @@ function doModify() {
 </script>
 
 <style scoped>
+
+.custom-red-select .el-input__inner {
+  background-color: red;
+  color: white;
+}
 .btn-close {
     margin: 10px;
 }
