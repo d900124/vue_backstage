@@ -155,9 +155,9 @@
     <div v-if="openZon" class="col-1"></div>
     <div v-if="openZon" class="col-5"
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
-    <div v-if="openZon" class="col-5"
+    <div v-if="openZon" class="col-5" 
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-        <el-switch v-model="isModify" inline-prompt class="value5" size="large"
+        <el-switch v-if="employeeInfo!==null &&employeeInfo.accountType==4" v-model="isModify" inline-prompt class="value5" size="large"
             active-text="&nbsp;&nbsp;開啟修改&nbsp;&nbsp;" inactive-text="&nbsp;&nbsp;資料鎖定&nbsp;&nbsp;"
             style="--el-switch-on-color: #a33238; -webkit-margin-start: 18px ;" @click="openDoModify" />
     </div>
@@ -179,10 +179,25 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import { useStore } from 'vuex';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
+
+// 串接登入員工
+let employeeInfo = ref({});
+const store = useStore();
+
+onMounted(() => {
+    const username = localStorage.getItem('username');
+    if (username) {
+        store.dispatch('fetchEmployeeInfo', username);
+    }
+});
+employeeInfo = computed(() => store.state.employeeInfo.data || {});
+console.log('===>test Employee info:', employeeInfo);
+
 
 //用於重新導向 router.push
 const router = useRouter()
