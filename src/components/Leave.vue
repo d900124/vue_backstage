@@ -342,26 +342,31 @@ function doModify() {
                 }).then(function () {
                     callQuery();
 
-                    const startTime = singleLeave.value.startTime+":00";
-                    const endTime = singleLeave.value.endTime+":00";
-                    console.log("startDate",singleLeave.value.startDate);
-                    console.log(1111111,startTime ,endTime);
-                    if (startTime && endTime) {
-                        console.log(2222222222222222222222222222222);
-                        const formattedStartTime = `${startTime}:00`;
-                        const formattedEndTime = `${endTime}:00`;
+                    
+                    const startTimeStr = singleLeave.value.startTime;
+                    const endTimeStr = singleLeave.value.endTime;
 
-                        const unavailableTimeStr = `${startTime}`;
-                        const unavailableTimeEnd = `${endTime}`;
-                        console.log("開始時間",unavailableTimeStr)
-                        console.log("開始時間",unavailableTimeStr)
-                        console.log("開始時間",unavailableTimeStr)
+                    if (startTimeStr && endTimeStr) {
+                        
+                        const startDate = new Date(`${startTimeStr}:00`);
+                        const endDate = new Date(`${endTimeStr}:00`);
+
+                        
+                        startDate.setSeconds(startDate.getSeconds() + 1);
+                        endDate.setSeconds(endDate.getSeconds() - 1);
+
+                
+                        const adjustedStartTime = startDate.toISOString().slice(0, 19).replace('T', ' ');
+                        const adjustedEndTime = endDate.toISOString().slice(0, 19).replace('T', ' ');
+
+                        console.log("adjustedStartTime", adjustedStartTime);
+                        console.log("adjustedEndTime", adjustedEndTime);
 
                         let newAgendaRequest = {
                             "employeeId": singleLeave.value.employeeId,
                             "businessPurpose": `員工:${singleLeave.value.employeeName} , 假別:${singleLeave.value.leaveTypeName}`,
-                            "unavailableTimeStr":unavailableTimeStr,
-                            "unavailableTimeEnd":unavailableTimeEnd,
+                            "unavailableTimeStr": adjustedStartTime,
+                            "unavailableTimeEnd": adjustedEndTime,
                             "unavailableStatus": 1
                         };
 
