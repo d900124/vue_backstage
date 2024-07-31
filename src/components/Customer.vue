@@ -1,27 +1,31 @@
 <template>
-    <!-- https://getbootstrap.com/docs/5.2/content/tables/#table-group-dividers 表單部分 -->
-    <!-- https://element-plus.org/zh-CN/component/config-provider.html  頁碼 -->
-
     <div class="col-1"></div>
     <!-- 多選下拉選單(簡易搜尋) -->
     <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
-        <el-select
-      v-model="findAccountType"
-      clearable
-      placeholder="帳號分類"
-      size="small"
-      style="width: 130px; margin-right: 20px; background-color: red; "
-      @change="current=1;callFindByHQL(false)"
-    
-    >
-      <el-option
-        v-for="Option in leaveTypeOptions"
-        :key="Option.value"
-        :label="Option.label"
-        :value="Option.value"
-      />
-    </el-select>
-                </div>
+        <div class="mb-3 custom-input-wrapper">
+            <div class="input-group">
+                <span class="input-group-text custom-input-icon">
+                    <font-awesome-icon icon="fa-solid fa-magnifying-glass" class="custom-icon" />
+                </span>
+                <input type="text" class="form-control custom-input" v-model="name" @input="handleInput"
+                    placeholder="搜尋" />
+            </div>
+        </div>
+        <div class="mb-3 custom-select-wrapper">
+            <select class="form-select custom-select" v-model="accountType" @change="handleChange"
+                style="margin-left: 10px;">
+                <option value="" disabled selected hidden>帳號分類</option>
+                <option v-for="option in leaveTypeOptions" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                </option>
+            </select>
+        </div>
+        <div class="btm-div" style="display: flex;margin-left: 20px; margin-bottom: 14px;" @click="clearSelection">
+            <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;" />
+            <el-button type='' link style="color: #a33238; font-weight: 900;">清除查詢</el-button>
+        </div>
+
+    </div>
 
     <!-- 抬頭 -->
     <div class="col-2" style="padding: 0px 0px;">
@@ -171,10 +175,11 @@
     <div v-if="openZon" class="col-1"></div>
     <div v-if="openZon" class="col-5"
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
-    <div v-if="openZon" class="col-5" 
+    <div v-if="openZon" class="col-5"
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-        <el-switch v-if="employeeInfo!==null &&employeeInfo.accountType==4" v-model="isModify" inline-prompt class="value5" size="large"
-            active-text="&nbsp;&nbsp;開啟修改&nbsp;&nbsp;" inactive-text="&nbsp;&nbsp;資料鎖定&nbsp;&nbsp;"
+        <el-switch v-if="employeeInfo !== null && employeeInfo.accountType == 4" v-model="isModify" inline-prompt
+            class="value5" size="large" active-text="&nbsp;&nbsp;開啟修改&nbsp;&nbsp;"
+            inactive-text="&nbsp;&nbsp;資料鎖定&nbsp;&nbsp;"
             style="--el-switch-on-color: #a33238; -webkit-margin-start: 18px ;" @click="openDoModify" />
     </div>
     <div v-if="openZon" class="col-1"></div>
@@ -237,9 +242,13 @@ const isModify = ref(false);
 //確認修改彈出視窗用
 const dialogVisible = ref(false)
 
-const leaveTypeOptions=[
-    {value: 1,label: '一般會員'},
-    {value: 2,label: '會員賣家'},
+//簡易查詢用屬性
+const accountType = ref('')
+const name = ref('')
+
+const leaveTypeOptions = [
+    { value: 1, label: '一般會員' },
+    { value: 2, label: '賣家' },
 ]
 
 onMounted(function () {
@@ -268,17 +277,31 @@ function customerInfo(customerId) {
 }
 
 
-// 多筆查詢
-function callQuery() {
-    console.log("callQuery - 當前頁碼:", current.value);
+const handleChange = () => {
+    current.value = 1;
+    callQuery(false);
+};
+const handleInput = () => {
+    current.value = 1;
+    callQuery(false);
+};
 
+// 清空搜尋框
+const clearSelection = () => {
+    accountType.value = ''
+    name.value = '';
+    callQuery();
+}
+const callQuery = () => {
+    console.log("callQuery - 當前頁碼:", current.value);
     let request = {
-        "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
-        "pageSize": rows.value
+        "pageNum": current.value - 1, // 由于Spring Boot分页是从0开始，这里减1
+        "pageSize": rows.value,
+        "accountType": accountType.value,
+        "name": name.value
     };
 
-
-    axiosapi.post("/customer/query", request).then(function (response) {
+    axiosapi.post("/customer/query", request).then((response) => {
         customers.value = response.data.data.content; // 获取查询到的数据列表
         // 更新分頁資訊
         total.value = response.data.data.totalElements; // 总条目数
@@ -287,14 +310,17 @@ function callQuery() {
         console.log("customers", response.data.data.content);
         console.log("total", response.data.data.totalElements);
         console.log("pages", response.data.data.totalPages);
-    }).catch(function (error) {
+    }).catch((error) => {
         console.log("error", error);
         Swal.fire({
             text: "查詢錯誤：" + error.message,
             icon: "error"
         });
     });
-}
+};
+
+// 初始加载时调用查询
+callQuery();
 
 
 //開啟確認修改視窗
@@ -360,11 +386,78 @@ function doModify() {
 </script>
 
 <style scoped>
-
-.custom-red-select .el-input__inner {
-  background-color: red;
-  color: white;
+.custom-input-icon {
+    background: transparent;
+    /* 背景透明 */
+    border: none;
+    /* 去掉边框 */
+    padding: 0.375rem;
+    /* 内边距 */
 }
+
+.custom-input-icon {
+    background: transparent;
+    /* 背景透明 */
+    border: none;
+    /* 去掉边框 */
+    padding: 0.375rem;
+    /* 内边距 */
+}
+
+.custom-icon {
+    color: #a33238;
+    /* 图标颜色与输入框一致 */
+    font-size: 1rem;
+    /* 图标大小 */
+}
+
+.custom-input {
+    font-size: 0.875rem;
+    /* 字体大小 */
+    color: #a33238;
+    /* 字体颜色 */
+    font-weight: bold;
+    /* 字体加粗 */
+    border: none;
+    /* 去掉默认边框 */
+    border-bottom: 2px solid #a33238;
+    /* 底部边框颜色和厚度 */
+    box-shadow: none;
+    /* 去掉阴影 */
+    border-radius: 0;
+    /* 直角边缘 */
+    padding: 0.375rem 0.75rem;
+    /* 内边距 */
+}
+
+.custom-input::placeholder {
+    color: #a33238;
+    /* 占位符颜色 */
+    font-weight: bold;
+    /* 占位符字体加粗 */
+}
+
+.custom-select option[disabled] {
+    color: #6c757d;
+    /* 设置占位符颜色 */
+}
+
+custom-select-wrapper {
+    width: 120px;
+    /* 调整宽度 */
+    margin-right: 10px;
+}
+
+.custom-select {
+    font-size: 0.875rem;
+    color: #a33238;
+    font-weight: bold;
+    border: none;
+    border-bottom: 2px solid #a33238;
+    box-shadow: none;
+    border-radius: 0;
+}
+
 .btn-close {
     margin: 10px;
 }
