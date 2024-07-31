@@ -83,10 +83,12 @@
                         
                     </div>
                     <div v-if="arg.event.extendedProps.unavailableStatus==1" style="display: flex; justify-content: flex-end; margin-top: 20px;">
-                        <el-button class="calendar-btm" size="small" color="#254252" :dark="isDark" style=""  @click="leaveURL(arg.event.id)">
+                        <el-button class="calendar-btm" size="small" color="#254252" :dark="isDark" style=""  
+                        @click="GetleaveInfo(arg.event.extendedProps.businessPurpose)">
                         詳細
                         </el-button>
-                        <el-button class="calendar-btm" size="small" color="#254252" :dark="isDark" style="" disabled="true" @click="openRemoveAgangaEvent( arg.event.id )">
+                        <el-button class="calendar-btm" size="small" color="#254252" :dark="isDark" style=""  @click="openRemoveAgangaEvent( arg.event.id ,1 );
+                                                                                                                                    leaveBusinessPurpose=arg.event.extendedProps.businessPurpose ">
                         刪除
                         </el-button>
                     </div>
@@ -95,7 +97,7 @@
                         <el-button class="calendar-btm" size="small" color="#a77a2f" :dark="isDark" style=""  @click="viewCarURL(arg.event.id)">
                         詳細
                         </el-button>
-                        <el-button class="calendar-btm" size="small" color="#a77a2f" :dark="isDark" style="" disabled="true" @click="openRemoveAgangaEvent( arg.event.id )">
+                        <el-button class="calendar-btm" size="small" color="#a77a2f" :dark="isDark" style="" disabled="true" @click="openRemoveAgangaEvent( arg.event.id,2 )">
                         刪除
                         </el-button>
                     </div>
@@ -114,7 +116,7 @@
                                     modifyBusinessPurpose=arg.event.extendedProps.businessPurpose;">
                         詳細
                         </el-button>
-                        <el-button class="calendar-btm" size="small" color="#a33238" :dark="isDark" style=""  @click="openRemoveAgangaEvent( arg.event.id )">
+                        <el-button class="calendar-btm" size="small" color="#a33238" :dark="isDark" style=""  @click="openRemoveAgangaEvent( arg.event.id ,3)">
                         刪除
                         </el-button>
                     </div>
@@ -390,10 +392,56 @@
 </template>
 </el-dialog>
 
-<!-- <div>
-用户名:{{ employeeInfo.name || "" }} / 用户ID:{{ employeeInfo.id || "" }}  / 帳號:{{ employeeInfo.account || "" }} / 帳號分類:{{ employeeInfo.accountType || "" }}
-</div> -->
 
+<!-- 請假詳情彈出 -->
+    <el-drawer
+        v-model="openAgandaLeaveDrawer"
+        title=""
+        :direction="direction"
+        size="450"
+        
+        >
+        <el-divider content-position="left">
+                    <h5  class="table-title" >No. {{leaveEventId}}  排程詳情 (假單)</h5>
+        </el-divider>
+        <el-form :model="form" label-width="auto" style="width: 100%; padding: 25px;">
+            <el-form-item label="價單編號 :&nbsp;">
+                <p style="margin: 0;">{{ leaveInfo.id }}</p>
+            </el-form-item>
+            <el-form-item label="請假人員 :&nbsp;">
+                <p style="margin: 0;">{{ leaveInfo.employeeName }}</p>
+            </el-form-item>
+            <el-form-item label="假種 :&nbsp;">
+                <p style="margin: 0;">{{ leaveInfo.leaveTypeName }}</p>
+            </el-form-item>
+            <el-form-item label="工作代理 :&nbsp;">
+                <p style="margin: 0;">{{ leaveInfo.deputyName }}</p>
+            </el-form-item>
+            <el-form-item label="請假時段 :&nbsp;">
+                <p style="margin: 0;">{{ leaveInfo.startTime }}&nbsp;&nbsp;~&nbsp;&nbsp;</p> 
+                <p style="margin: 0;">{{ leaveInfo.endTime }}</p>
+            </el-form-item>
+            <el-form-item label="總計時數 :&nbsp;">
+                <p style="margin: 0;">{{ leaveInfo.actualLeaveHours }}</p>
+            </el-form-item>
+            <el-form-item label="申請時間 :&nbsp;">
+                <p style="margin: 0;">{{ leaveInfo.createTime }}</p>
+            </el-form-item>
+            <el-form-item label="簽核狀態 :&nbsp;">
+                <p style="margin: 0;">已簽核</p>
+            </el-form-item>
+            <el-form-item label="簽核時間 :&nbsp;">
+                <p style="margin: 0;">{{ leaveInfo.auditTime }}</p>
+            </el-form-item>
+            <el-form-item label="審核意見 :&nbsp;">
+                <p style="margin: 0;">{{ leaveInfo.permisionRemarks }}</p>
+            </el-form-item>
+            <el-form-item label="請假備註 :&nbsp;">
+                <p style="margin: 0;">{{ leaveInfo.reason }}</p>
+            </el-form-item>
+            
+        </el-form>
+    </el-drawer>
 </template>
     
 
@@ -431,6 +479,7 @@ const creatAGDVisible =ref(false)
 const removeAGDVisible =ref(false)
 const modifyAGDVisible =ref(false)
 const selectDaysVisible =ref(false)
+const openAgandaLeaveDrawer = ref(false)
 
 //新增用屬性
 const createEmployeeId =ref(null)
@@ -450,8 +499,14 @@ const modifyBusinessPurpose =ref('')
 const modifyUnavailableStatus =ref(null)
 const isModify=ref(false)
 
+//假單詳情屬性
+const leaveEventId =ref(null)
+const leaveInfo =ref([])
+const leaveBusinessPurpose=ref("")
+
 //刪除用屬性
 const removeAGDId =ref(null)
+const removeEventStatus =ref(null)
 
 //尋日期用屬性
 const selectDays = ref([null,null])
@@ -1065,8 +1120,9 @@ function openModifyAGDVisible() {
 } 
 
 //開啟刪除小視窗 並傳ID值
-function openRemoveAgangaEvent(id) {
+function openRemoveAgangaEvent(id,eventStatus) {
     removeAGDId.value = id
+    removeEventStatus.value = eventStatus
     removeAGDVisible.value = true
     
 }
@@ -1121,6 +1177,9 @@ function removeAgangaEvent() {
                 cancelCerateAgenda();
                 // location.reload();
             }, 1000); 
+            if (removeEventStatus.value == 1) {
+                changeleaveStatus();
+            }
         } else {
             Swal.fire({
                 icon: "warning",
@@ -1171,6 +1230,53 @@ function agdTableDoEmpFindAll() {
             });
         // router.push("/")
     }) 
+}
+
+//請假編號詳情查詢
+function GetleaveInfo(businessPurpose) {
+    const leaveId = businessPurpose.split(':');
+    console.log(businessPurpose);
+    console.log("請假編號",leaveId[3]);
+    
+    axiosapi.get(`leave/info/${leaveId[3]}`).then(function (responce) {  //
+        console.log("leave/info",responce.data);
+        leaveInfo.value=responce.data.data;
+        
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "假單詢錯誤"+error.message,
+                icon: "error"
+            });
+        
+    }) 
+    openAgandaLeaveDrawer.value = true
+    
+}
+
+function changeleaveStatus() {
+    const leaveId = leaveBusinessPurpose.value.split(':');
+    console.log(leaveBusinessPurpose.value);
+    console.log("修改Status請假編號",leaveId[3]);
+
+    let request = {
+        "id": Number(leaveId[3]),
+        "leaveStatus":1,
+        "permisionStatus": 3
+    }
+    console.log("request",request);
+    axiosapi.put(`leave/modify/${leaveId[3]}`,request).then(function (responce) {  
+        console.log("leave/modify",responce.data);
+        
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "假單修改錯誤"+error.message,
+                icon: "error"
+            });
+        
+    }) 
+    
 }
 
 </script>
