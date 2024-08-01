@@ -51,7 +51,7 @@
                         :value="Option.value"
                     />
                 </el-select>
-             
+
 <!-- 清除查詢 -->
                 <div class="btm-div" style="display: flex;margin-right: 20px;" @click="clearSelection">
                     <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;"/>
