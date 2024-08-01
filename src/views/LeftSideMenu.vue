@@ -58,6 +58,7 @@
             </template>
             <a href="/pages/teamMaintain#carAdjust" style="all: unset;"><el-menu-item> - 車輛調整簽核</el-menu-item></a>
             <a href="/pages/teamMaintain#leave" style="all: unset;"><el-menu-item > - 假單簽核 </el-menu-item></a>
+            <a href="/pages/teamMaintain#giveLeave" style="all: unset;"><el-menu-item > - 給假簽核 </el-menu-item></a>
             <a href="/pages/teamMaintain#employee" style="all: unset;"><el-menu-item > - 員工總覽 </el-menu-item></a>
             <a href="/pages/teamMaintain#kpi" style="all: unset;"><el-menu-item> - 考核評比 </el-menu-item></a>
         </el-sub-menu>
