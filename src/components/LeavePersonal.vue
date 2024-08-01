@@ -29,7 +29,7 @@
                         <td class="table-td">{{ employeeInfo.personalLeaveHours }} 小時</td>
                     </tr>
                     <tr>
-                        <th scope="row" class="table-td">病假</th>
+                        <th scope="row" class="table-td">半薪病假</th>
                         <td class="table-td">{{ employeeInfo.sickLeaveHours }} 小時</td>
                     </tr>
                     <tr v-if="employeeInfo.annualLeaveHours !== null">
@@ -386,7 +386,7 @@ const findEmployeeId = ref('');
 const leaveTypeOptions = [
   { value: 1, label: "特休" },
   { value: 5, label: "事假" },
-  { value: 6, label: "病假" },
+  { value: 6, label: "半薪病假" },
   { value: 7, label: "婚假" },
   { value: 8, label: "生理假" },
   { value: 9, label: "公假" },
@@ -401,7 +401,7 @@ const getRemainingHours = (leaveTypeName) => {
       return employeeInfo.value.annualLeaveHours;
     case "事假":
       return employeeInfo.value.personalLeaveHours;
-    case "病假":
+    case "半薪病假":
       return employeeInfo.value.sickLeaveHours;
     case "婚假":
       return employeeInfo.value.marriageLeaveHours;
@@ -587,7 +587,7 @@ function doCreate() {
         case '1': // 年假
             if (actualLeaveHours > annualLeaveHours) {
                 insufficientLeave = true;
-                errorMessage = "年假剩餘時數不足。";
+                errorMessage = "可用年假剩餘時數不足。";
             }
             break;
         case '5': // 事假
@@ -599,7 +599,7 @@ function doCreate() {
         case '6': // 病假
             if (actualLeaveHours > sickLeaveHours) {
                 insufficientLeave = true;
-                errorMessage = "可用病假剩餘時數不足。";
+                errorMessage = "可用半薪病假剩餘時數不足。";
             }
             break;
         case '7': // 婚假
@@ -636,7 +636,6 @@ function doCreate() {
     }
 
     if (insufficientLeave) {
-        // 先显示 SweetAlert 消息
         Swal.fire({
             icon: "error",
             text: errorMessage,
