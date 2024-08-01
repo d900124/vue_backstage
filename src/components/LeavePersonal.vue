@@ -3,14 +3,13 @@
     <div class="col-1">&nbsp;</div>
     <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;"></div>
     <!-- 抬頭 -->
-    
     <div class="col-2" style="padding: 0px 0px;display: flex; justify-content: flex-end;align-items:flex-end;">
         <h3 class="table-title" id="leavePersonal">請假申請</h3>
     </div>
     <div class="col-1">&nbsp;</div>
-
     <!-- 主容器 -->
     <!-- 左邊的剩餘假別表格 -->
+    
     <div class="left-panel" v-if="employeeInfo">
         <div class="table-part">
             <table class="table">
@@ -30,7 +29,7 @@
                         <td class="table-td">{{ employeeInfo.personalLeaveHours }} 小時</td>
                     </tr>
                     <tr>
-                        <th scope="row" class="table-td">病假</th>
+                        <th scope="row" class="table-td">半薪病假</th>
                         <td class="table-td">{{ employeeInfo.sickLeaveHours }} 小時</td>
                     </tr>
                     <tr v-if="employeeInfo.annualLeaveHours !== null">
@@ -48,6 +47,10 @@
                     <tr v-if="employeeInfo.marriageLeaveHours !== null">
                         <th scope="row" class="table-td">婚假</th>
                         <td class="table-td">{{ employeeInfo.marriageLeaveHours }} 小時</td>
+                    </tr>
+                    <tr v-if="employeeInfo.bereavementLeaveHours !== null">
+                        <th scope="row" class="table-td">喪假</th>
+                        <td class="table-td">{{ employeeInfo.bereavementLeaveHours }} 小時</td>
                     </tr>
                 </tbody>
             </table>
@@ -76,15 +79,15 @@
               <td class="table-td">{{ leaveTwo.validityPeriodStart }}  -  {{ leaveTwo.validityPeriodEnd }}</td>
               <td class="table-td">{{ getRemainingHours(leaveTwo.leaveTypeName) }}</td>
             </tr>
-          </tbody>
+        </tbody>
         </table>
-      </div>
     </div>
-  </div>
+    </div>
 </div>
-
+</div>
         <div class="col-5"
             style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
+            
             <!-- 新增用按鈕 -->
             <div class="btm-div" style="display: flex;" @click="openModal('insert')">
                 <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;" />
@@ -92,10 +95,37 @@
             </div>
         </div>
     </div>
-
     <!-- 列表主體 -->
     <div class="table-partr right-panel" v-if="employeeInfo">
+            <!-- 多條件下拉查詢 -->
+        <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
+            <div class="mb-3 custom-select-wrapper">
+            <select class="form-select custom-select" v-model="permisionStatus" @change="handleChange"
+                style="margin-left: 10px;">
+                <option value=""  disabled selected hidden>簽核狀態</option>
+                <option v-for="option in permisionStatusOptions" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                </option>
+            </select>
+        </div>
+        <div class="mb-3 custom-select-wrapper">
+            <select class="form-select custom-select" v-model="leaveType" @change="handleChange"
+                style="margin-left: 20px;">
+                <option value="" disabled selected hidden>假別</option>
+                <option v-for="option in leaveTypeOptions" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                </option>
+            </select>
+        </div>
+        <div style="display: flex;margin-left: 28px; margin-right: -30px;margin-bottom: 14px;" @click="clearSelection">
+            <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;" />
+            <el-button type='' link style="color: #a33238; font-weight: 900;">清除查詢</el-button>
+        </div>
+
+    </div>
+ 
         <table class="table">
+
             <thead style="border-bottom: 2px solid #a33238;">
                 <tr>
                     <th scope="col" class="table-th">申請時間</th>
@@ -328,7 +358,6 @@ onMounted(() => {
     if (employeeInfo.value) {
         callQuery();
         callQueryTwo();
-        
     }
 });
 
@@ -348,12 +377,11 @@ const router = useRouter()
 const total = ref(0) //總比數
 const current = ref(1) //目前頁碼
 const pages = ref(0) //分頁總數
-const rows = ref(4) //分頁資料顯示筆數
+const rows = ref(6) //分頁資料顯示筆數
 
 //查詢全部員工
 const allEmployees=ref([]);
 const findEmployeeId = ref('');
-
 
 const leaveTypeOptions = [
   { value: 1, label: "特休" },
@@ -364,7 +392,6 @@ const leaveTypeOptions = [
   { value: 9, label: "公假" },
   { value: 10, label: "喪假" }
 ];
-
 
 
 // 根据假别名称获取剩余时数
@@ -401,6 +428,12 @@ const getPermisionStatusText = (status) => {
             return '未知狀態';
     }
 };
+
+const permisionStatusOptions = [
+    { value: 1, label: '簽核中' },
+    { value: 2, label: '同意' },
+    { value: 3, label: '拒絕' },
+]
 
 
 
@@ -442,8 +475,9 @@ onMounted(() => {
     }
 });
 
-
-
+//簡易查詢用屬性
+const permisionStatus = ref('');
+const leaveType = ref('');
 
 //下方詳細資料開啟用
 const openZon = ref(false)
@@ -456,10 +490,6 @@ const leaves = ref([]);
 const singleLeave = ref([]);
 const leavesTwo = ref([]);
 
-const leaveType = ref(null);
-
-const startTime = ref(null);
-const endTime = ref(null);
 
 const creatDdialogVisible = ref(false)  //新增
 
@@ -508,15 +538,116 @@ function openModal() {
 }
 
 function doCreate() {
+    // 获取实际请假小时数（假设从表单中获取）
+    let actualLeaveHours = Number(form.value.actualLeaveHours); // 确保转换为数字
+
+    // 验证实际请假小时数是否合理
+    if (actualLeaveHours <= 0) {
+        Swal.fire({
+            icon: "error",
+            text: "請假時數必須大於0",
+            showConfirmButton: true
+        });
+        return; 
+    }
+
     // 创建一个新的请求对象，包含修改后的表单数据
     let request = {
         ...form.value,
         employeeId: employeeInfo.value.id,
         teamLeaderId: employeeInfo.value.teamLeaderId
     };
-    
-    console.log("Form before submission:", request);
-    
+
+    // 从 employeeInfo 中获取假别小时数并转换为数字
+    let personalLeaveHours = Number(employeeInfo.value.personalLeaveHours);
+    let sickLeaveHours = Number(employeeInfo.value.sickLeaveHours);
+    let annualLeaveHours = Number(employeeInfo.value.annualLeaveHours);
+    let menstrualLeaveHours = Number(employeeInfo.value.menstrualLeaveHours);
+    let officialLeaveHours = Number(employeeInfo.value.officialLeaveHours);
+    let marriageLeaveHours = Number(employeeInfo.value.marriageLeaveHours);
+
+    let leaveType = String(form.value.leaveType); // 将 leaveType 转换为字符串
+    let insufficientLeave = false; // 在使用前定义和初始化
+    let errorMessage = ""; // 定义并初始化 errorMessage 变量
+
+    // 打印调试信息
+    console.log("实际请假小时数:", actualLeaveHours);
+    console.log("员工假别数据:", {
+        personalLeaveHours,
+        sickLeaveHours,
+        annualLeaveHours,
+        menstrualLeaveHours,
+        officialLeaveHours,
+        marriageLeaveHours,
+    });
+    console.log("選取的假別", leaveType);
+    creatDdialogVisible.value = false;
+    // 验证假别小时数
+    switch (leaveType) {
+        case '1': // 年假
+            if (actualLeaveHours > annualLeaveHours) {
+                insufficientLeave = true;
+                errorMessage = "可用年假剩餘時數不足。";
+            }
+            break;
+        case '5': // 事假
+            if (actualLeaveHours > personalLeaveHours) {
+                insufficientLeave = true;
+                errorMessage = "可用事假剩餘時數不足。";
+            }
+            break;
+        case '6': // 病假
+            if (actualLeaveHours > sickLeaveHours) {
+                insufficientLeave = true;
+                errorMessage = "可用半薪病假剩餘時數不足。";
+            }
+            break;
+        case '7': // 婚假
+            if (actualLeaveHours > marriageLeaveHours) {
+                insufficientLeave = true;
+                errorMessage = "可用婚假剩餘時數不足。";
+            }
+            break;
+        case '8': // 生理假
+            if (actualLeaveHours > menstrualLeaveHours) {
+                insufficientLeave = true;
+                errorMessage = "可用生理假剩餘時數不足。";
+            }
+            break;
+        case '9': // 公假
+            if (actualLeaveHours > officialLeaveHours) {
+                insufficientLeave = true;
+                errorMessage = "可用公假剩餘時數不足";
+            }
+            break;
+        case '10': 
+            if (actualLeaveHours > bereavementLeaveHours) {
+                insufficientLeave = true;
+                errorMessage = "可用喪假剩餘時數不足";
+            }
+            break;
+        default:
+            Swal.fire({
+                icon: "error",
+                text: "無此假別",
+                showConfirmButton: true
+            });
+            return;
+    }
+
+    if (insufficientLeave) {
+        Swal.fire({
+            icon: "error",
+            text: errorMessage,
+            showConfirmButton: true
+        }).then(() => {
+            // 关闭对话框
+            creatDdialogVisible.value = false;
+        });
+        return; 
+    }
+
+    // 关闭对话框和显示 "正在执行" 提示
     creatDdialogVisible.value = false;
     Swal.fire({
         text: "執行中......",
@@ -524,6 +655,7 @@ function doCreate() {
         showConfirmButton: false,
     });
 
+    // 发送请求
     axiosapi.post("/leave/add", request)
         .then(response => {
             Swal.close(); // 关闭正在执行的提示
@@ -535,9 +667,7 @@ function doCreate() {
                     timer: 2000 // 消息显示时间为2秒
                 }).then(() => {
                     // 刷新页面或更新状态
-                    window.location.reload(); // 刷新页面
-                    // 或者使用 Vue 的方法来更新页面状态，例如：
-                    // openZon.value = true; // 打开详细数据区域
+                    openZon.value = true; // 打开详细数据区域
                 });
             } else {
                 Swal.fire({
@@ -554,6 +684,7 @@ function doCreate() {
             });
         });
 }
+
 
 //單筆查詢
 function leaveInfo(leaveId) {
@@ -585,7 +716,6 @@ function callQueryTwo() {
         "pageSize": rows.value,
         "employeeId": employeeId.value,
         "leaveStatus": 1, // 1 为给假
-       
     };
 
     axiosapi.post("/leave/query", request)
@@ -610,7 +740,17 @@ function callQueryTwo() {
             });
         });
 }
+const handleChange = () => {
+    current.value = 1;
+    callQuery(false);
+};
 
+// 清空搜尋框
+const clearSelection = () => {
+    leaveType.value = ''
+    permisionStatus.value = ''
+    callQuery();
+}
 
 // 多筆查詢
 function callQuery() {
@@ -623,6 +763,8 @@ function callQuery() {
         "pageSize": rows.value,
         "employeeId": employeeId.value,
         "leaveStatus": 0, // 0為請假
+        "permisionStatus": permisionStatus.value,
+        "leaveType": leaveType.value
     };
 
     axiosapi.post("/leave/query", request).then(function (response) {
@@ -646,6 +788,78 @@ function callQuery() {
 </script>
 
 <style scoped>
+.custom-input-icon {
+    background: transparent;
+    /* 背景透明 */
+    border: none;
+    /* 去掉边框 */
+    padding: 0.375rem;
+    /* 内边距 */
+}
+
+.custom-input-icon {
+    background: transparent;
+    /* 背景透明 */
+    border: none;
+    /* 去掉边框 */
+    padding: 0.375rem;
+    /* 内边距 */
+}
+
+.custom-icon {
+    color: #a33238;
+    /* 图标颜色与输入框一致 */
+    font-size: 1rem;
+    /* 图标大小 */
+}
+
+.custom-input {
+    font-size: 0.875rem;
+    /* 字体大小 */
+    color: #a33238;
+    /* 字体颜色 */
+    font-weight: bold;
+    /* 字体加粗 */
+    border: none;
+    /* 去掉默认边框 */
+    border-bottom: 2px solid #a33238;
+    /* 底部边框颜色和厚度 */
+    box-shadow: none;
+    /* 去掉阴影 */
+    border-radius: 0;
+    /* 直角边缘 */
+    padding: 0.375rem 0.75rem;
+    /* 内边距 */
+}
+
+.custom-input::placeholder {
+    color: #a33238;
+    /* 占位符颜色 */
+    font-weight: bold;
+    /* 占位符字体加粗 */
+}
+
+.custom-select option[disabled] {
+    color: #6c757d;
+    /* 设置占位符颜色 */
+}
+
+custom-select-wrapper {
+    width: 120px;
+    /* 调整宽度 */
+    margin-right: 10px;
+}
+
+.custom-select {
+    font-size: 0.875rem;
+    color: #a33238;
+    font-weight: bold;
+    border: none;
+    border-bottom: 2px solid #a33238;
+    box-shadow: none;
+    border-radius: 0;
+}
+
 .btn-custom {
   background-color: #a33238; /* 设置背景颜色 */
   color: #ffffff;            /* 设置字体颜色为白色 */
@@ -664,12 +878,14 @@ function callQuery() {
   justify-content: center;
   align-items: center;
   min-height: calc(90% - 1rem); /* 避免顶部和底部的空白区域 */
-
 }
 .right-panel {
-    width: 60%;
-    padding: 60px;
-    margin-left: -20px;
+    width: 58%;
+    padding: 50px;
+    
+    padding-top: 15px;
+    margin-left: -35px;
+
     /* 根据需要调整这个值 */
 }
 
@@ -687,6 +903,9 @@ function callQuery() {
     margin: 10px;
 }
 
+.btm-div:hover {
+    text-decoration: underline 2px solid #a33238;
+}
 .btm-div {
     position: absolute;
     right: 20px;

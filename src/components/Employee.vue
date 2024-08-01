@@ -1,4 +1,5 @@
 <template>
+    <div class="col-12" style="height: 50px;"></div>
     <div class="col-1"></div>
 
     <!-- 簡易搜尋欄位 -->
