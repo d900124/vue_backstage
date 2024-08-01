@@ -3,10 +3,48 @@
 
     <div class="col-1"></div>
     <!-- 多選下拉選單(簡易搜尋) -->
-    <div class="col-5" style="padding: 0px 0px;"></div>
+    <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
+        <el-select
+                    v-model="employeeId"
+                    clearable
+                    placeholder="員工"
+                    size="small"
+                    style="width: 130px;margin-right: 20px;"
+                    @change="handleChange"
+                    @click="leaveFindAllEmployee();"
+                    >
+                    <el-option
+                        v-for="Option in employeeIdOptions"
+                        :key="Option.value"
+                        :label="Option.label"
+                        :value="Option.value"
+                    />
+                </el-select>
+        <el-select
+                    v-model="leaveType"
+                    clearable
+                    placeholder="假別"
+                    size="small"
+                    style="width: 130px;margin-right: 20px;"
+                    @change="handleChange"
+                    >
+                    <el-option
+                        v-for="Option in leaveTypeOptions"
+                        :key="Option.value"
+                        :label="Option.label"
+                        :value="Option.value"
+                    />
+                </el-select>
+
+<!-- 清除查詢 -->
+                <div class="btm-div" style="display: flex;margin-right: 20px;" @click="clearSelection">
+                    <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;"/>
+                    <el-button type='' link  style="color: #a33238; font-weight: 900;">清除查詢</el-button>
+                </div>
+        </div>
 
     <!-- 抬頭 -->
-    <div class="col-5" style="padding: 0px 0px;">
+    <div class="col-2" style="padding: 0px 0px;">
         <h3 class="table-title" id="leave">給假簽核</h3>
     </div>
     <div class="col-1"></div>
@@ -201,7 +239,7 @@ const router = useRouter()
 const total = ref(0) //總比數
 const current = ref(1) //目前頁碼
 const pages = ref(0) //分頁總數
-const rows = ref(4) //分頁資料顯示筆數
+const rows = ref(5) //分頁資料顯示筆數
 
 
 //下方新增資料開啟用
@@ -215,6 +253,13 @@ const leaveType = ref('');
 const actualLeaveHours = ref('');
 const permisionRemarks = ref('');
 
+//簡易查詢用
+const employeeId = ref('');
+
+
+//查找所有員工
+const employeeIdOptions=ref([])
+
 
 
 const leaveTypeOptions = [
@@ -226,6 +271,31 @@ const leaveTypeOptions = [
     { value: 9, label: "公假" },
     { value: 10, label: "喪假" }
 ];
+
+function leaveFindAllEmployee() {
+    let empcount = 0;
+    axiosapi.get("employee/count").then(function (response){
+        empcount=response.data.data;
+        console.log("empcount",empcount);
+    })
+
+    axiosapi.get("employee/all").then(function (response) {  //(AJAX前端程式)單筆查詢的Post功能()
+        console.log("employee/all response",response.data);
+        employeeIdOptions.value=[];
+        for(let i = 0;i<empcount;i++){
+            employeeIdOptions.value.push({
+                        value:response.data.data[i].id,
+                        label: response.data.data[i].name})
+        }
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "員工查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
+}
 
 // 在组件挂载时或 employeeInfo 变化时调用 findAllEmployee
 onMounted(() => {
@@ -384,6 +454,17 @@ function leaveInfo(leaveId) {
     })
 }
 
+const handleChange = () => {
+    current.value = 1;
+    callQuery(false);
+};
+
+// 清空搜尋框
+const clearSelection = () => {
+    employeeId.value = ''
+    leaveType.value = ''
+    callQuery();
+}
 
 // 多筆查詢
 function callQuery() {
@@ -394,6 +475,8 @@ function callQuery() {
         "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
         "pageSize": rows.value,
         "createTime": singleLeave.value.createTime,
+        "employeeId": employeeId.value,
+        "leaveType": leaveType.value,
     };
 
     axiosapi.post("/leave/query", request).then(function (response) {
