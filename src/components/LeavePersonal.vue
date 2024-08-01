@@ -60,10 +60,9 @@
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" v-if="employeeInfo">
   <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content">
-        <div class="modal-header">
-        <h5 class="modal-title " id="exampleModalLabel" style="color:#a33238; font-weight: bold; margin-left:325px;">可用假別時數</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+        
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+      
       <div class="modal-body">
         <table class="table" style="margin-left:0px;">
           <thead>

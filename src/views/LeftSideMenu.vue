@@ -57,7 +57,7 @@
                 <RouterLink :to="{ name: 'team-maintain-link' }" style="all: unset;"><el-icon><font-awesome-icon
                             icon="clipboard-check" style="color: #a33238;" /></el-icon></RouterLink>
                 <span>
-                    <RouterLink :to="{ name: 'team-maintain-link' }" style="all: unset;"><b>員工管理專區</b></RouterLink>
+                    <RouterLink :to="{ name: 'team-maintain-link' }" style="all: unset;"><b>簽核管理專區</b></RouterLink>
                 </span>
 
             </template>

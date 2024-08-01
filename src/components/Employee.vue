@@ -181,7 +181,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="密碼 :&nbsp;">
-                <el-input v-model="form.password" placeholder="請輸入密碼" size="small" />
+                <el-input v-model="form.password" placeholder="請輸入密碼" size="small" type="password" />
             </el-form-item>
 
         </el-form>
