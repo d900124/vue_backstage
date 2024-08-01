@@ -42,7 +42,7 @@
             <template #title>
 
                 <RouterLink :to="{ name: 'client-maintain-link' }" style="all: unset;"><el-icon><font-awesome-icon
-                            icon="clipboard-check" style="color: #a33238;" /></el-icon></RouterLink>
+                            icon="briefcase" style="color: #a33238;" /></el-icon></RouterLink>
                 <span>
                     <RouterLink :to="{ name: 'client-maintain-link' }" style="all: unset;"><b>帳號管理專區</b></RouterLink>
                 </span>
