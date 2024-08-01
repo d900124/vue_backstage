@@ -78,11 +78,8 @@
                     </el-select>
                     
                     <!-- 車輛列表 -->
-                     
-
             <div class="table-part">
             <table class="table">
-            
                 <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
                         <th scope="col" class="table-th">ID</th>
@@ -101,7 +98,7 @@
                         <td class="table-td">{{ carData.employeeName }}</td>
                         <td class="table-td">{{ carData.updateTime }}</td>
                         <td class="table-td">{{ carData.stateName }}</td>
-                        <el-button type="danger" :icon="Delete" circle />
+                        <el-button type="danger" style="color: #a33238;" round>修改r</el-button>
                     </tr>
                 </tbody>
             </table>
