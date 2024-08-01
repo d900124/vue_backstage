@@ -3,10 +3,64 @@
 
     <div class="col-1"></div>
     <!-- 多選下拉選單(簡易搜尋) -->
-    <div class="col-5" style="padding: 0px 0px;"></div>
+    <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
+        <el-select
+                    v-model="employeeId"
+                    clearable
+                    placeholder="申請人"
+                    size="small"
+                    style="width: 130px;margin-right: 20px;"
+                    @change="handleChange"
+                    @click="leaveFindAllEmployee();"
+                    >
+                    <el-option
+                        v-for="Option in employeeIdOptions"
+                        :key="Option.value"
+                        :label="Option.label"
+                        :value="Option.value"
+                    />
+                </el-select>
+        <el-select
+                    v-model="leaveType"
+                    clearable
+                    placeholder="假別"
+                    size="small"
+                    style="width: 130px;margin-right: 20px;"
+                    @change="handleChange"
+                    >
+                    <el-option
+                        v-for="Option in leaveTypeOptions"
+                        :key="Option.value"
+                        :label="Option.label"
+                        :value="Option.value"
+                    />
+                </el-select>
 
+                <el-select
+                    v-model="permisionStatus"
+                    clearable
+                    placeholder="簽核狀態"
+                    size="small"
+                    style="width: 130px;margin-right: 20px;"
+                    @change="handleChange"
+                    >
+                    <el-option
+                        v-for="Option in permisionStatusOptions"
+                        :key="Option.value"
+                        :label="Option.label"
+                        :value="Option.value"
+                    />
+                </el-select>
+             
+<!-- 清除查詢 -->
+                <div class="btm-div" style="display: flex;margin-right: 20px;" @click="clearSelection">
+                    <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;"/>
+                    <el-button type='' link  style="color: #a33238; font-weight: 900;">清除查詢</el-button>
+                </div>
+        </div>
+        
     <!-- 抬頭 -->
-    <div class="col-5" style="padding: 0px 0px;">
+    <div class="col-2" style="padding: 0px 0px;">
         <h3 class="table-title" id="leave">假單簽核</h3>
     </div>
     <div class="col-1"></div>
@@ -174,10 +228,34 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref , watch, computed} from 'vue';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+
+const store = useStore();
+
+// 确保 employeeInfo 在页面加载时是一个初始值为空的对象，而不是 null 或 undefined。这样可以确保在模板渲染时不会出错
+const employeeInfo = computed(() => store.state.employeeInfo.data || {});
+console.log('===>Employee info:', employeeInfo);
+console.log('===>Employee info:', employeeInfo.value);
+const accountTypeName = computed(() => employeeInfo.value?.accountTypeName || '');
+console.log('Account Type Name:', accountTypeName.value);
+
+onMounted(() => {
+    const username = localStorage.getItem('username');
+    if (username) {
+        store.dispatch('fetchEmployeeInfo', username);
+    }
+});
+
+// 监控 employeeInfo 的变化，并在其加载完成后执行 callQuery
+watch(employeeInfo, (newValue) => {
+    if (newValue) {
+        callQuery();
+    }
+});
 
 //用於重新導向 router.push
 const router = useRouter()
@@ -204,6 +282,14 @@ const isModify = ref(false);
 //確認修改彈出視窗用
 const dialogVisible = ref(false)
 
+//簡易查詢用
+const permisionStatus = ref('');
+const leaveType = ref('');
+const employeeId = ref('');
+
+//查找所有員工
+const employeeIdOptions=ref([])
+
 
 const getPermisionStatusText = (status) => {
     switch (status) {
@@ -217,6 +303,22 @@ const getPermisionStatusText = (status) => {
             return '未知狀態';
     }
 };
+const leaveTypeOptions = [
+  { value: 1, label: "特休" },
+  { value: 5, label: "事假" },
+  { value: 6, label: "半薪病假" },
+  { value: 7, label: "婚假" },
+  { value: 8, label: "生理假" },
+  { value: 9, label: "公假" },
+  { value: 10, label: "喪假" }
+];
+
+
+const permisionStatusOptions = [
+    { value: 1, label: '簽核中' },
+    { value: 2, label: '同意' },
+    { value: 3, label: '拒絕' },
+]
 
 
 // 定義審核狀態選項
@@ -226,6 +328,43 @@ const permissionStatuses = ref([
     { value: 3, label: '拒絕' }
 ]);
 
+// 在组件挂载时或 employeeInfo 变化时调用 findAllEmployee
+onMounted(() => {
+    if (employeeInfo.value) {
+        leaveFindAllEmployee();
+    }
+});
+
+watch(employeeInfo, (newValue) => {
+    if (newValue) {
+        leaveFindAllEmployee();
+    }
+});
+
+function leaveFindAllEmployee() {
+    let empcount = 0;
+    axiosapi.get("employee/count").then(function (response){
+        empcount=response.data.data;
+        console.log("empcount",empcount);
+    })
+
+    axiosapi.get("employee/all").then(function (response) {  //(AJAX前端程式)單筆查詢的Post功能()
+        console.log("employee/all response",response.data);
+        employeeIdOptions.value=[];
+        for(let i = 0;i<empcount;i++){
+            employeeIdOptions.value.push({
+                        value:response.data.data[i].id,
+                        label: response.data.data[i].name})
+        }
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "員工查詢錯誤"+error.message,
+                icon: "error"
+            });
+        // router.push("/")
+    }) 
+}
 
 onMounted(function () {
     callQuery();
@@ -242,9 +381,9 @@ function openModal() {
 //單筆查詢
 function leaveInfo(leaveId) {
     console.log(leaveId)
-    axiosapi.get("/leave/info/" + leaveId).then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
-        console.log("responce", responce.data);
-        singleLeave.value = responce.data.data;
+    axiosapi.get("/leave/info/" + leaveId).then(function (response) {  //(AJAX前端程式)單筆查詢的Post功能()
+        console.log("response", response.data);
+        singleLeave.value = response.data.data;
         // console.log("singleLeave.value.id", singleLeave.leave.id);
         openZon.value = true
         isModify.value = false
@@ -259,6 +398,18 @@ function leaveInfo(leaveId) {
     })
 }
 
+const handleChange = () => {
+    current.value = 1;
+    callQuery(false);
+};
+
+// 清空搜尋框
+const clearSelection = () => {
+    permisionStatus.value = ''
+    leaveType.value = ''
+    employeeId.value = ''
+    callQuery();
+}
 
 // 多筆查詢
 function callQuery() {
@@ -267,7 +418,10 @@ function callQuery() {
     let request = {
         "leaveStatus": 0, // 0為請假
         "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
-        "pageSize": rows.value
+        "pageSize": rows.value,
+        "leaveType": leaveType.value,
+        "permisionStatus": permisionStatus.value,
+        "employeeId": employeeId.value
     };
 
     axiosapi.post("/leave/query", request).then(function (response) {

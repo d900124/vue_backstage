@@ -95,7 +95,6 @@
             </div>
         </div>
     </div>
-
     <!-- 列表主體 -->
     <div class="table-partr right-panel" v-if="employeeInfo">
             <!-- 多條件下拉查詢 -->
@@ -126,7 +125,7 @@
     </div>
  
         <table class="table">
-  
+
             <thead style="border-bottom: 2px solid #a33238;">
                 <tr>
                     <th scope="col" class="table-th">申請時間</th>
