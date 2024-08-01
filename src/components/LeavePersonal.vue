@@ -386,7 +386,7 @@ const findEmployeeId = ref('');
 const leaveTypeOptions = [
   { value: 1, label: "特休" },
   { value: 5, label: "事假" },
-  { value: 6, label: "半薪病假" },
+  { value: 6, label: "病假" },
   { value: 7, label: "婚假" },
   { value: 8, label: "生理假" },
   { value: 9, label: "公假" },
@@ -401,7 +401,7 @@ const getRemainingHours = (leaveTypeName) => {
       return employeeInfo.value.annualLeaveHours;
     case "事假":
       return employeeInfo.value.personalLeaveHours;
-    case "半薪病假":
+    case "病假":
       return employeeInfo.value.sickLeaveHours;
     case "婚假":
       return employeeInfo.value.marriageLeaveHours;

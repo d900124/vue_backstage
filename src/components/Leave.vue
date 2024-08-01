@@ -264,7 +264,7 @@ const router = useRouter()
 const total = ref(0) //總比數
 const current = ref(1) //目前頁碼
 const pages = ref(0) //分頁總數
-const rows = ref(4) //分頁資料顯示筆數
+const rows = ref(5) //分頁資料顯示筆數
 
 //下方詳細資料開啟用
 const openZon = ref(false)
@@ -306,7 +306,7 @@ const getPermisionStatusText = (status) => {
 const leaveTypeOptions = [
   { value: 1, label: "特休" },
   { value: 5, label: "事假" },
-  { value: 6, label: "半薪病假" },
+  { value: 6, label: "病假" },
   { value: 7, label: "婚假" },
   { value: 8, label: "生理假" },
   { value: 9, label: "公假" },
