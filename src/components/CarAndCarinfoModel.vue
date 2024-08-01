@@ -26,14 +26,14 @@
     <select id="isListPic" name="isListPic" v-model="isListPic" required>
       <option option value="" disabled>是否為清單小圖</option>
       <option value="1">是</option>
-      <option value="2">否</option>
+      <option value="0">否</option>
     </select> 
 
 <label>是否為產品主圖</label>
 <select id="isMainPic" name="isMainPic" v-model="isMainPic" required>
       <option option value="" disabled>是否為產品主圖</option>
       <option value="1">是</option>
-      <option value="2">否</option>
+      <option value="0">否</option>
     </select> 
 
 <label>carId</label>
