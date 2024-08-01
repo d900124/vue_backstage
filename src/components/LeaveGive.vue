@@ -45,7 +45,7 @@
 
     <!-- 抬頭 -->
     <div class="col-2" style="padding: 0px 0px;">
-        <h3 class="table-title" id="leave">給假簽核</h3>
+        <h3 class="table-title" id="giveLeave">給假簽核</h3>
     </div>
     <div class="col-1"></div>
 

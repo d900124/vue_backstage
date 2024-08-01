@@ -213,7 +213,7 @@
     </div>
     <div class="col-1"></div>
     <div v-if="openZon" class="col-1"></div>
-    <div v-if="openZon" class="col-10" style="height: 300px; background-color:rgb(245, 250, 250)  ;">
+    <div v-if="openZon" class="col-10" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
         <!-- 下方詳細資料區/ 第一欄 -->
         <div class="table-responsive" style="padding:20px ; ">
             <table class="table" style="width: 1000px; ">
@@ -371,7 +371,7 @@ const teamLeaders = ref([]); // 定义空数组或根据需求初始化
 const total = ref(0);
 const current = ref(1);
 const pages = ref(0);
-const rows = ref(4);
+const rows = ref(5);
 
 const openZon = ref(false); // 初始值改為false，避免一開始就顯示單筆詳細資料
 //下方新增資料開啟用

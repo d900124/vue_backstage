@@ -8,12 +8,11 @@
                 <!-- 車輛調整簽核 -->
                 <CarAdjustTable></CarAdjustTable>
 
-                <!-- 假單簽核 -->
+                <!-- 請假簽核 -->
                 <Leave></Leave>
-                <LeaveGive></LeaveGive>
 
-                <!-- 員工總覽 -->
-                <Employee></Employee>
+                <!-- 給假簽核 -->
+                <LeaveGive></LeaveGive>
 
                 <!-- 考核評比 -->
                 <KpiTable></KpiTable>
@@ -26,7 +25,6 @@
 import CarAdjustTable from '@/components/CarAdjustTable.vue';
 import KpiTable from '@/components/KpiTable.vue';
 import Leave from '@/components/Leave.vue';
-import EmployeeList from '@/components/Employee.vue';
 import Logout from '@/components/Logout.vue';
 import LeaveGive from '@/components/LeaveGive.vue';
 
