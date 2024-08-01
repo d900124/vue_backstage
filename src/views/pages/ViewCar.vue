@@ -68,7 +68,7 @@
   <div class="row" style="background-color:  #fff5eb ;border-end-end-radius: 15px;border-end-start-radius: 15px; margin-bottom: 5%;">
     <div class="col-12" style="padding: 0;">
         <div style="width: 100%;height: 80vh;overflow: hidden;">
-            <img src='/viewCarTamp.jpg' width="100%">
+            <img :src="`${path}${imgUrl}`" width="100%">
         </div>
     </div>
     <div class="row" style="padding :40px;">
@@ -122,6 +122,7 @@ const sex= ref()
 
 //車輛圖片用參數
 const path = import.meta.env.VITE_PHOTO;
+const imgUrl =ref([])
 
 
 const viewcarId = Number(route.query.viewcarId);  // 获取传递过来的viewcarId参数
@@ -212,13 +213,27 @@ function callViewCarSelect() {
             })
         }
 
-     }).catch(function (error) {
+        //圖片
+        axiosapi.get(`image/isMainPic/${viewCarItem.value.car}`).then(function (responce) {
+            imgUrl.value = responce.data.isMainPic
+            console.log("imgUrl",imgUrl.value);
+        }).catch(function (error) {
+            console.log("error",error);
+            Swal.fire({
+                    text: "查詢員工錯誤"+error.message,
+                    icon: "error"
+                });
+        })
+
+    }).catch(function (error) {
         console.log("error",error);
         Swal.fire({
                 text: "查詢賞車錯誤"+error.message,
                 icon: "error"
             });
     }) 
+
+    
 }
         
 </script>
