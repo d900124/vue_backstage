@@ -227,7 +227,7 @@ const router = useRouter()
 const total = ref(0) //總比數
 const current = ref(1) //目前頁碼
 const pages = ref(0) //分頁總數
-const rows = ref(4) //分頁資料顯示筆數
+const rows = ref(5) //分頁資料顯示筆數
 
 //下方詳細資料開啟用
 const openZon = ref(false)
@@ -388,63 +388,39 @@ function doModify() {
 <style scoped>
 .custom-input-icon {
     background: transparent;
-    /* 背景透明 */
     border: none;
-    /* 去掉边框 */
     padding: 0.375rem;
-    /* 内边距 */
 }
 
 .custom-input-icon {
     background: transparent;
-    /* 背景透明 */
     border: none;
-    /* 去掉边框 */
     padding: 0.375rem;
-    /* 内边距 */
 }
 
 .custom-icon {
     color: #a33238;
-    /* 图标颜色与输入框一致 */
     font-size: 1rem;
-    /* 图标大小 */
 }
 
 .custom-input {
     font-size: 0.875rem;
-    /* 字体大小 */
     color: #a33238;
-    /* 字体颜色 */
     font-weight: bold;
-    /* 字体加粗 */
     border: none;
-    /* 去掉默认边框 */
     border-bottom: 2px solid #a33238;
-    /* 底部边框颜色和厚度 */
     box-shadow: none;
-    /* 去掉阴影 */
     border-radius: 0;
-    /* 直角边缘 */
     padding: 0.375rem 0.75rem;
-    /* 内边距 */
 }
 
 .custom-input::placeholder {
     color: #a33238;
-    /* 占位符颜色 */
     font-weight: bold;
-    /* 占位符字体加粗 */
-}
-
-.custom-select option[disabled] {
-    color: #6c757d;
-    /* 设置占位符颜色 */
 }
 
 custom-select-wrapper {
     width: 120px;
-    /* 调整宽度 */
     margin-right: 10px;
 }
 
