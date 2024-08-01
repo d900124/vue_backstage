@@ -15,7 +15,7 @@
             <select class="form-select custom-select" v-model="accountType" @change="handleChange"
                 style="margin-left: 10px;">
                 <option value="" disabled selected hidden>帳號分類</option>
-                <option v-for="option in leaveTypeOptions" :key="option.value" :value="option.value">
+                <option v-for="option in accountTypeOptions" :key="option.value" :value="option.value">
                     {{ option.label }}
                 </option>
             </select>
@@ -246,7 +246,7 @@ const dialogVisible = ref(false)
 const accountType = ref('')
 const name = ref('')
 
-const leaveTypeOptions = [
+const accountTypeOptions = [
     { value: 1, label: '一般會員' },
     { value: 2, label: '賣家' },
 ]

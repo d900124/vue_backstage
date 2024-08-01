@@ -79,11 +79,11 @@
               <td class="table-td">{{ leaveTwo.validityPeriodStart }}  -  {{ leaveTwo.validityPeriodEnd }}</td>
               <td class="table-td">{{ getRemainingHours(leaveTwo.leaveTypeName) }}</td>
             </tr>
-          </tbody>
+        </tbody>
         </table>
-      </div>
     </div>
-  </div>
+    </div>
+</div>
 </div>
         <div class="col-5"
             style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
@@ -101,24 +101,24 @@
             <!-- 多條件下拉查詢 -->
         <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
             <div class="mb-3 custom-select-wrapper">
-            <select class="form-select custom-select" v-model="accountType" @change="handleChange"
+            <select class="form-select custom-select" v-model="permisionStatus" @change="handleChange"
                 style="margin-left: 10px;">
-                <option value="" disabled selected hidden>簽核狀態</option>
-                <option v-for="option in leaveTypeOptions" :key="option.value" :value="option.value">
+                <option value=""  disabled selected hidden>簽核狀態</option>
+                <option v-for="option in permisionStatusOptions" :key="option.value" :value="option.value">
                     {{ option.label }}
                 </option>
             </select>
         </div>
         <div class="mb-3 custom-select-wrapper">
-            <select class="form-select custom-select" v-model="accountType" @change="handleChange"
+            <select class="form-select custom-select" v-model="leaveType" @change="handleChange"
                 style="margin-left: 20px;">
-                <option value="" disabled selected hidden>帳號分類</option>
+                <option value="" disabled selected hidden>假別</option>
                 <option v-for="option in leaveTypeOptions" :key="option.value" :value="option.value">
                     {{ option.label }}
                 </option>
             </select>
         </div>
-        <div class="btm-div-clear" style="display: flex;margin-left: 25px; margin-bottom: 14px;" @click="clearSelection">
+        <div style="display: flex;margin-left: 28px; margin-right: -30px;margin-bottom: 14px;" @click="clearSelection">
             <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;" />
             <el-button type='' link style="color: #a33238; font-weight: 900;">清除查詢</el-button>
         </div>
@@ -359,7 +359,6 @@ onMounted(() => {
     if (employeeInfo.value) {
         callQuery();
         callQueryTwo();
-        
     }
 });
 
@@ -385,7 +384,6 @@ const rows = ref(6) //分頁資料顯示筆數
 const allEmployees=ref([]);
 const findEmployeeId = ref('');
 
-
 const leaveTypeOptions = [
   { value: 1, label: "特休" },
   { value: 5, label: "事假" },
@@ -395,7 +393,6 @@ const leaveTypeOptions = [
   { value: 9, label: "公假" },
   { value: 10, label: "喪假" }
 ];
-
 
 
 // 根据假别名称获取剩余时数
@@ -432,6 +429,12 @@ const getPermisionStatusText = (status) => {
             return '未知狀態';
     }
 };
+
+const permisionStatusOptions = [
+    { value: 1, label: '簽核中' },
+    { value: 2, label: '同意' },
+    { value: 3, label: '拒絕' },
+]
 
 
 
@@ -473,8 +476,9 @@ onMounted(() => {
     }
 });
 
-
-
+//簡易查詢用屬性
+const permisionStatus = ref('');
+const leaveType = ref('');
 
 //下方詳細資料開啟用
 const openZon = ref(false)
@@ -745,8 +749,8 @@ const handleChange = () => {
 
 // 清空搜尋框
 const clearSelection = () => {
-    accountType.value = ''
-    name.value = '';
+    leaveType.value = ''
+    permisionStatus.value = ''
     callQuery();
 }
 
@@ -761,6 +765,8 @@ function callQuery() {
         "pageSize": rows.value,
         "employeeId": employeeId.value,
         "leaveStatus": 0, // 0為請假
+        "permisionStatus": permisionStatus.value,
+        "leaveType": leaveType.value
     };
 
     axiosapi.post("/leave/query", request).then(function (response) {
