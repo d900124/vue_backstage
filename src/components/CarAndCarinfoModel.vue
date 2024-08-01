@@ -144,6 +144,7 @@
 <script setup >
 import { ref,onMounted } from 'vue'
 import axios from 'axios'
+import axiosapi from '@/plugins/axios';
 
 const props = defineProps(["modelValue","carinfoData"]);
 const emits = defineEmits(["customInsert","update:modelValue"]);
@@ -163,7 +164,7 @@ onMounted(function () {
 
     function callCarinfoFind() {
   //搜尋單筆carinfo資訊
-  axios.get(`${kajartaUrl}/carinfo/list`)
+  axiosapi.get(`/carinfo/list`)
         .then(function (response) {
             if (response && response.data) {
                 console.log("response", response);
@@ -230,7 +231,7 @@ console.log(`File name: ${images.value[0].name}`);
     console.log(`File size: ${images.value[0].size} bytes`);
     console.log(`File type: ${images.value[0].type}`);
         //使用Axios上傳檔案
-        axios.post(`${kajartaUrl}/image/create`,formData)
+        axiosapi.post(`/image/create`,formData)
         .then(function (response) {
             if (response && response.data) {
                 console.log("response", response);

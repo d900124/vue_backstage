@@ -59,7 +59,7 @@
                             
                         />
                     </el-select>
-            
+            <!-- =====================資料列表===================== -->
             <el-select
                         v-model="findApprovalStatus"
                         clearable
@@ -76,50 +76,80 @@
                             
                         />
                     </el-select>
+                    
                     <!-- 車輛列表 -->
+                     
 
-                <div class="table-part">
-                <table class="table">
+            <div class="table-part">
+            <table class="table">
+            
                 <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
-                    <th scope="col" class="table-th" >ID</th>
-                    <th scope="col" class="table-th" >品牌 - 型號</th>
-                    <th scope="col" class="table-th" >價格</th>
-                    <th scope="col" class="table-th" >銷售員</th>
-                    <th scope="col" class="table-th" >更新時間</th>
-                    <th scope="col" class="table-th" >狀態</th>
+                        <th scope="col" class="table-th">ID</th>
+                        <th scope="col" class="table-th">品牌/型號</th>
+                        <th scope="col" class="table-th">價錢</th>
+                        <th scope="col" class="table-th">銷售員</th>
+                        <th scope="col" class="table-th">最後修改時間</th>
+                        <th scope="col" class="table-th">狀態</th>
                     </tr>
                 </thead>
                 <tbody class="table-group-divider">
-                    <tr v-for="item in items" :key="item.id"  @click="itemClick(item.id)">
-                    <th scope="row" class="table-td">{{item.id}}</th>
-                    <td class="table-td">{{item.carBrand}}&nbsp;-&nbsp;{{item.carModelName}}</td>
-                    <td v-if="item.approvalType==1||item.approvalType==2" class="table-td">{{item.approvalTypeName}} 至 ${{item.floatingAmount}}</td>
-                    <td v-if="item.approvalType==3" class="table-td">{{item.approvalTypeName}} </td>
-                    <td class="table-td">{{item.createTimeString}}</td>
-                    <td class="table-td">{{item.employeeName}}</td>
-                    <td class="table-td">{{item.approvalStatusName}}</td>
+                    <tr v-for="carData in carDatas" :key="carDatas.id" :carData="carData">
+                        <th scope="row" class="table-td">{{ carData.id }}</th>
+                        <td class="table-td">{{ carData.cainfoBrand }} - {{ carData.carinfoModelName }} </td>
+                        <td class="table-td">{{ carData.price }} </td>
+                        <td class="table-td">{{ carData.employeeName }}</td>
+                        <td class="table-td">{{ carData.updateTime }}</td>
+                        <td class="table-td">{{ carData.stateName }}</td>
+                        <el-button type="danger" :icon="Delete" circle />
                     </tr>
-                    
                 </tbody>
-                </table>
-                <div>
-                </div>
-            </div>
-            
-        
-
-     
-            
-
-
-        
+            </table>
+        </div>
 </template>
     
 <script setup >
 import { computed,onMounted,ref } from 'vue';
+import axiosapi from '@/plugins/axios';
     
-    const openFindMore =ref(false)
+
+const openFindMore =ref(false);
+const props=defineProps([]);
+const carDatas=ref([]);
+onMounted(function(){
+    callFindAll();
+});
+
+function callFindAll() {
+    let request = {
+        pageNumber: 1,
+        sortOrder: "asc",
+        max: 10
+    };
+
+    axiosapi.get(`/car/findAll`, { params: request })
+            .then(function (response) {
+                if (response && response.data) {
+                    console.log("response", response);
+                    carDatas.value = response.data.list;
+                    total.value = response.data.totalElements;
+                    pages.value = response.data.totalPages;
+                } else {
+                    console.error("Invalid response data structure:", response);
+                }
+    
+                // setTimeout(function () {
+                //     Swal.close();
+                // }, 500);
+            })
+            .catch(function (error) {
+                console.error("Error fetching data:", error, response);
+                Swal.fire({
+                    text: "查詢失敗：" + error.message,
+                    icon: "error"
+                });
+            });
+}
 </script>
     
 <style>

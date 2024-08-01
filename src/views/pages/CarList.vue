@@ -12,7 +12,14 @@
 <script setup>
 import Logout from '@/components/Logout.vue';
 import CarModifySign from '@/components/CarModifySign.vue';
-    
+import axiosapi from '@/plugins/axios';
+import { onMounted, ref } from 'vue';
+
+
+
+
+
+
 </script>
     
 <style>

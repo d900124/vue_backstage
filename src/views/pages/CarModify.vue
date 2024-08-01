@@ -14,12 +14,13 @@
 import { ref,onMounted } from 'vue'
 import axios from 'axios'
 import CarAndCarinfoModify from '@/components/CarAndCarinfoModify.vue';
+import axiosapi from '@/plugins/axios';
 
 const Datas=ref({ });
 const Modify=ref(null);
 
 function callModify(data) {
-  axios.put('http://localhost:8080/kajarta/car/modify/2', data).then(function(response){
+  axiosapi.put('/car/modify/2', data).then(function(response){
     console.log("responseCarCreate",response)
   }).catch()
 }
