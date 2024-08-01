@@ -1,6 +1,6 @@
 <template>
 	<div class="header">
-		<span class="welcome-message"><b>歡迎 {{ employeeInfo.name || '用户' }}</b></span>
+		<span class="welcome-message"><b>歡迎 {{ employeeInfo.name || '用戶' }}</b></span>
 		<el-button round @click="logout" plain>登出</el-button>
 	</div>
 </template>
