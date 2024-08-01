@@ -27,7 +27,7 @@
             </tr>
         </thead>
         <tbody class="table-group-divider">
-            <tr v-for="item in items" :key="item.id"  @click="">
+            <tr v-for="item in items" :key="item.id"  @click="changeToViewCar(item.id,item.employeeId,item.assignedStatus)">
             <th scope="row" class="table-td">{{item.id}}</th>
             <td class="table-td">{{item.viewCarStatusName}}</td>
             <td class="table-td">{{item.branch}} - {{item.modelName}}</td>
@@ -716,6 +716,11 @@ function getOldAgandaInfo(date,time,empId) {
         });
         
     }) 
+}
+
+//跳轉導ViewCar頁面
+function changeToViewCar(viewcarId,employeeId,assignedStatus) {
+    router.push({ name: 'view-car-link', query: { viewcarId: viewcarId, employeeId:employeeId , assignedStatus:assignedStatus} });
 }
 </script>
     

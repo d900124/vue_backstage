@@ -94,7 +94,7 @@
                     </div>
 
                     <div v-if="arg.event.extendedProps.unavailableStatus==2" style="display: flex; justify-content: flex-end; margin-top: 20px;">
-                        <el-button class="calendar-btm" size="small" color="#a77a2f" :dark="isDark" style=""  @click="viewCarURL(arg.event.id)">
+                        <el-button class="calendar-btm" size="small" color="#a77a2f" :dark="isDark" style=""  @click="goViewCarTable(arg.event.extendedProps.employeeId,arg.event.extendedProps.businessPurpose)">
                         詳細
                         </el-button>
                         <el-button class="calendar-btm" size="small" color="#a77a2f" :dark="isDark" style="" disabled="true" @click="openRemoveAgangaEvent( arg.event.id,2 )">
@@ -1254,6 +1254,7 @@ function GetleaveInfo(businessPurpose) {
     
 }
 
+//修改請假狀態
 function changeleaveStatus() {
     const leaveId = leaveBusinessPurpose.value.split(':');
     console.log(leaveBusinessPurpose.value);
@@ -1277,6 +1278,14 @@ function changeleaveStatus() {
         
     }) 
     
+}
+
+//跳轉賞車詳情
+function goViewCarTable(empId,businessPurpose){
+    const viewCarId = businessPurpose.split(' ,')[0].split('.')[1];
+    console.log("empId",empId);
+    console.log("viewCarId",viewCarId);
+    router.push({ name: 'view-car-link', query: { viewcarId: viewCarId, employeeId:empId , assignedStatus:2} });
 }
 
 </script>
