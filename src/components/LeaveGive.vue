@@ -263,14 +263,28 @@ const employeeIdOptions=ref([])
 
 
 const leaveTypeOptions = [
-    { value: 1, label: "特休" },
-    { value: 5, label: "事假" },
-    { value: 6, label: "半薪病假" },
-    { value: 7, label: "婚假" },
-    { value: 8, label: "生理假" },
-    { value: 9, label: "公假" },
-    { value: 10, label: "喪假" }
+  { value: 1, label: "特休-年資半年", hours: 24 }, 
+  { value: 2, label: "特休-年資1年", hours: 56 }, 
+  { value: 3, label: "特休-年資2年", hours: 80 }, 
+  { value: 4, label: "特休-年資3、4年", hours: 112 },
+  { value: 13, label: "特休-其他", hours: 0 },  
+  { value: 5, label: "事假", hours: 112 }, 
+  { value: 6, label: "半薪病假", hours: 240 }, 
+  { value: 7, label: "婚假", hours: 64 }, 
+  { value: 8, label: "生理假", hours: 8 }, 
+  { value: 10, label: "喪假-父母、養父母、繼父母、配偶喪亡者", hours: 64 }, 
+  { value: 11, label: "喪假-祖父母、子女、配偶之父母、配偶之養父母或繼父母喪亡者", hours: 48 }, 
+  { value: 12, label: "喪假-曾祖父母、兄弟姊妹、配偶之祖父母喪亡者", hours: 24 }, 
 ];
+
+watch(leaveType, (newValue) => {
+  const selectedLeave = leaveTypeOptions.find(option => option.value === newValue);
+  if (selectedLeave) {
+    actualLeaveHours.value = selectedLeave.hours;
+  } else {
+    actualLeaveHours.value = ''; // 如果选择的假别不存在，清空时数
+  }
+});
 
 function leaveFindAllEmployee() {
     let empcount = 0;
