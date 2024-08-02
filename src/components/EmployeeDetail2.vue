@@ -31,15 +31,44 @@
                 </div>
             </div>
         </div>
+        
         <div class="col-4" style="padding: 0px 0px;height:100%">
             <div class="infoBox" >
                 <h4 class="infoTitle" >個人資料<br> - {{ employeeInfo.name }} -</h4>
+                <!-- 彈窗 -->
+                <div class="resetPwd">
+                <font-awesome-icon icon="fa-solid fa-lock" style="color:#a33238;"/>  
+                <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#resetPwd" @click="ss" >變更密碼</button>
+            </div>
+            <!-- 彈出視窗 -->
+            <div class="modal fade" id="resetPwd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" v-if="employeeInfo">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 350px;"> 
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body"  style="display: flex; justify-content: center; align-items: center; height: 100%;">
+        <el-form>
+          <el-form-item label="請輸入原密碼 :&nbsp;" style="color:#a33238">
+            <el-input v-model="oldPassword" type="password" size="small" style="width:200px;" />
+          </el-form-item>
+          <el-form-item label="請輸入新密碼 :&nbsp;" style="color:#a33238">
+            <el-input v-model="password" type="password" size="small" style="width:200px;" />
+          </el-form-item>
+        </el-form>
+      </div>
+      <div class="modal-footer">
+  <button type="button" class="btn btn-primary custom-btn-primary" @click="doModify()">確認修改</button>
+</div>
+    </div>
+  </div>
+</div>
                 <div class="infoTextBox" style=" bottom: 2%;">
-                    <p class="infoText">員工編號：{{ employeeInfo.id }}<br>
+                    <p class="infoText">帳號：{{ employeeInfo.account }}<br>
+                    員工編號：{{  employeeInfo.id }}<br>
                     職等：{{ employeeInfo.accountTypeName }}<br>
                     姓名：{{ employeeInfo.name }}<br>
                     性别：{{ employeeInfo.sex }}<br>
-                    帳號：{{ employeeInfo.account }}<br>
                     手機：{{ employeeInfo.phone }}<br>
                     Email：{{ employeeInfo.email }}<br>
                     入職日：{{ employeeInfo.startDate }}<br>
@@ -130,6 +159,74 @@ const fetchEmployeeData = async () => {
     await store.dispatch("fetchEmployeeInfo", username);
   }
 };
+
+//修改密碼用
+const oldPassword = ref('');
+const password = ref('')
+
+// 修改密码用
+function doModify() {
+    // 手动检查字段是否为空
+    if (!oldPassword.value.trim()) {
+        Swal.fire({
+            icon: "warning",
+            text: "原密碼不可為空",
+        });
+        return;
+    }
+    if (!password.value.trim()) {
+        Swal.fire({
+            icon: "warning",
+            text: "新密碼不可為空",
+        });
+        return;
+    }
+
+    Swal.fire({
+        text: "執行中......",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+    });
+
+    let request = {
+        "password": password.value,
+    };
+
+    console.log("request========>" + JSON.stringify(request));
+
+    // 直接使用 employeeInfo.value.id
+    axiosapi.put(`/employee/modify/${employeeInfo.value.id}`, request).then(function (response) {
+        console.log("response", response);
+        if (response.data.success) {
+            Swal.fire({
+                icon: "success",
+                text: response.data.message,
+                showConfirmButton: false,
+            },700).then(() => {
+                setTimeout(() => {
+                    window.location.reload();  // 自动刷新页面
+                }, 0);
+            });
+        } else {
+            Swal.fire({
+                icon: "warning",
+                text: response.data.message,
+            });
+        }
+    }).catch(function (error) {
+        console.log("error", error);
+        Swal.fire({
+            icon: "error",
+            text: "修改錯誤：" + error.message,
+        });
+    }).finally(() => {
+        setTimeout(() => {
+            Swal.close();  // 关闭视窗
+        }, 1000);
+    });
+}
+
+
 
 //分頁用參數
 const total = ref(0) //總比數
@@ -231,6 +328,45 @@ function empPageCallKpiFindByHQL() {
 </script>
 
 <style scoped>
+
+.custom-btn-primary {
+  background-color: #a33238;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 0;
+  font-size: 15px;
+  width: 100px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+
+.custom-btn-primary:hover {
+  background-color: #a33238;; /* 悬停时背景颜色 */
+  border-color: #a33238;; /* 悬停时边框颜色 */
+}
+
+.btn-custom {
+  color: #a33238;
+  font-weight: bold;
+}
+
+.btn-custom,
+.btn-custom:focus,
+.btn-custom:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.resetPwd{
+    margin-right: 220px;
+    color: #fff5eb;
+    border: #a33238;
+    outline: none 
+}
 .infoTitle{
     text-align:left;
     color: #a33238;
