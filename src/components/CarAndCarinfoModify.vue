@@ -128,14 +128,16 @@
 import { ref,onMounted } from 'vue'
 import axios from 'axios'
 import axiosapi from '@/plugins/axios';
+import { useRoute } from 'vue-router';
 
+const route = useRoute(); 
 const props = defineProps(["carData","carinfoData","imageData"]);
 const emits = defineEmits(["customModify","updata:carData","updata:imageData"]);
 const kajartaUrl = import.meta.env.VITE_API_URL;
 const carinfoDatas=ref([]);
 const carDatas=ref([]);
 const imageDatas=ref([]);
-
+const query =route.query
 const carData=ref({});
 
 function doInput(key,event) {
@@ -158,7 +160,7 @@ onMounted(function () {
 });
 
 function callCarFind() {
-  axiosapi.get(`${kajartaUrl}/car/find/2`)
+  axiosapi.get(`${kajartaUrl}/car/find/${query.id}`)
         .then(function (response) {
             if (response && response.data) {
                 console.log("response", response);
@@ -207,7 +209,7 @@ function callCarFind() {
         });
 }
 
-function callImageFind() {
+function callImageFind() {//id===================================================
   axiosapi.get(`/image/find/2`)
         .then(function (response) {
             if (response && response.data) {
@@ -236,7 +238,7 @@ function callImageFind() {
 
 
 function callImageFindByCarId() {
-  axiosapi.get(`/image/getCarIdImage/1`)
+  axiosapi.get(`/image/getCarIdImage/${query.id}`)
         .then(function (response) {
             if (response && response.data) {
                 console.log("response", response);

@@ -15,6 +15,6 @@ export default [
     { name: "carinsert-link", path: "/pages/carinsert", component: CarInsert },
     { name: "carmodify-link", path: "/pages/carmodify", component: CarModify },
     { name: "car-list-link", path: "/pages/carList", component: CarList },
-    { name: "car-Modify-Sign-link", path: "/pages/carModifySign", component: CarModifySign },
+    { name: "car-Modify-Sign-link", path: "/pages/carModifySign", component: CarModify },
     
 ]
