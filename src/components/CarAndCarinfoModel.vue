@@ -262,8 +262,12 @@ console.log(`File name: ${images.value[0].name}`);
     }
 
     function handleClick() {
-      domultiple();
-      emits('customInsert');
+      // domultiple();
+      // emits('customInsert');
+      console.log(`File name: ${images.value[0].name}`);
+    console.log(`File size: ${images.value[0].size} bytes`);
+    console.log(`File type: ${images.value[0].type}`);
+
     }
 </script>
     
