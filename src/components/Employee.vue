@@ -164,7 +164,7 @@
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
             <el-form-item label="分店 :&nbsp;">
-                <el-select v-model="form.branch" placeholder="請選擇分店">
+                <el-select v-model="form.branch" placeholder="請選擇分店" size="small">
                     <el-option v-for="branch in branches" :key="branch.value" :label="branch.label"
                         :value="branch.value" />
                 </el-select>

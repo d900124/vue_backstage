@@ -444,7 +444,7 @@ const form = ref({
     startTime: '',
     endTime: '',
     actualLeaveHours: 0,
-    deputyId: '3',
+    deputyId: '',
     reason: '',
 });
 
@@ -554,7 +554,8 @@ function doCreate() {
     let request = {
         ...form.value,
         employeeId: employeeInfo.value.id,
-        teamLeaderId: employeeInfo.value.teamLeaderId
+        teamLeaderId: employeeInfo.value.teamLeaderId,
+        deputyId: findEmployeeId.value
     };
 
     // 从 employeeInfo 中获取假别小时数并转换为数字
@@ -860,14 +861,15 @@ custom-select-wrapper {
 }
 
 .btn-custom {
-  background-color: #a33238; /* 设置背景颜色 */
-  color: #ffffff;            /* 设置字体颜色为白色 */
-  border: none;              /* 去掉按钮边框 */
-  height: 30px;              /* 设置按钮高度 */
-  font-size: 15px;           /* 设置字体大小 */
+  background-color: #a33238; 
+  color: #ffffff;           
+  border: none;             
+  height: 30px;              
+  font-size: 15px;           
   display: flex;             /* 使用 flex 布局 */
   align-items: center;       /* 垂直居中对齐 */
   justify-content: center;   /* 水平居中对齐 */
+  margin-left: 10px ;
   padding: 0 15px;           /* 添加内边距，使按钮有一定宽度 */
 }
 
