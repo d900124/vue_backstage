@@ -486,7 +486,7 @@ async function doModify() {
 
     const startTimeStr = singleLeave.value.startTime;
     const endTimeStr = singleLeave.value.endTime;
-    const permisionStatus = singleLeave.value.permisionStatus; // 2為同意假單 3為拒絕假單
+    const permisionStatus = singleLeave.value.permisionStatus; // 1為簽核中 2為同意假單 3為拒絕假單
 
     if (startTimeStr && endTimeStr) {
         const startDate = new Date(`${startTimeStr}:00`);
@@ -505,7 +505,7 @@ async function doModify() {
         let newAgendaRequest = {
             "employeeId": singleLeave.value.employeeId,
             "businessPurpose": `員工:${singleLeave.value.employeeName} , 假別:${singleLeave.value.leaveTypeName} ,
-             單號:${singleLeave.value.id}`,
+            單號:${singleLeave.value.id}`,
             "unavailableTimeStr": adjustedStartTime,
             "unavailableTimeEnd": adjustedEndTime,
             "unavailableStatus": 1
