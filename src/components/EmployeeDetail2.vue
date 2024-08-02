@@ -166,7 +166,7 @@ const password = ref('')
 
 // 修改密码用
 function doModify() {
-    // 手动检查字段是否为空
+
     if (!oldPassword.value.trim()) {
         Swal.fire({
             icon: "warning",
