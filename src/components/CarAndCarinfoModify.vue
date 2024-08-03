@@ -127,16 +127,18 @@
 <script setup >
 import { ref,onMounted } from 'vue'
 import axios from 'axios'
+import axiosapi from '@/plugins/axios';
+import { useRoute } from 'vue-router';
 
+const route = useRoute(); 
 const props = defineProps(["carData","carinfoData","imageData"]);
 const emits = defineEmits(["customModify","updata:carData","updata:imageData"]);
 const kajartaUrl = import.meta.env.VITE_API_URL;
 const carinfoDatas=ref([]);
 const carDatas=ref([]);
 const imageDatas=ref([]);
-
+const query =route.query
 const carData=ref({});
-
 
 function doInput(key,event) {
   emits('updata:imageData',{
@@ -158,7 +160,7 @@ onMounted(function () {
 });
 
 function callCarFind() {
-  axios.get(`${kajartaUrl}/car/find/2`)
+  axiosapi.get(`${kajartaUrl}/car/find/${query.id}`)
         .then(function (response) {
             if (response && response.data) {
                 console.log("response", response);
@@ -185,7 +187,7 @@ function callCarFind() {
 
     function callCarinfoFind() {
   //搜尋單筆carinfo資訊
-  axios.get(`${kajartaUrl}/carinfo/list`)
+  axiosapi.get(`/carinfo/list`)
         .then(function (response) {
             if (response && response.data) {
                 console.log("response", response);
@@ -207,8 +209,8 @@ function callCarFind() {
         });
 }
 
-function callImageFind() {
-  axios.get(`${kajartaUrl}/image/find/2`)
+function callImageFind() {//id===================================================
+  axiosapi.get(`/image/find/2`)
         .then(function (response) {
             if (response && response.data) {
                 console.log("response", response);
@@ -236,7 +238,7 @@ function callImageFind() {
 
 
 function callImageFindByCarId() {
-  axios.get(`${kajartaUrl}/image/getCarIdImage/1`)
+  axiosapi.get(`/image/getCarIdImage/${query.id}`)
         .then(function (response) {
             if (response && response.data) {
                 console.log("response", response);

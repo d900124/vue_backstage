@@ -26,14 +26,14 @@
     <select id="isListPic" name="isListPic" v-model="isListPic" required>
       <option option value="" disabled>是否為清單小圖</option>
       <option value="1">是</option>
-      <option value="2">否</option>
+      <option value="0">否</option>
     </select> 
 
 <label>是否為產品主圖</label>
 <select id="isMainPic" name="isMainPic" v-model="isMainPic" required>
       <option option value="" disabled>是否為產品主圖</option>
       <option value="1">是</option>
-      <option value="2">否</option>
+      <option value="0">否</option>
     </select> 
 
 <label>carId</label>
@@ -125,7 +125,7 @@
     <select name="remark" :value="modelValue.remark"  @change="doInput('remark',$event)" required>
       <option value="" disabled>是否有改裝</option>
       <option value="1">有</option>
-      <option value="2">無</option>
+      <option value="0">無</option>
     </select> 
 
     <label >上架日期</label>
@@ -144,6 +144,7 @@
 <script setup >
 import { ref,onMounted } from 'vue'
 import axios from 'axios'
+import axiosapi from '@/plugins/axios';
 
 const props = defineProps(["modelValue","carinfoData"]);
 const emits = defineEmits(["customInsert","update:modelValue"]);
@@ -163,7 +164,7 @@ onMounted(function () {
 
     function callCarinfoFind() {
   //搜尋單筆carinfo資訊
-  axios.get(`${kajartaUrl}/carinfo/list`)
+  axiosapi.get(`/carinfo/list`)
         .then(function (response) {
             if (response && response.data) {
                 console.log("response", response);
@@ -230,7 +231,7 @@ console.log(`File name: ${images.value[0].name}`);
     console.log(`File size: ${images.value[0].size} bytes`);
     console.log(`File type: ${images.value[0].type}`);
         //使用Axios上傳檔案
-        axios.post(`${kajartaUrl}/image/create`,formData)
+        axiosapi.post(`/image/create`,formData)
         .then(function (response) {
             if (response && response.data) {
                 console.log("response", response);
