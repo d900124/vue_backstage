@@ -2,11 +2,47 @@
     <div class="col-12" style="height: 50px;"></div>
     <div class="col-1"></div>
 
-    <!-- 簡易搜尋欄位 -->
-    <div class="col-5" style="padding: 0px 0px;"></div>
+    <!-- 多選下拉選單(簡易搜尋) -->
+    <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
+        <div class="mb-3 custom-input-wrapper">
+            <div class="input-group">
+                <span class="input-group-text custom-input-icon">
+                    <font-awesome-icon icon="fa-solid fa-magnifying-glass" class="custom-icon" />
+                </span>
+                <input type="text" class="form-control custom-input" v-model="name" @input="handleInput"
+                    placeholder="搜尋" />
+            </div>
+        </div>
+
+        <div class="mb-3 custom-select-wrapper">
+            <select class="form-select custom-select" v-model="accountType" @change="handleChange"
+                style="margin-left: 10px;">
+                <option value="" disabled selected hidden>帳號分類</option>
+                <option v-for="option in accountTypes" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                </option>
+            </select>
+        </div>
+
+        <div class="mb-3 custom-select-wrapper">
+            <select class="form-select custom-select" v-model="branch" @change="handleChange"
+                style="margin-left: 20px;">
+                <option value="" disabled selected hidden>分店</option>
+                <option v-for="option in branches" :key="option.value" :value="option.value">
+                    {{ option.label }}
+                </option>
+            </select>
+        </div>
+
+        <!-- 清除查詢 -->
+        <div class="btm-div" style="display: flex;margin-left: 20px; margin-bottom: 14px;" @click="clearSelection">
+            <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;" />
+            <el-button type='' link style="color: #a33238; font-weight: 900;">清除查詢</el-button>
+        </div>
+    </div>
 
     <!-- 標題區域 -->
-    <div class="col-5" style="padding: 0px 0px;">
+    <div class="col-2" style="padding: 0px 0px;">
         <h3 class="table-title" id="employee">員工總覽</h3>
     </div>
 
@@ -134,7 +170,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="密碼 :&nbsp;">
-                <el-input v-model="form.password" placeholder="請輸入密碼" size="small" />
+                <el-input v-model="form.password" placeholder="請輸入密碼" size="small" type="password" />
             </el-form-item>
 
         </el-form>
@@ -166,7 +202,7 @@
     </div>
     <div class="col-1"></div>
     <div v-if="openZon" class="col-1"></div>
-    <div v-if="openZon" class="col-10" style="height: 300px; background-color:rgb(245, 250, 250)  ;">
+    <div v-if="openZon" class="col-10" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
         <!-- 下方詳細資料區/ 第一欄 -->
         <div class="table-responsive" style="padding:20px ; ">
             <table class="table" style="width: 1000px; ">
@@ -275,8 +311,8 @@
         </template>
     </el-dialog>
 
-     <!-- 確認修改用彈出視窗 -->
-     <el-dialog v-model="dialogVisible" width="300" :show-close="false">
+    <!-- 確認修改用彈出視窗 -->
+    <el-dialog v-model="dialogVisible" width="300" :show-close="false">
         <h5 class="msg-title">確認修改 員工編號 {{ singleEmployee.id }} ?</h5>
         <template #footer>
             <div class="dialog-footer" style="justify-content: center;">
@@ -287,9 +323,6 @@
             </div>
         </template>
     </el-dialog>
-
-
-
 </template>
 
 <script setup>
@@ -312,13 +345,22 @@ onMounted(() => {
 employeeInfo = computed(() => store.state.employeeInfo.data || {});
 console.log('===>test Employee info:', employeeInfo);
 
-
 const router = useRouter();
+
+//簡易查詢用
+const name = ref('')
+const accountType = ref('')
+const branch = ref('')
+
+
+
+const teamLeaders = ref([]); // 定义空数组或根据需求初始化
+
 
 const total = ref(0);
 const current = ref(1);
 const pages = ref(0);
-const rows = ref(4);
+const rows = ref(5);
 
 const openZon = ref(false); // 初始值改為false，避免一開始就顯示單筆詳細資料
 //下方新增資料開啟用
@@ -328,7 +370,7 @@ const creatDdialogVisible = ref(false)  //新增
 
 const employees = ref([]);
 
-const teamLeaders = ref([]); // 定义空数组或根据需求初始化
+
 const singleEmployee = ref({
     accountType: null,
     branch: null,
@@ -336,7 +378,6 @@ const singleEmployee = ref({
     teamLeaderName: '', // 添加 teamLeaderName
 });
 
-// export { teamLeaders }; // 导出 teamLeaders 变量
 
 // 是否可以修改
 const isModify = ref(false);
@@ -368,6 +409,8 @@ const form = ref({
     account: '',
     password: '',
 });
+
+callQuery();
 
 onMounted(function () {
     callQuery();
@@ -415,18 +458,18 @@ function doCreat() {
 }
 
 
-
 // 獲取所有主管ID
 function getAllTeamLeaders() {
-    axiosapi.get("/employee/teamLeaders")
+    axiosapi.get('/employee/teamLeaders')
         .then(function (response) {
-            console.log("teamLeaders", response.data);
+            console.log('Complete response:', response);
+            console.log('teamLeaders', response.data);
             teamLeaders.value = response.data.data;
         }).catch(function (error) {
-            console.log("error", error);
+            console.log('error', error);
             Swal.fire({
-                text: "获取主管列表错误：" + error.message,
-                icon: "error"
+                text: '获取主管列表错误：' + error.message,
+                icon: 'error'
             });
         });
 }
@@ -453,30 +496,54 @@ function employeeClick(employeeId) {
             });
         });
 }
+const handleChange = () => {
+    current.value = 1;
+    callQuery(false);
+};
+const handleInput = () => {
+    current.value = 1;
+    callQuery(false);
+};
+
+// 清空搜尋框
+const clearSelection = () => {
+    name.value = '';
+    accountType.value = '';
+    branch.value = '';
+    callQuery();
+}
 
 // 多條件多筆查詢
 function callQuery() {
-    console.log("callQuery - 當前頁碼:", current.value);
+    console.log('callQuery - 當前頁碼:', current.value);
 
     let request = {
-        "pageNum": current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
-        "pageSize": rows.value
+        pageNum: current.value - 1,  // 由于Spring Boot分页是从0开始，这里减1
+        pageSize: rows.value,
+        name: name.value,
+        accountType: accountType.value,
+        branch: branch.value,
+
     };
 
-    axiosapi.post("/employee/query", request)
+    axiosapi.post('/employee/query', request)
         .then(function (response) {
-            console.log("API response:", response.data);
+            console.log('API response:', response.data);
             employees.value = response.data.data.content;
             total.value = response.data.data.totalElements;
             pages.value = response.data.data.totalPages;
         }).catch(function (error) {
-            console.log("error", error);
+            console.log('error', error);
             Swal.fire({
-                text: "查詢錯誤" + error.message,
-                icon: "error"
+                text: '查詢錯誤' + error.message,
+                icon: 'error'
             });
         });
 }
+onMounted(() => {
+    getAllTeamLeaders();
+});
+
 
 //開啟確認修改視窗
 function openDoModify() {
@@ -548,7 +615,65 @@ function doModify() {
 
 </script>
 
+
 <style scoped>
+.custom-input-icon {
+    background: transparent;
+    /* 背景透明 */
+    border: none;
+    /* 去掉边框 */
+    padding: 0.375rem;
+    /* 内边距 */
+}
+
+.custom-input-icon {
+    background: transparent;
+    /* 背景透明 */
+    border: none;
+    /* 去掉边框 */
+    padding: 0.375rem;
+    /* 内边距 */
+}
+
+.custom-icon {
+    color: #a33238;
+    /* 图标颜色与输入框一致 */
+    font-size: 1rem;
+    /* 图标大小 */
+}
+
+.custom-input {
+    font-size: 0.875rem;
+    color: #a33238;
+    font-weight: bold;
+    border: none;
+    border-bottom: 2px solid #a33238;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0.375rem 0.75rem;
+}
+
+.custom-input::placeholder {
+    color: #a33238;
+    font-weight: bold;
+}
+
+custom-select-wrapper {
+    width: 120px;
+    margin-right: 10px;
+}
+
+.custom-select {
+    font-size: 0.875rem;
+    color: #a33238;
+    font-weight: bold;
+    border: none;
+    border-bottom: 2px solid #a33238;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+
 .btn-close {
     margin: 10px;
 }

@@ -8,7 +8,8 @@
             <!-- 客戶總覽 -->
             <Customer></Customer>
 
-            <!-- 客戶詳情 -->
+            <!-- 員工總覽 -->
+            <Employee></Employee>
 
         </div>
     </div>
@@ -18,6 +19,7 @@
 <script setup>
 import Customer from '@/components/Customer.vue';
 import Logout from '@/components/Logout.vue';
+import Employee from '@/components/Employee.vue';
 
 
 </script>

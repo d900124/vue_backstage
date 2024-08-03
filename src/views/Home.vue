@@ -7,7 +7,7 @@
 </template>
     
 <script setup >
-import LoginPage from './pages/LoginPage.vue';
+import LoginPage from './pages/LoginPage2.vue';
 
     // const currentPage3 = ref(5)
     // const pageSize3 = ref(100)

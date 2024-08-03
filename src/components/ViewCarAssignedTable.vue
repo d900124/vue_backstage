@@ -27,10 +27,10 @@
             </tr>
         </thead>
         <tbody class="table-group-divider">
-            <tr v-for="item in items" :key="item.id"  @click="">
+            <tr v-for="item in items" :key="item.id"  @click="changeToViewCar(item.id,item.employeeId,item.assignedStatus)">
             <th scope="row" class="table-td">{{item.id}}</th>
             <td class="table-td">{{item.viewCarStatusName}}</td>
-            <td class="table-td">{{item.branch}} - {{item.modelName}}</td>
+            <td class="table-td">{{item.carinfoBrand}} - {{item.modelName}}</td>
             <td class="table-td">{{item.viewCarDate}}</td>
             <td class="table-td">{{item.viewTimeSection}}</td>
             <td class="table-td">{{item.customerName}}</td>
@@ -352,6 +352,16 @@ function callViewCarSelect(doCreat) {
                         icon: "error"
                     });
             }) 
+
+            axiosapi.get(`/car/find/${vcInfo.car}`).then(function (responce) {  
+                vcInfo.carinfoBrand=responce.data.list[0].carinfoBrand
+            }).catch(function (error) {
+                console.log("error",error);
+                Swal.fire({
+                        text: "查詢車輛錯誤"+error.message,
+                        icon: "error"
+                    });
+            })
         }
 
     }).catch(function (error) {
@@ -716,6 +726,11 @@ function getOldAgandaInfo(date,time,empId) {
         });
         
     }) 
+}
+
+//跳轉導ViewCar頁面
+function changeToViewCar(viewcarId,employeeId,assignedStatus) {
+    router.push({ name: 'view-car-link', query: { viewcarId: viewcarId, employeeId:employeeId , assignedStatus:assignedStatus} });
 }
 </script>
     

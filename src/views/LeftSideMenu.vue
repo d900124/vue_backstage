@@ -38,13 +38,18 @@
             <a href="#" style="all: unset;"><el-menu-item index="2-2"> - 車輛總覽</el-menu-item></a>
         </el-sub-menu>
 
-        <el-menu-item index='/pages/clientMaintain'>
-            <RouterLink :to="{ name: 'client-maintain-link' }" style="all: unset;"><el-icon><font-awesome-icon
-                        icon="briefcase" style="color: #a33238;" /></el-icon></RouterLink>
+        <el-sub-menu index="/pages/clientMaintain">
             <template #title>
-                <RouterLink :to="{ name: 'client-maintain-link' }" style="all: unset;"><b>客戶管理專區</b></RouterLink>
+
+                <RouterLink :to="{ name: 'client-maintain-link' }" style="all: unset;"><el-icon><font-awesome-icon
+                            icon="briefcase" style="color: #a33238;" /></el-icon></RouterLink>
+                <span>
+                    <RouterLink :to="{ name: 'client-maintain-link' }" style="all: unset;"><b>帳號管理專區</b></RouterLink>
+                </span>
             </template>
-        </el-menu-item>
+            <a href="/pages/clientMaintain#customer" style="all: unset;"><el-menu-item > - 客戶總覽 </el-menu-item></a>
+            <a href="/pages/clientMaintain#employee" style="all: unset;" v-if="employeeInfo!==null &&employeeInfo.accountType==4"><el-menu-item > - 員工總覽 </el-menu-item></a>
+        </el-sub-menu>
 
         <el-sub-menu index="/pages/teamMaintain" v-if="employeeInfo!==null &&employeeInfo.accountType==4">
             <template #title>
@@ -52,13 +57,13 @@
                 <RouterLink :to="{ name: 'team-maintain-link' }" style="all: unset;"><el-icon><font-awesome-icon
                             icon="clipboard-check" style="color: #a33238;" /></el-icon></RouterLink>
                 <span>
-                    <RouterLink :to="{ name: 'team-maintain-link' }" style="all: unset;"><b>員工管理專區</b></RouterLink>
+                    <RouterLink :to="{ name: 'team-maintain-link' }" style="all: unset;"><b>簽核管理專區</b></RouterLink>
                 </span>
 
             </template>
             <a href="/pages/teamMaintain#carAdjust" style="all: unset;"><el-menu-item> - 車輛調整簽核</el-menu-item></a>
             <a href="/pages/teamMaintain#leave" style="all: unset;"><el-menu-item > - 假單簽核 </el-menu-item></a>
-            <a href="/pages/teamMaintain#employee" style="all: unset;"><el-menu-item > - 員工總覽 </el-menu-item></a>
+            <a href="/pages/teamMaintain#giveLeave" style="all: unset;"><el-menu-item > - 給假簽核 </el-menu-item></a>
             <a href="/pages/teamMaintain#kpi" style="all: unset;"><el-menu-item> - 考核評比 </el-menu-item></a>
         </el-sub-menu>
 
