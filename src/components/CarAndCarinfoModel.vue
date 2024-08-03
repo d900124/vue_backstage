@@ -125,7 +125,7 @@
     <select name="remark" :value="modelValue.remark"  @change="doInput('remark',$event)" required>
       <option value="" disabled>是否有改裝</option>
       <option value="1">有</option>
-      <option value="2">無</option>
+      <option value="0">無</option>
     </select> 
 
     <label >上架日期</label>
