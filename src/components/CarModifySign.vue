@@ -89,6 +89,16 @@
               <font-awesome-icon icon="arrow-left" size="xl" style="color: #a33238; padding: 13 5 0 5;" />
               <el-button type='' link class="text-btm" style="color: #a33238;">返回車輛資訊列表</el-button>
           </div>
+          <p></p>
+<!--------------------- 分頁組件 ----------------------->
+          <el-pagination
+          background
+          layout="prev, pager, next"
+          :total="total"
+          :current-page.sync="currentPage"
+          :page-size="5"
+          @current-change="handlePageChange"
+        ></el-pagination> 
           
   </template>
       
@@ -105,7 +115,8 @@
   const carId=ref(null);
   const findBrand = ref(null);
   const input = ref('')
- 
+  const total = ref(0);
+  const currentPage = ref(1);
   
 
   //轉值 品牌
@@ -132,34 +143,44 @@
   
   // 模糊查詢方法
   const performSearch = async () => {
-    try {
-      const response = await axios.get('http://localhost:8080/kajarta/preference/searchMore', {
-        params: {
-          brand: findBrand.value,
-          modelName: input.value
-        }
-      });
-      console.log('Search resultsｓ:', response.data);
-      if (response.data && Array.isArray(response.data.preferenceCarList)) {
-      carDatas.value = response.data.preferenceCarList.map(car => ({//定義前端跟後端接值的名字
-        id:car.id,
-        cainfoBrand:car.brand,
-        carinfoModelName:car.modelName,
-        price:car.price,
-        employeeName:car.employeeName,
-        updateTime:car.updateTime,
-        stateName:stateMapping[car.state] //這邊有用前端轉值出來
-      }));
-  
-    } else {
-        carDatas.value = []; // preferenceCarList
+  try {
+    const response = await axios.get('http://localhost:8080/kajarta/preference/searchMore', {
+      params: {
+        brand: findBrand.value,
+        modelName: input.value,
       }
-  
-      console.log('Mapped car data:', carDatas.value);
-    } catch (error) {
-      console.error('Error performing search:', error);
+    });
+    console.log('Search results:', response.data);
+    
+    if (response.data && Array.isArray(response.data.preferenceCarList)) {
+      const allResults = response.data.preferenceCarList.map(car => ({
+        id: car.id,
+        cainfoBrand: car.brand,
+        carinfoModelName: car.modelName,
+        price: car.price,
+        employeeName: car.employeeName,
+        updateTime: car.updateTime,
+        stateName: stateMapping[car.state]
+      }));
+      
+      total.value = allResults.length;
+      updatePagedResults(allResults);//搜尋結果儲存
+    } else {
+      carDatas.value = [];
+      total.value = 0;
     }
-  };
+    
+    console.log('Mapped car data:', carDatas.value);
+  } catch (error) {
+    console.error('Error performing search:', error);
+  }
+};
+
+const updatePagedResults = (allResults) => {
+  const startIndex = (currentPage.value - 1) * 5; // 假設每頁5項
+  const endIndex = startIndex + 5;
+  carDatas.value = allResults.slice(startIndex, endIndex);
+};
   
   onMounted(function(){
       callFindAll();
@@ -172,9 +193,9 @@
   
   function callFindAll() {
       let request = {
-          pageNumber: 1,
+          pageNumber: currentPage.value,//抓出結果到頁面
           sortOrder: "asc",
-          max: 100
+          max: 5
       };
   
       axiosapi.get(`/car/findAll`, { params: request })
@@ -228,6 +249,15 @@
     // 重新調用 callFindAll 以刷新資料
     callFindAll();
   });
+};
+
+const handlePageChange = (newPage) => {//查詢跟findAll的分頁
+  currentPage.value = newPage;
+  if (findBrand.value || input.value) {
+    performSearch();
+  } else {
+    callFindAll();
+  }
 };
 
   
