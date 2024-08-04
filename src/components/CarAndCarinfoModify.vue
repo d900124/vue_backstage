@@ -129,7 +129,9 @@ import { ref,onMounted } from 'vue'
 import axios from 'axios'
 import axiosapi from '@/plugins/axios';
 import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const route = useRoute(); 
 const props = defineProps(["carData","carinfoData","imageData"]);
 const emits = defineEmits(["customModify","updata:carData","updata:imageData"]);
@@ -264,9 +266,9 @@ function callImageFindByCarId() {
 
 
     function handleClick() {
-      // domultiple();
       console.log("carDatas before submit:", carData.value);
       emits('customModify',carData.value);
+      router.push({ name: 'car-list-link' });//完成修改跳轉
     }
 
 </script>
