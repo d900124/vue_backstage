@@ -281,33 +281,33 @@ const isMainPic = ref('');
 const carId = ref('');
 
 function validate(selected) {
-  console.log("selected", selected);
-  if (selected.length == 0) {
-    alert("請選擇檔案");
-    return false;
-  }
-  for (let i = 0; i < selected.length; i++) {
-    let file = selected[i];
-    let fext = file.name.split('.').pop().toLowerCase();
-    if (!filetype.includes(fext)) {
-      alert(file.name + "檔案類型錯誤");
-      return false;
+        console.log("selected", selected)
+        if (selected.length == 0) {
+            alert("請選擇檔案");
+            return false;
+        }
+        for (let i = 0; i < selected.length; i++) {
+            let uploadFile = selected[0];
+            if (uploadFile.size > 10000000) {
+                alert("檔案大小超出限制(10M)");
+                return false;
+            }
+        }
+        return true;
     }
-    if (file.size > 2097152) {
-      alert(file.name + " 檔案太大");
-      return false;
+    function domultiple() {
+        if (!validate(images.value)) {
+          images.value = [];
+            return;
+        }
+
     }
-  }
-  return true;
-}
 
 
 
-// watch(dialogFormVisible, (newValue) => {
-//   if (!newValue) {
-//     newDialogVisible.value = true;
-//   }
-// });
+
+
+
 function showDialog() {
   newDialogVisible.value = true;
 }
