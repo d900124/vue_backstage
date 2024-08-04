@@ -107,12 +107,10 @@
   </el-dialog>
 
 
-
+    <!-- 主圖 -->
   <div class="dialog-wrapper">
-    <!-- 主图选择对话框 -->
     <el-dialog v-model="newDialogVisible" title="選擇主圖" width="600px" class="centered-dialog">
       <div class="dialog-content">
-        <!-- 图片上传区块 -->
         <div class="upload-section">
           <div class="upload-header">
             <label for="images">檔案：</label>
@@ -133,17 +131,15 @@
           </div>
         </div>
       </div>
-      <!-- 对话框底部 -->
       <span slot="footer" class="dialog-footer">
         <el-button @click="newDialogVisible = false">取消</el-button>
         <el-button type="primary" @click="handleUpload">下一步</el-button>
       </span>
     </el-dialog>
 
-    <!-- 清單图选择对话框 -->
+    <!-- 清單 -->
     <el-dialog v-model="listDialogVisible" title="選擇清單圖" width="600px" class="centered-dialog">
       <div class="dialog-content">
-        <!-- 图片上传区块 -->
         <div class="upload-section">
           <div class="upload-header">
             <label for="images">檔案：</label>
@@ -164,7 +160,6 @@
           </div>
         </div>
       </div>
-      <!-- 对话框底部 -->
       <span slot="footer" class="dialog-footer">
         <el-button @click="listDialogVisible = false">取消</el-button>
         <el-button type="primary" @click="listUpload">下一步</el-button>
@@ -321,7 +316,10 @@ function handleUpload() {
   images.value.forEach(image => {
     formData.append("images", image.file);
   });
-  domultiple();
+  if (!validate(images.value)) {
+    images.value = [];
+    return;
+  }
   formData.append("isListPic", isListPic.value);
   formData.append("isMainPic", isMainPic.value);
   formData.append("carId", carId.value);
@@ -342,11 +340,15 @@ function handleUpload() {
 }
 
 function listUpload() {
+ 
   let formData = new FormData();
   images.value.forEach(image => {
     formData.append("images", image.file);
   });
-  domultiple();
+  if (!validate(images.value)) {
+    images.value = [];
+    return;
+  }
   formData.append("isListPic", isListPic.value);
   formData.append("isMainPic", isMainPic.value);
   formData.append("carId", carId.value);
@@ -360,7 +362,6 @@ function listUpload() {
   Swal.fire({
     icon: "success",
     text: "車輛新增成功",
-
   })
 }
 
@@ -371,6 +372,26 @@ function deleteFile(index) {
 </script>
 
 <style scoped>
+.dialog-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.left-column,
+.right-column {
+  flex: 1;
+  max-width: 48%;
+}
+
+.el-form-item {
+  margin-bottom: 15px;
+}
+
+.dialog-footer {
+  text-align: right;
+}
+
 .dialog-content {
   padding: 20px;
 }
