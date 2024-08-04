@@ -355,7 +355,7 @@ function handleUpload() {
 
 }
 
-function listUpload(){
+function listUpload() {
   let formData = new FormData();
   images.value.forEach(image => {
     formData.append("images", image.file);
@@ -371,8 +371,12 @@ function listUpload(){
     }
   })
   listDialogVisible.value = false;
-}
+  Swal.fire({
+    icon: "success",
+    text: "車輛新增成功",
 
+  })
+}
 
 
 
