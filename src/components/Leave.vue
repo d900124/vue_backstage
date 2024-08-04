@@ -4,61 +4,30 @@
     <div class="col-1"></div>
     <!-- 多選下拉選單(簡易搜尋) -->
     <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
-        <el-select
-                    v-model="employeeId"
-                    clearable
-                    placeholder="申請人"
-                    size="small"
-                    style="width: 130px;margin-right: 20px;"
-                    @change="handleChange"
-                    @click="leaveFindAllEmployee();"
-                    >
-                    <el-option
-                        v-for="Option in employeeIdOptions"
-                        :key="Option.value"
-                        :label="Option.label"
-                        :value="Option.value"
-                    />
-                </el-select>
-        <el-select
-                    v-model="leaveType"
-                    clearable
-                    placeholder="假別"
-                    size="small"
-                    style="width: 130px;margin-right: 20px;"
-                    @change="handleChange"
-                    >
-                    <el-option
-                        v-for="Option in leaveTypeOptions"
-                        :key="Option.value"
-                        :label="Option.label"
-                        :value="Option.value"
-                    />
-                </el-select>
+        <el-select v-model="employeeId" clearable placeholder="申請人" size="small"
+            style="width: 130px;margin-right: 20px;" @change="handleChange" @click="leaveFindAllEmployee();">
+            <el-option v-for="Option in employeeIdOptions" :key="Option.value" :label="Option.label"
+                :value="Option.value" />
+        </el-select>
+        <el-select v-model="leaveType" clearable placeholder="假別" size="small" style="width: 130px;margin-right: 20px;"
+            @change="handleChange">
+            <el-option v-for="Option in leaveTypeOptions" :key="Option.value" :label="Option.label"
+                :value="Option.value" />
+        </el-select>
 
-                <el-select
-                    v-model="permisionStatus"
-                    clearable
-                    placeholder="簽核狀態"
-                    size="small"
-                    style="width: 130px;margin-right: 20px;"
-                    @change="handleChange"
-                    >
-                    <el-option
-                        v-for="Option in permisionStatusOptions"
-                        :key="Option.value"
-                        :label="Option.label"
-                        :value="Option.value"
-                    />
-                </el-select>
+        <el-select v-model="permisionStatus" clearable placeholder="簽核狀態" size="small"
+            style="width: 130px;margin-right: 20px;" @change="handleChange">
+            <el-option v-for="Option in permisionStatusOptions" :key="Option.value" :label="Option.label"
+                :value="Option.value" />
+        </el-select>
 
-<!-- 清除查詢 -->
-                <div class="btm-div" style="display: flex;margin-right: 20px;" @click="clearSelection">
-                    <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;"/>
-                    <el-button type='' link  style="color: #a33238; font-weight: 900;">清除查詢</el-button>
-                </div>
+        <!-- 清除查詢 -->
+        <div class="btm-div" style="display: flex;margin-right: 20px;" @click="clearSelection">
+            <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;" />
+            <el-button type='' link style="color: #a33238; font-weight: 900;">清除查詢</el-button>
         </div>
-        
+    </div>
+
     <!-- 抬頭 -->
     <div class="col-2" style="padding: 0px 0px;">
         <h3 class="table-title" id="leave">假單簽核</h3>
@@ -228,7 +197,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref , watch, computed} from 'vue';
+import { onMounted, ref, watch, computed } from 'vue';
 import axiosapi from '@/plugins/axios.js';
 import Swal from 'sweetalert2';
 import { useRouter } from 'vue-router';
@@ -288,7 +257,7 @@ const leaveType = ref('');
 const employeeId = ref('');
 
 //查找所有員工
-const employeeIdOptions=ref([])
+const employeeIdOptions = ref([])
 
 
 const getPermisionStatusText = (status) => {
@@ -304,13 +273,13 @@ const getPermisionStatusText = (status) => {
     }
 };
 const leaveTypeOptions = [
-  { value: 1, label: "特休" },
-  { value: 5, label: "事假" },
-  { value: 6, label: "半薪病假" },
-  { value: 7, label: "婚假" },
-  { value: 8, label: "生理假" },
-  { value: 9, label: "公假" },
-  { value: 10, label: "喪假" }
+    { value: 1, label: "特休" },
+    { value: 5, label: "事假" },
+    { value: 6, label: "半薪病假" },
+    { value: 7, label: "婚假" },
+    { value: 8, label: "生理假" },
+    { value: 9, label: "公假" },
+    { value: 10, label: "喪假" }
 ];
 
 
@@ -343,27 +312,28 @@ watch(employeeInfo, (newValue) => {
 
 function leaveFindAllEmployee() {
     let empcount = 0;
-    axiosapi.get("employee/count").then(function (response){
-        empcount=response.data.data;
-        console.log("empcount",empcount);
+    axiosapi.get("employee/count").then(function (response) {
+        empcount = response.data.data;
+        console.log("empcount", empcount);
     })
 
     axiosapi.get("employee/all").then(function (response) {  //(AJAX前端程式)單筆查詢的Post功能()
-        console.log("employee/all response",response.data);
-        employeeIdOptions.value=[];
-        for(let i = 0;i<empcount;i++){
+        console.log("employee/all response", response.data);
+        employeeIdOptions.value = [];
+        for (let i = 0; i < empcount; i++) {
             employeeIdOptions.value.push({
-                        value:response.data.data[i].id,
-                        label: response.data.data[i].name})
+                value: response.data.data[i].id,
+                label: response.data.data[i].name
+            })
         }
     }).catch(function (error) {
-        console.log("error",error);
+        console.log("error", error);
         Swal.fire({
-                text: "員工查詢錯誤"+error.message,
-                icon: "error"
-            });
+            text: "員工查詢錯誤" + error.message,
+            icon: "error"
+        });
         // router.push("/")
-    }) 
+    })
 }
 
 onMounted(function () {
@@ -532,7 +502,7 @@ async function doModify() {
                 } else {
                     throw new Error(modifyResponse.data.message);
                 }
-            } else if (permisionStatus == 3) {
+            } else if (permisionStatus == 3 || permisionStatus == 1) {
                 // 如果权限状态是“拒绝”，只执行请假修改请求
                 const modifyResponse = await axiosapi.put(`/leave/modify/${singleLeave.value.id}`, request);
 

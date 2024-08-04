@@ -9,7 +9,7 @@
     <div class="col-1">&nbsp;</div>
     <!-- 主容器 -->
     <!-- 左邊的剩餘假別表格 -->
-    
+
     <div class="left-panel" v-if="employeeInfo">
         <div class="table-part">
             <table class="table">
@@ -19,9 +19,11 @@
                     </tr>
                     <tr>
                         <!-- 彈窗 -->
-                    <button type="button" class="btn btn-custom" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="callQueryTwo">
-                        可用剩餘假別時數
-                    </button></tr>
+                        <button type="button" class="btn btn-custom" data-bs-toggle="modal"
+                            data-bs-target="#exampleModal" @click="callQueryTwo">
+                            可用剩餘假別時數
+                        </button>
+                    </tr>
                 </thead>
                 <tbody class="table-body">
                     <tr>
@@ -56,37 +58,39 @@
             </table>
         </div>
 
-<!-- 彈出視窗 -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" v-if="employeeInfo">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-        
-        <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
-      
-      <div class="modal-body">
-        <table class="table" style="margin-left:0px;">
-          <thead>
-            <tr>
-              <th style="color: #a33238;">假別</th>
-              <th style="color: #a33238;">使用期限</th>
-              <th style="color: #a33238;">可用時數</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="leaveTwo in leavesTwo" :key="leaveTwo.id" >
-              <th scope="row" class="table-td">{{ leaveTwo.leaveTypeName }}</th>
-              <td class="table-td">{{ leaveTwo.validityPeriodStart }}  -  {{ leaveTwo.validityPeriodEnd }}</td>
-              <td class="table-td">{{ getRemainingHours(leaveTwo.leaveTypeName) }}</td>
-            </tr>
-        </tbody>
-        </table>
-    </div>
-    </div>
-</div>
-</div>
+        <!-- 彈出視窗 -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true"
+            v-if="employeeInfo">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+
+                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                    <div class="modal-body">
+                        <table class="table" style="margin-left:0px;">
+                            <thead>
+                                <tr>
+                                    <th style="color: #a33238;">假別</th>
+                                    <th style="color: #a33238;">使用期限</th>
+                                    <th style="color: #a33238;">可用時數</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="leaveTwo in leavesTwo" :key="leaveTwo.id">
+                                    <th scope="row" class="table-td">{{ leaveTwo.leaveTypeName }}</th>
+                                    <td class="table-td">{{ leaveTwo.validityPeriodStart }} - {{
+                                        leaveTwo.validityPeriodEnd }}</td>
+                                    <td class="table-td">{{ getRemainingHours(leaveTwo.leaveTypeName) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="col-5"
             style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
-            
+
             <!-- 新增用按鈕 -->
             <div class="btm-div" style="display: flex;" @click="openModal('insert')">
                 <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;" />
@@ -96,33 +100,34 @@
     </div>
     <!-- 列表主體 -->
     <div class="table-partr right-panel" v-if="employeeInfo">
-            <!-- 多條件下拉查詢 -->
+        <!-- 多條件下拉查詢 -->
         <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
             <div class="mb-3 custom-select-wrapper">
-            <select class="form-select custom-select" v-model="permisionStatus" @change="handleChange"
-                style="margin-left: 10px;">
-                <option value=""  disabled selected hidden>簽核狀態</option>
-                <option v-for="option in permisionStatusOptions" :key="option.value" :value="option.value">
-                    {{ option.label }}
-                </option>
-            </select>
-        </div>
-        <div class="mb-3 custom-select-wrapper">
-            <select class="form-select custom-select" v-model="leaveType" @change="handleChange"
-                style="margin-left: 20px;">
-                <option value="" disabled selected hidden>假別</option>
-                <option v-for="option in leaveTypeOptions" :key="option.value" :value="option.value">
-                    {{ option.label }}
-                </option>
-            </select>
-        </div>
-        <div style="display: flex;margin-left: 28px; margin-right: -30px;margin-bottom: 14px;" @click="clearSelection">
-            <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;" />
-            <el-button type='' link style="color: #a33238; font-weight: 900;">清除查詢</el-button>
+                <select class="form-select custom-select" v-model="permisionStatus" @change="handleChange"
+                    style="margin-left: 10px;">
+                    <option value="" disabled selected hidden>簽核狀態</option>
+                    <option v-for="option in permisionStatusOptions" :key="option.value" :value="option.value">
+                        {{ option.label }}
+                    </option>
+                </select>
+            </div>
+            <div class="mb-3 custom-select-wrapper">
+                <select class="form-select custom-select" v-model="leaveType" @change="handleChange"
+                    style="margin-left: 20px;">
+                    <option value="" disabled selected hidden>假別</option>
+                    <option v-for="option in leaveTypeOptions" :key="option.value" :value="option.value">
+                        {{ option.label }}
+                    </option>
+                </select>
+            </div>
+            <div style="display: flex;margin-left: 28px; margin-right: -30px;margin-bottom: 14px;"
+                @click="clearSelection">
+                <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;" />
+                <el-button type='' link style="color: #a33238; font-weight: 900;">清除查詢</el-button>
+            </div>
+
         </div>
 
-    </div>
- 
         <table class="table">
 
             <thead style="border-bottom: 2px solid #a33238;">
@@ -190,13 +195,15 @@
             <el-divider border-style="dashed" style="margin: 0;" />
 
             <el-form-item label="開始時間 :&nbsp;">
-                <input id="start-date" type="datetime-local" class="form-control" v-model="form.startTime" style="height:25px" />
+                <input id="start-date" type="datetime-local" class="form-control" v-model="form.startTime"
+                    style="height:25px" />
             </el-form-item>
 
             <el-divider border-style="dashed" style="margin: 0;" />
 
             <el-form-item label="結束時間 :&nbsp;">
-                <input id="end-date" type="datetime-local" class="form-control" v-model="form.endTime" style="height:25px"/>
+                <input id="end-date" type="datetime-local" class="form-control" v-model="form.endTime"
+                    style="height:25px" />
             </el-form-item>
 
         </el-form>
@@ -215,22 +222,12 @@
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
             <el-form-item label="工作代理人 :&nbsp;">
-        <el-select
-            v-if="employeeInfo != null"
-            v-model="findEmployeeId"
-            placeholder="Select"
-            clearable
-            size="small"
-            style="width: 200px;"
-        >
-            <el-option
-                v-for="option in allEmployees"
-                :key="option.value"
-                :label="option.label"
-                :value="option.value"
-            />
-        </el-select>
-    </el-form-item>
+                <el-select v-if="employeeInfo != null" v-model="findEmployeeId" placeholder="Select" clearable
+                    size="small" style="width: 200px;">
+                    <el-option v-for="option in allEmployees" :key="option.value" :label="option.label"
+                        :value="option.value" />
+                </el-select>
+            </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
             <el-form-item label="備註 :&nbsp;">
                 <el-input v-model="form.reason" type="textarea" placeholder="請輸入備註" size="small" rows="2" />
@@ -379,40 +376,37 @@ const pages = ref(0) //分頁總數
 const rows = ref(6) //分頁資料顯示筆數
 
 //查詢全部員工
-const allEmployees=ref([]);
+const allEmployees = ref([]);
 const findEmployeeId = ref('');
 
 const leaveTypeOptions = [
-  { value: 1, label: "特休" },
-  { value: 5, label: "事假" },
-  { value: 6, label: "半薪病假" },
-  { value: 7, label: "婚假" },
-  { value: 8, label: "生理假" },
-  { value: 9, label: "公假" },
-  { value: 10, label: "喪假" }
+    { value: 1, label: "特休" },
+    { value: 5, label: "事假" },
+    { value: 6, label: "半薪病假" },
+    { value: 7, label: "婚假" },
+    { value: 8, label: "生理假" },
+    { value: 10, label: "喪假" }
 ];
 
 
 // 根据假别名称获取剩余时数
 const getRemainingHours = (leaveTypeName) => {
-  switch (leaveTypeName) {
-    case "特休":
-      return employeeInfo.value.annualLeaveHours;
-    case "事假":
-      return employeeInfo.value.personalLeaveHours;
-    case "半薪病假":
-      return employeeInfo.value.sickLeaveHours;
-    case "婚假":
-      return employeeInfo.value.marriageLeaveHours;
-    case "生理假":
-      return employeeInfo.value.menstrualLeaveHours;
-    case "公假":
-      return employeeInfo.value.officialLeaveHours;
-    case "喪假":
-      return employeeInfo.value.bereavementLeaveHours;
-    default:
-      return 0;
-  }
+    switch (leaveTypeName) {
+        case "特休":
+            return employeeInfo.value.annualLeaveHours;
+        case "事假":
+            return employeeInfo.value.personalLeaveHours;
+        case "半薪病假":
+            return employeeInfo.value.sickLeaveHours;
+        case "婚假":
+            return employeeInfo.value.marriageLeaveHours;
+        case "生理假":
+            return employeeInfo.value.menstrualLeaveHours;
+        case "喪假":
+            return employeeInfo.value.bereavementLeaveHours;
+        default:
+            return 0;
+    }
 };
 
 const getPermisionStatusText = (status) => {
@@ -547,7 +541,7 @@ function doCreate() {
             text: "請假時數必須大於0",
             showConfirmButton: true
         });
-        return; 
+        return;
     }
 
     // 创建一个新的请求对象，包含修改后的表单数据
@@ -620,7 +614,7 @@ function doCreate() {
                 errorMessage = "可用公假剩餘時數不足";
             }
             break;
-        case '10': 
+        case '10':
             if (actualLeaveHours > bereavementLeaveHours) {
                 insufficientLeave = true;
                 errorMessage = "可用喪假剩餘時數不足";
@@ -644,7 +638,7 @@ function doCreate() {
             // 关闭对话框
             creatDdialogVisible.value = false;
         });
-        return; 
+        return;
     }
 
     // 关闭对话框和显示 "正在执行" 提示
@@ -668,6 +662,8 @@ function doCreate() {
                 }).then(() => {
                     // 刷新页面或更新状态
                     openZon.value = true; // 打开详细数据区域
+                    callQuery();
+                    location.reload();
                 });
             } else {
                 Swal.fire({
@@ -722,13 +718,13 @@ function callQueryTwo() {
         .then(function (response) {
             // 获取查询到的数据列表
             leavesTwo.value = response.data.data.content; // 获取查询到的数据列表
-        // 更新分页信息
-        total.value = response.data.data.totalElements; // 总条目数
-        pages.value = response.data.data.totalPages; // 总页数
+            // 更新分页信息
+            total.value = response.data.data.totalElements; // 总条目数
+            pages.value = response.data.data.totalPages; // 总页数
 
-        console.log("leavesTwo", response.data.data.content);
-        console.log("total", response.data.data.totalElements);
-        console.log("pages", response.data.data.totalPages);
+            console.log("leavesTwo", response.data.data.content);
+            console.log("total", response.data.data.totalElements);
+            console.log("pages", response.data.data.totalPages);
 
             console.log("leavesTwo", response.data.data);
         })
@@ -861,29 +857,35 @@ custom-select-wrapper {
 }
 
 .btn-custom {
-  background-color: #a33238; 
-  color: #ffffff;           
-  border: none;             
-  height: 30px;              
-  font-size: 15px;           
-  display: flex;             /* 使用 flex 布局 */
-  align-items: center;       /* 垂直居中对齐 */
-  justify-content: center;   /* 水平居中对齐 */
-  margin-left: 10px ;
-  padding: 0 15px;           /* 添加内边距，使按钮有一定宽度 */
+    background-color: #a33238;
+    color: #ffffff;
+    border: none;
+    height: 30px;
+    font-size: 15px;
+    display: flex;
+    /* 使用 flex 布局 */
+    align-items: center;
+    /* 垂直居中对齐 */
+    justify-content: center;
+    /* 水平居中对齐 */
+    margin-left: 10px;
+    padding: 0 15px;
+    /* 添加内边距，使按钮有一定宽度 */
 }
 
 /* 调整模态框的垂直位置，使其居中显示 */
 .modal-dialog {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: calc(90% - 1rem); /* 避免顶部和底部的空白区域 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(90% - 1rem);
+    /* 避免顶部和底部的空白区域 */
 }
+
 .right-panel {
     width: 58%;
     padding: 50px;
-    
+
     padding-top: 15px;
     margin-left: -35px;
 
@@ -907,6 +909,7 @@ custom-select-wrapper {
 .btm-div:hover {
     text-decoration: underline 2px solid #a33238;
 }
+
 .btm-div {
     position: absolute;
     right: 20px;
