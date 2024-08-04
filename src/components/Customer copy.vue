@@ -67,6 +67,9 @@
 
     <div class="col-1"></div>
     <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
+        <!-- 新增用按鈕 ，此功能不須新增-->
+        <div class="btm-div" style="display: flex;" @click="openModal('insert')">
+        </div>
     </div>
 
     <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
@@ -86,99 +89,6 @@
         </el-divider>
     </div>
     <div v-if="openZon" class="col-1"></div>
-    <div class="row" style="margin-top: 5%; margin-bottom: 5%;">
-        <form v-if="!isModify" class="col-md-8 customer-form">
-            <div class=" form-item">
-                <label for="createTime">註冊時間&emsp;&emsp;&emsp;：</label>
-                <span class="infoText">{{ singleCustomer.createTime }}</span>
-            </div>
-            <div class="form-item">
-                <label for="accountTypeName">帳號類別&emsp;&emsp;&emsp;：</label>
-                <span class="infoText">{{ singleCustomer.accountTypeName }}</span>
-            </div>
-            <div class="form-item">
-                <label for="account">帳號&emsp;&emsp;&emsp;：</label>
-                <span class="infoText">{{ singleCustomer.account }}</span>
-            </div>
-            <div class="form-item">
-                <label for="name">姓名&emsp;&emsp;&emsp;：</label>
-                <span class="infoText">{{ singleCustomer.name }}</span>
-            </div>
-            <div class="form-item">
-                <label for="sex">性別&emsp;&emsp;&emsp;：</label>
-                <span class="infoText">{{ singleCustomer.sex }}</span>
-            </div>
-            <div class="form-item">
-                <label for="phone">電話&emsp;：</label>
-                <span class="infoText">{{ singleCustomer.phone }}</span>
-            </div>
-            <div class="form-item">
-                <label for="idNumber">身分證號&emsp;：</label>
-                <span class="infoText">{{ singleCustomer.idNumber }}</span>
-            </div>
-            <div class="form-item">
-                <label for="email">E-mail&emsp;&emsp;：</label>
-                <span class="infoText">{{ singleCustomer.email }}</span>
-            </div>
-            <div class="form-item">
-                <label for="city">縣市&emsp;&emsp;&emsp;：</label>
-                <span class="infoText">{{ singleCustomer.cityName }}</span>
-            </div>
-            <div class="form-item">
-                <label for="address">地址&emsp;&emsp;&emsp;：</label>
-                <span class="infoText">{{ singleCustomer.address }}</span>
-            </div>
-        </form>
-        <div class="col-md-4 d-flex flex-column align-items-center">
-            <img src="/member_info_01.jpg" alt="Register" class="card-image mb-3" />
-            <button type="button" @click="doModify" class="save-button btn btn-primary" style="width: 100%;">Information
-                Revise</button>
-        </div>
-    </div>
-    <!-- 编辑模式表单 -->
-    <form v-if="isModify" @submit.prevent="doModify" style="margin-left: 5%;">
-        <div class="form-item">
-            <label for="name">姓名&emsp;&emsp;&emsp;：</label>
-            <input id="name" type="text" v-model="singleCustomer.name" class="custom-input" />
-        </div>
-        <div class="form-item">
-            <label for="idNumber">身分證號&emsp;：</label>
-            <input id="idNumber" type="text" v-model="singleCustomer.idNumber" class="custom-input" />
-        </div>
-        <div class="form-item">
-            <label for="gender">性別&emsp;&emsp;&emsp;：</label>
-            <select id="gender" v-model="singleCustomer.sex" class="custom-input">
-                <option value="F">F</option>
-                <option value="M">M</option>
-            </select>
-        </div>
-        <div class="form-item">
-            <label for="phone">電話&emsp;&emsp;&emsp;：</label>
-            <input id="phone" type="text" v-model="singleCustomer.phone" class="custom-input" />
-        </div>
-        <div class="form-item">
-            <label for="email">E-mail&emsp;&emsp;：</label>
-            <input id="email" type="email" v-model="singleCustomer.email" class="custom-input" />
-        </div>
-        <div class="form-item">
-            <label for="city">縣市&emsp;&emsp;&emsp;：</label>
-            <select id="city" v-model="singleCustomer.city" class="custom-input">
-                <option v-for="(city, value) in cities" :key="value" :value="value">
-                    {{ city }}
-                </option>
-            </select>
-        </div>
-        <div class="form-item">
-            <label for="address">地址&emsp;&emsp;&emsp;：</label>
-            <input id="address" type="text" v-model="singleCustomer.address" class="custom-input" />
-        </div>
-        <button type="button" @click="cancelEditing" class="cancel-button"
-            style="width: 20%;position: absolute;right:5%">Cancel</button>
-        <button type="submit" class="save-button" style="width: 20%;position: absolute;right:26%">Save</button>
-    </form>
-
-
-
     <!-- 下方詳細資料區 / 第一欄-->
     <div v-if="openZon" class="col-1"></div>
     <div v-if="openZon" class="col-10" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
@@ -476,12 +386,6 @@ function doModify() {
 </script>
 
 <style scoped>
-.customer-form {
-    background-color: #fff5eb;
-    width: 630px;
-    margin-left: 110px;
-}
-
 .custom-input-icon {
     background: transparent;
     border: none;
