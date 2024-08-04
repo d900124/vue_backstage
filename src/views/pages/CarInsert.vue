@@ -1,6 +1,6 @@
-<template class="backgroundColor">
+<template>
   <!-- ===============================拖曳上傳=============================== -->
-  <div class="backgroundColor">
+  <div>
   <br><br><br><br>
   <CarAndCarinfoModel  
     ref="carAndCarinfoModel" 
