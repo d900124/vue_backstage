@@ -1,7 +1,5 @@
 <template>
-  <el-button plain @click="dialogFormVisible = true">
-    Open a Form nested Dialog
-  </el-button>
+  
 
   <el-dialog v-model="dialogFormVisible" title="車輛資料" width="1000px">
     <div class="dialog-container">
@@ -193,7 +191,7 @@ const emits = defineEmits(["customInsert", "update:modelValue"]);
 const kajartaUrl = import.meta.env.VITE_API_URL;
 
 const carinfoDatas = ref([]);
-const dialogFormVisible = ref(false);
+const dialogFormVisible = ref(true);
 const newDialogVisible = ref(false);
 const listDialogVisible = ref(false);
 const formLabelWidth = '140px';
@@ -297,16 +295,6 @@ function domultiple() {
   }
 
 }
-
-
-
-
-
-
-function showDialog() {
-  newDialogVisible.value = true;
-}
-
 
 
 function handleClick() {
