@@ -15,14 +15,13 @@ import { ref,onMounted } from 'vue'
 import axios from 'axios'
 import CarAndCarinfoModel from '@/components/CarAndCarinfoModel.vue';
 import axiosapi from '@/plugins/axios';
+import Swal from 'sweetalert2';
 
 const Datas=ref({ });
 const carAndCarinfoModel=ref(null);
 
 function callCreate() {
-  axiosapi.post('/car/create', Datas.value).then(function(response){
-    console.log("responseCarCreate",response)
-  }).catch()
+  axiosapi.post('/car/create', Datas.value)
 }
 
 
