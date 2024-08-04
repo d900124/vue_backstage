@@ -81,6 +81,7 @@
 import FileUpload from 'vue-upload-component'
 import { ref } from 'vue';
 import axios from 'axios';
+import axiosapi from '@/plugins/axios';
 import { faHouseMedicalCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { date } from 'quasar';
 const kajartaUrl = import.meta.env.VITE_API_URL;
@@ -92,6 +93,7 @@ const kajartaUrl = import.meta.env.VITE_API_URL;
         }
         })
 const emits=defineEmits(["uploadImage"]);
+
 
 const selectImageId=ref(null);
 function handleClick(imageId) {
@@ -139,7 +141,7 @@ console.log(`File name: ${images.value[0].name}`);
     console.log(`File size: ${images.value[0].size} bytes`);
     console.log(`File type: ${images.value[0].type}`);
         //使用Axios上傳檔案
-        axios.put(`${kajartaUrl}/image/modify/${selectImageId.value}`,formData)
+        axiosapi.put(`/image/modify/${selectImageId.value}`,formData)
         .then(function (response) {
             if (response && response.data) {
                 console.log("response", response);

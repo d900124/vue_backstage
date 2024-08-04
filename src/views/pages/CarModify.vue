@@ -5,6 +5,7 @@
   <CarAndCarinfoModify  
     ref="Modify" 
     v-model:carData="Datas" 
+    :value="query.id"
     @custom-modify="callModify"
     ></CarAndCarinfoModify>
 </div>
@@ -12,14 +13,19 @@
     
 <script setup>
 import { ref,onMounted } from 'vue'
+import { useRoute,useRouter  } from 'vue-router';
 import axios from 'axios'
 import CarAndCarinfoModify from '@/components/CarAndCarinfoModify.vue';
+import axiosapi from '@/plugins/axios';
 
+const route=useRoute();
+const query=route.query;
 const Datas=ref({ });
 const Modify=ref(null);
+const carId=ref(null);
 
-function callModify(data) {
-  axios.put('http://localhost:8080/kajarta/car/modify/2', data).then(function(response){
+function callModify(data) {//要carId
+  axiosapi.put(`/car/modify/${query.id}`, data).then(function(response){
     console.log("responseCarCreate",response)
   }).catch()
 }

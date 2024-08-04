@@ -1,6 +1,6 @@
-<template class="backgroundColor">
+<template>
   <!-- ===============================拖曳上傳=============================== -->
-  <div class="backgroundColor">
+  <div>
   <br><br><br><br>
   <CarAndCarinfoModel  
     ref="carAndCarinfoModel" 
@@ -14,12 +14,13 @@
 import { ref,onMounted } from 'vue'
 import axios from 'axios'
 import CarAndCarinfoModel from '@/components/CarAndCarinfoModel.vue';
+import axiosapi from '@/plugins/axios';
 
 const Datas=ref({ });
 const carAndCarinfoModel=ref(null);
 
 function callCreate() {
-  axios.post('http://localhost:8080/kajarta/car/create', Datas.value).then(function(response){
+  axiosapi.post('/car/create', Datas.value).then(function(response){
     console.log("responseCarCreate",response)
   }).catch()
 }
