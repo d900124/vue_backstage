@@ -1,5 +1,5 @@
 <template >
-  <CarImage :imageByCarIdDatas=imageByCarIdDatas></CarImage>
+  <CarImage :imageByCarIdDatas=imageByCarIdDatas style="height: 50%; overflow: hidden;"></CarImage>
   <!-- =======================圖片上傳區塊======================= -->
   <div v-for="imageData in imageDatas" :key="imageData.id" :imageData="imageData">
 <label>是否為清單小圖</label>
@@ -95,7 +95,13 @@
   
   <!-- =======================狀態======================= -->
     <label for="state">狀態</label>
-    <input type="text"  name="state" v-model="carData.state" @input="doInput('state',$event)" required />
+    <select name="state" v-model="carData.state"  @change="doInput('state',$event)" required>
+      <option value="" disabled>選擇停放的分店</option>
+      <option value="1">草稿</option>
+      <option value="2">上架</option>
+      <option value="3">下架</option>
+      <option value="4">暫時下架</option>
+    </select> 
   
   
   <!-- =======================售價======================= -->

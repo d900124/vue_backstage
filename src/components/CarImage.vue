@@ -56,7 +56,14 @@
                         選擇檔案
                     </FileUpload>
                 </td>
-                <td></td>
+                <td>
+                    <label>是否為清單小圖</label>
+    <select id="isListPic" name="isListPic" @change="doInput('isListPic',$event)" required>
+      <option value="" disabled>是否為清單小圖</option>
+      <option value="1">是</option>
+      <option value="2">否</option>
+    </select> 
+                </td>
             </tr>
 
             <tr v-for="(image, index) in images" :key="image.id">
@@ -94,6 +101,7 @@ const kajartaUrl = import.meta.env.VITE_API_URL;
         })
 const emits=defineEmits(["uploadImage"]);
 
+console.log("gggggggggggg",props.imageByCarIdDatas);
 
 const selectImageId=ref(null);
 function handleClick(imageId) {
