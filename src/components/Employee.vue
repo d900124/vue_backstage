@@ -191,7 +191,7 @@
 
 
 
-    <!-- 下方詳細資料區 -->
+    <!-- 下方詳細資料區/ 抬頭 -->
     <div v-if="openZon" style="height: 50px;"></div>
     <div v-if="openZon" class="col-1"></div>
     <div v-if="openZon" class="col-10" style="padding: 0px 0px; background-color:unset;" @click="closeInfo">
@@ -200,94 +200,104 @@
             <h5 class="table-title">員工編號 {{ singleEmployee.id }} --單筆詳細資料</h5>
         </el-divider>
     </div>
-    <div class="col-1"></div>
+
     <div v-if="openZon" class="col-1"></div>
-    <div v-if="openZon" class="col-10" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
-        <!-- 下方詳細資料區/ 第一欄 -->
-        <div class="table-responsive" style="padding:20px ; ">
-            <table class="table" style="width: 1000px; ">
-                <thead style="border-bottom: 2px solid #a33238;">
-                    <tr>
-                        <th scope="col" class="table-th">職等</th>
-                        <th scope="col" class="table-th">姓名</th>
-                        <th scope="col" class="table-th">入職日</th>
-                        <th scope="col" class="table-th">直屬主管</th>
-                    </tr>
-                </thead>
-                <tbody class="table-group-divider">
-                    <tr v-if="!isModify">
-                        <td class="table-td">{{ singleEmployee.accountTypeName }}</td>
-                        <td class="table-td">{{ singleEmployee.name }}</td>
-                        <td class="table-td">{{ singleEmployee.startDate }}</td>
-                        <td class="table-td">{{ singleEmployee.teamLeaderName }}</td>
-                    </tr>
-                    <tr v-if="isModify">
-                        <td class="table-td">
-                            <el-select v-model="singleEmployee.accountType" placeholder="請選擇職等">
+    <div class="row" style="margin-top: 3%; height:550px" v-if="openZon">
+        <form class="col-md-8 customer-form" style="margin-bottom:20px;" v-if="!isModify" >
+            <div class="form-item" style="margin-top: 70px;" > 
+                <label for="startDate">入職日&emsp;&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleEmployee.startDate }}</span>
+            </div>
+            <div class="form-item" >
+                <label for="accountTypeName">帳號類別&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleEmployee.accountTypeName }}</span>
+            </div>
+            <div class="form-item">
+                <label for="name">姓名&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <span class="infoText" >{{ singleEmployee.name }}</span>
+            </div>
+            
+            <div class="form-item" > 
+                <label for="sex">性別&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleEmployee.sex }}</span>
+            </div>
+            <div class="form-item">
+                <label for="phone">電話&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleEmployee.phone }}</span>
+            </div>
+            <div class="form-item">
+                <label for="email">E-mail&emsp;&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleEmployee.email }}</span>
+            </div>
+            <div class="form-item">
+                <label for="teamLeaderName">直屬主管&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleEmployee.teamLeaderName }}</span>
+            </div>
+            <div class="form-item">
+                <label for="branchName">分店&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleEmployee.branchName }}</span>
+            </div>
+        </form>
+        <div v-if="!isModify" class="col-md-4 d-flex flex-column align-items-center">
+            <img src="/personal_photo.jpg" alt="Register" class="card-image mb-3" style="height:550px; width:430px"/>
+        </div>
+        <form v-if="isModify" class="col-md-8 customer-form" style="height:550px">
+            <div class="form-item" style="margin-top: 70px;"> 
+                <label for="startDate">入職日&emsp;&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleEmployee.startDate }}</span>
+            </div>
+            <div class="form-item">
+                <label for="accountTypeName">帳號類別&emsp;&emsp;&emsp;：</label>
+                <el-select v-model="singleEmployee.accountType" placeholder="請選擇職等" class="custom-el-input" size="small">
                                 <el-option v-for="status in accountTypes" :key="status.value" :label="status.label"
                                     :value="status.value" />
                             </el-select>
-                        </td>
-                        <td class="table-td">
-                            <el-input v-model="singleEmployee.name" placeholder="姓名"></el-input>
-                        </td>
-                        <td class="table-td">
-                            <el-date-picker v-model="singleEmployee.startDate" type="date" placeholder="入職日"
-                                style="width: 100%;"></el-date-picker>
-                        </td>
-                        <td class="table-td">
-                            <el-select v-model="singleEmployee.teamLeaderName" placeholder="請選擇直屬主管">
+            </div>
+            <div class="form-item">
+                <label for="name" >姓名&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <el-input v-model="singleEmployee.name" placeholder="姓名" class="custom-el-input" size="small"></el-input>
+            </div>
+            <div class="form-item">
+                <label for="sex">性別&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <el-select v-model="singleEmployee.sex" placeholder="請選擇性別" class="custom-el-input" size="small">
+                    <el-option label="M" value="M"></el-option>
+                    <el-option label="F" value="F"></el-option>
+                </el-select>
+            </div>
+            <div class="form-item">
+                <label for="phone">電話&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <el-input v-model="singleEmployee.phone" placeholder="姓名" class="custom-el-input" size="small"></el-input>
+            </div>
+            <div class="form-item">
+                <label for="email">E-mail&emsp;&emsp;&emsp;&emsp;：</label>
+                <el-input v-model="singleEmployee.email" placeholder="姓名" class="custom-el-input" size="small"></el-input>
+            </div>
+            <div class="form-item">
+                <label for="address">直屬主管&emsp;&emsp;&emsp;：</label>
+                <el-select v-model="singleEmployee.teamLeaderName" placeholder="請選擇直屬主管" class="custom-el-input" size="small">
                                 <el-option v-for="leader in teamLeaders" :key="leader.id" :label="leader.name"
                                     :value="leader.id"></el-option>
                             </el-select>
-                        </td>
-                    </tr>
-                </tbody>
-                <div style="height: 20px;"></div>
-                <!-- 下方詳細資料區/ 第二欄 -->
-                <thead style="border-bottom: 2px solid #a33238;">
-                    <tr>
-                        <th scope="col" class="table-th">性別</th>
-                        <th scope="col" class="table-th">電話</th>
-                        <th scope="col" class="table-th">Email</th>
-                        <th scope="col" class="table-th">分店</th>
-                    </tr>
-                </thead>
-                <tbody class="table-group-divider">
-                    <tr v-if="!isModify">
-                        <td class="table-td">{{ singleEmployee.sex }}</td>
-                        <td class="table-td">{{ singleEmployee.phone }}</td>
-                        <td class="table-td">{{ singleEmployee.email }}</td>
-                        <td class="table-td">{{ singleEmployee.branchName }}</td>
-                    </tr>
-                    <tr v-if="isModify">
-                        <td class="table-td">
-                            <el-select v-model="singleEmployee.sex" placeholder="請選擇性別">
-                                <el-option label="M" value="M"></el-option>
-                                <el-option label="F" value="F"></el-option>
-                            </el-select>
-                        </td>
-                        <td class="table-td">
-                            <el-input v-model="singleEmployee.phone" placeholder="電話"></el-input>
-                        </td>
-                        <td class="table-td">
-                            <el-input v-model="singleEmployee.email" placeholder="Email"></el-input>
-                        </td>
-                        <td class="table-td">
-                            <el-select v-model="singleEmployee.branch" placeholder="請選擇分店">
+            </div>
+            <div class="form-item">
+                <label for="address">分店&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <el-select v-model="singleEmployee.branch" placeholder="請選擇分店" class="custom-el-input" size="small">
                                 <el-option v-for="status in branches" :key="status.value" :label="status.label"
                                     :value="status.value" />
                             </el-select>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            </div>
+
+        </form>
+        <div v-if="isModify" class="col-md-4 d-flex flex-column align-items-center">
+            <img src="/personal_photo.jpg" alt="Register" class="card-image mb-3" style="height:550px; width:430px"/>
         </div>
     </div>
+
+    
     <div v-if="openZon" class="col-1"></div>
     <!-- 下方詳細資料區 / 修改按鈕-->
     <div v-if="openZon" class="col-1"></div>
-    <div v-if="openZon" class="col-5"
+    <div v-if="openZon" class="col-4"
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
     <div v-if="openZon" class="col-5"
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
@@ -618,6 +628,38 @@ function doModify() {
 
 
 <style scoped>
+.custom-el-input {
+    width: 300px; 
+}
+.form-item {
+  text-align: left;
+  margin-left: 40px;
+  margin-top: 20px;
+  position: relative; /* 需要相对定位以定位伪元素 */
+
+}
+
+.form-item::after {
+    content: "";
+    position: absolute;
+  bottom: 0; /* 固定在底部 */
+  left: 0; /* 固定在左边 */
+  width: 90%; /* 自定义宽度，例如 50% */
+  border-bottom: #a33238 1px solid; /* 使用相同的颜色和粗细 */
+}
+.customer-form {
+    background-color: #fff5eb;
+    width: 675px;
+    margin-left: 110px;
+    
+    color: #a33238;
+    font-weight: bold;
+    padding-bottom: 45px;
+    padding-top: 20px;
+}
+
+
+
 .custom-input-icon {
     background: transparent;
     /* 背景透明 */
