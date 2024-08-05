@@ -86,9 +86,9 @@
         </el-divider>
     </div>
     <div v-if="openZon" class="col-1"></div>
-    <div class="row" style="margin-top: 5%; margin-bottom: 5%;">
+    <div class="row" style="margin-top: 3%; margin-bottom: 5%;">
         <form v-if="!isModify" class="col-md-8 customer-form">
-            <div class=" form-item">
+            <div class="form-item">
                 <label for="createTime">註冊時間&emsp;&emsp;&emsp;：</label>
                 <span class="infoText">{{ singleCustomer.createTime }}</span>
             </div>
@@ -97,42 +97,44 @@
                 <span class="infoText">{{ singleCustomer.accountTypeName }}</span>
             </div>
             <div class="form-item">
-                <label for="account">帳號&emsp;&emsp;&emsp;：</label>
+                <label for="account">帳號&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
                 <span class="infoText">{{ singleCustomer.account }}</span>
             </div>
             <div class="form-item">
-                <label for="name">姓名&emsp;&emsp;&emsp;：</label>
+                <label for="name">姓名&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
                 <span class="infoText">{{ singleCustomer.name }}</span>
             </div>
             <div class="form-item">
-                <label for="sex">性別&emsp;&emsp;&emsp;：</label>
+                <label for="sex">性別&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
                 <span class="infoText">{{ singleCustomer.sex }}</span>
             </div>
             <div class="form-item">
-                <label for="phone">電話&emsp;：</label>
+                <label for="phone">電話&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
                 <span class="infoText">{{ singleCustomer.phone }}</span>
             </div>
             <div class="form-item">
-                <label for="idNumber">身分證號&emsp;：</label>
+                <label for="idNumber">身分證號&emsp;&emsp;&emsp;：</label>
                 <span class="infoText">{{ singleCustomer.idNumber }}</span>
             </div>
             <div class="form-item">
-                <label for="email">E-mail&emsp;&emsp;：</label>
+                <label for="email">E-mail&emsp;&emsp;&emsp;&emsp;：</label>
                 <span class="infoText">{{ singleCustomer.email }}</span>
             </div>
             <div class="form-item">
-                <label for="city">縣市&emsp;&emsp;&emsp;：</label>
+                <label for="city">縣市&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
                 <span class="infoText">{{ singleCustomer.cityName }}</span>
             </div>
             <div class="form-item">
-                <label for="address">地址&emsp;&emsp;&emsp;：</label>
+                <label for="address">地址&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
                 <span class="infoText">{{ singleCustomer.address }}</span>
+            </div>
+            <div class="form-item">
+                <label for="remarks">備註&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleCustomer.remarks }}</span>
             </div>
         </form>
         <div class="col-md-4 d-flex flex-column align-items-center">
             <img src="/member_info_01.jpg" alt="Register" class="card-image mb-3" />
-            <button type="button" @click="doModify" class="save-button btn btn-primary" style="width: 100%;">Information
-                Revise</button>
         </div>
     </div>
     <!-- 编辑模式表单 -->
@@ -476,10 +478,32 @@ function doModify() {
 </script>
 
 <style scoped>
+.form-item {
+  text-align: left;
+  margin-left: 40px;
+  margin-top: 20px;
+  position: relative; /* 需要相对定位以定位伪元素 */
+ 
+}
+
+
+.form-item::after {
+    content: "";
+    position: absolute;
+  bottom: 0; /* 固定在底部 */
+  left: 0; /* 固定在左边 */
+  width: 90%; /* 自定义宽度，例如 50% */
+  border-bottom: #a33238 1px solid; /* 使用相同的颜色和粗细 */
+}
 .customer-form {
     background-color: #fff5eb;
     width: 630px;
     margin-left: 110px;
+    color: #a33238;
+    font-weight: bold;
+    padding-bottom: 45px;
+    padding-top: 20px;
+    
 }
 
 .custom-input-icon {
