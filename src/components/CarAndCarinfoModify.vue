@@ -1,33 +1,19 @@
 <template >
-  <CarImage :imageByCarIdDatas=imageByCarIdDatas style="height: 50%; overflow: hidden;"></CarImage>
+  <CarImage 
+    :imageByCarIdDatas=imageByCarIdDatas 
+    :mainImageUrl="mainImageUrl" 
+    :listImageUrl="listImageUrl"
+    :carId="carId"
+    style="height: 50%; overflow: hidden;"
+    ></CarImage>
   <!-- =======================圖片上傳區塊======================= -->
-  <div v-for="imageData in imageDatas" :key="imageData.id" :imageData="imageData">
-<label>是否為清單小圖</label>
-    <select id="isListPic" name="isListPic" v-model="imageData.isListPic" @change="doInput('isListPic',$event)" required>
-      <option value="" disabled>是否為清單小圖</option>
-      <option value="1">是</option>
-      <option value="2">否</option>
-    </select> 
-
-<label>是否為產品主圖</label>
-<select id="isMainPic" name="isMainPic" v-model="imageData.isMainPic" @change="doInput('isMainPic',$event)" required>
-      <option option value="" disabled>是否為產品主圖</option>
-      <option value="1">是</option>
-      <option value="2">否</option>
-    </select> 
-
-<label>carId</label>
-<input id="carId" type="text" name="carId" v-model="imageData.car" @input="doInput('id',$event)" required />
-</div>
-
 
 
         <div class="d-flex flex-row" >
     <div class="p-2">
       <div class="d-flex flex-column" v-for="carData in carDatas" :key="carData.id" :carData="carData">
  
-        <label>carId</label>
-<input id="carId1" type="text" name="carId1" v-model="carData.id" @input="doInput('id',$event)" required />
+<input style="display: none;" id="carId1" type="text" name="carId1" v-model="carData.id" @input="doInput('id',$event)" required />
  
         <!-- =======================車型======================= -->
     <label>車型</label>
@@ -63,8 +49,21 @@
   <div class="p-2">
     <div class="d-flex flex-column" v-for="carData in carDatas" :key="carData.id" :carData="carData">
   <!-- =======================賣家======================= -->
-    <label for="customer">賣家</label>
-    <input type="text" name="customerId" v-model="carData.customerId" @input="doInput('customerId',$event)" required />
+    <label for="customerId">賣家</label>
+    <select 
+        name="customerId" 
+        v-model="carData.customerId"
+        @change="doInput('customerId',$event)" 
+        required
+        >
+      <option
+       v-for="customer in customers"
+       :key="customer.id"
+       :customer="customer"
+        :value="`${customer.id}`" 
+      >{{ customer.name }}</option>
+    </select> 
+    <!-- <input type="text" name="customerId" v-model="carData.customerId" @input="doInput('customerId',$event)" required /> -->
   
   <!-- =======================管理銷售員======================= -->
     <label for="employee">管理銷售員</label>
@@ -142,12 +141,14 @@ const route = useRoute();
 const props = defineProps(["carData","carinfoData","imageData"]);
 const emits = defineEmits(["customModify","updata:carData","updata:imageData"]);
 const kajartaUrl = import.meta.env.VITE_API_URL;
+const path = import.meta.env.VITE_PHOTO;
 const carinfoDatas=ref([]);
 const carDatas=ref([]);
 const imageDatas=ref([]);
 const query =route.query
 const carData=ref({});
-
+const carId=query.id;
+const customers=ref([])
 function doInput(key,event) {
   emits('updata:imageData',{
 ...props.imageData,
@@ -165,7 +166,35 @@ onMounted(function () {
     callCarFind();
     callImageFind();
     callImageFindByCarId();
+    showMainImage();
+    showListImage();
+    callFindCustomer();
 });
+
+function callFindCustomer() {
+  axiosapi.get(`${kajartaUrl}/customer/all`)
+        .then(function (response) {
+            if (response && response.data) {
+                console.log("CustomerResponse", response);
+                customers.value=response.data.data
+              // carData.value={...carDatas.value[0]};
+              console.log("====================",customers.value);
+            } else {
+                console.error("Invalid response data structure:", response);
+            }
+
+            // setTimeout(function () {
+            //     Swal.close();
+            // }, 500);
+        })
+        .catch(function (error) {
+            console.error("Error fetching data:", error, response);
+            Swal.fire({
+                text: "查詢失敗：" + error.message,
+                icon: "error"
+            });
+        });
+}
 
 function callCarFind() {
   axiosapi.get(`${kajartaUrl}/car/find/${query.id}`)
@@ -268,8 +297,51 @@ function callImageFindByCarId() {
         });
 }
     
+//以carId搜主圖
+const mainImageUrl=ref('');
+function showMainImage() {
+    axiosapi.get(`/image/isMainPic/${query.id}`)
+        .then(function (response) {
+            if (response && response.data) {
+                console.log("MainPicresponse", response);
+                mainImageUrl.value = response.data.isMainPic;
+            } else {
+                console.error("Invalid response data structure:", response);
+                throw new Error("Invalid car data response");
+            }
+        })
+        .catch(function (error) {
+            console.error("Error fetching data:", error);
+            Swal.fire({
+                text: "查詢失敗：" + error.message,
+                icon: "error"
+            });
+        });
+}
 
-
+//以carId搜清單圖
+const listImageUrl=ref([]);
+function showListImage() {
+    axiosapi.get(`/image/isListPic/${query.id}`)
+        .then(function (response) {
+            if (response && response.data) {
+                console.log("MainPicresponse", response);
+                listImageUrl.value = response.data.isListPic;
+                console.log("listurl===========",listImageUrl.value);
+                
+            } else {
+                console.error("Invalid response data structure:", response);
+                throw new Error("Invalid car data response");
+            }
+        })
+        .catch(function (error) {
+            console.error("Error fetching data:", error);
+            Swal.fire({
+                text: "查詢失敗：" + error.message,
+                icon: "error"
+            });
+        });
+}
 
     function handleClick() {
       console.log("carDatas before submit:", carData.value);
