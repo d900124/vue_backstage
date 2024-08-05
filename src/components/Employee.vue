@@ -4,7 +4,7 @@
     <div class="col-1"></div>
  
     <!-- 多選下拉選單(簡易搜尋) -->
-    <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;"v-if="employeeInfo.accountType == 4">
+    <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;" v-if="employeeInfo.accountType == 4">
         <div class="mb-3 custom-input-wrapper"  >
             <div class="input-group">
                 <span class="input-group-text custom-input-icon">

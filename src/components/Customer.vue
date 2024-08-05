@@ -133,7 +133,7 @@
             </div>
         </form>
         <div v-if="!isModify" class="col-md-4 d-flex flex-column align-items-center">
-            <img src="/member_info_01.jpg" alt="Register" class="card-image mb-3" style="height:550px; width:500px"/>
+            <img src="/member_info_01.jpg" alt="Register" class="card-image mb-3" style="height:550px; width:430px"/>
         </div>
         <form v-if="isModify" class="col-md-8 customer-form" style="height:550px">
             <div class="form-item">
@@ -188,7 +188,7 @@
             </div>
         </form>
         <div v-if="isModify" class="col-md-4 d-flex flex-column align-items-center">
-            <img src="/member_info_01.jpg" alt="Register" class="card-image mb-3" style="height:550px; width:500px"/>
+            <img src="/member_info_01.jpg" alt="Register" class="card-image mb-3" style="height:550px; width:430px"/>
         </div>
     </div>
    <div v-if="openZon" class="col-1"></div>
@@ -458,7 +458,7 @@ function doModify() {
 }
 .customer-form {
     background-color: #fff5eb;
-    width: 630px;
+    width: 675px;
     margin-left: 110px;
     color: #a33238;
     font-weight: bold;
