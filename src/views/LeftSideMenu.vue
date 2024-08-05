@@ -35,7 +35,7 @@
 
             </template>
             <a href="/pages/carMaintain#viewCarAssigned" style="all: unset;"><el-menu-item > - 賞車清單</el-menu-item></a>
-            <a href="#" style="all: unset;"><el-menu-item index="2-2"> - 車輛總覽</el-menu-item></a>
+            <a href="/pages/carMaintain#cars" style="all: unset;"><el-menu-item> - 車輛總覽</el-menu-item></a>
         </el-sub-menu>
 
         <el-sub-menu index="/pages/clientMaintain">

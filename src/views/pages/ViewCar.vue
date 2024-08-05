@@ -15,10 +15,10 @@
                     class="backLogo" 
                     @click="backToCarMaintain()"/>
                 <div style="margin-top: 10px;margin-left: 20px;">
-                    <el-button type="primary" round @click="finishVKVisible=true" v-if="viewCarItem.viewCarStatus==1" style="background-color: #a33238;border: #a33238;">
+                    <el-button type="primary" round @click="finishVKVisible=true" v-if="viewCarItem.viewCarStatus==1" color="#a33238" :dark="isDark">
                         完成賞車
                     </el-button>
-                    <el-button type="primary" round @click="cancelVKVisible=true" v-if="viewCarItem.viewCarStatus==1" style="background-color: #a33238;border: #a33238;">
+                    <el-button type="primary" round @click="cancelVKVisible=true" v-if="viewCarItem.viewCarStatus==1" color="#a33238" :dark="isDark">
                         註銷賞車
                     </el-button>
                 </div>
@@ -112,7 +112,7 @@
 </div>
 </div>
 
-<!-- 確認刪除用彈出視窗 -->
+<!-- 確認"完成"賞車用彈出視窗 -->
 <el-dialog
         v-model="finishVKVisible"
         width="350"
@@ -131,7 +131,7 @@
         </template>
     </el-dialog>
 
-<!-- 確認刪除用彈出視窗 -->
+<!-- 確認"註銷"賞車用彈出視窗 -->
 <el-dialog
         v-model="cancelVKVisible"
         width="350"
