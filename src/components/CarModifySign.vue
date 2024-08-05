@@ -63,6 +63,7 @@
                      <tr v-if="carDatas.length === 0">
                      <td colspan="6" class="table-td">沒有這筆資料</td>
                      </tr>
+                     <br>
                       <tr v-for="carData in carDatas" :key="carData.id" :carData="carData">
                           <th scope="row" class="table-td">{{ carData.id }}</th>
                           <td class="table-td">{{ carData.cainfoBrand }} - {{ carData.carinfoModelName }} </td>
@@ -70,8 +71,7 @@
                           <td class="table-td">{{ carData.employeeName }}</td>
                           <td class="table-td">{{ carData.updateTime }}</td>
                           <td class="table-td">{{ carData.stateName }}</td>
-                          <br>
-                          <el-button type="danger"  @click="changeId(carData.id)" round >修改</el-button>
+                          <el-button type="danger" style="background-color:#a33238; color:white"  @click="changeId(carData.id)" round >修改</el-button>
                       </tr>
                   </tbody>
               </table>
@@ -264,5 +264,7 @@ const handlePageChange = (newPage) => {//查詢跟findAll的分頁
   </script>
       
   <style>
+
+
       
   </style>
