@@ -1,10 +1,11 @@
-<template>
-    <div class="col-12" style="height: 50px;"></div>
-    <div class="col-1"></div>
+<template >
 
+    <div class="col-12" style="height: 50px;" v-if="employeeInfo.accountType == 4"></div>
+    <div class="col-1"></div>
+ 
     <!-- 多選下拉選單(簡易搜尋) -->
-    <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
-        <div class="mb-3 custom-input-wrapper">
+    <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;"v-if="employeeInfo.accountType == 4">
+        <div class="mb-3 custom-input-wrapper"  >
             <div class="input-group">
                 <span class="input-group-text custom-input-icon">
                     <font-awesome-icon icon="fa-solid fa-magnifying-glass" class="custom-icon" />
@@ -40,20 +41,19 @@
             <el-button type='' link style="color: #a33238; font-weight: 900;">清除查詢</el-button>
         </div>
     </div>
-
     <!-- 標題區域 -->
-    <div class="col-2" style="padding: 0px 0px;">
+    <div class="col-2" style="padding: 0px 0px;" v-if="employeeInfo.accountType == 4">
         <h3 class="table-title" id="employee">員工總覽</h3>
     </div>
 
     <div class="col-1"></div>
     <div class="col-1"></div>
-    <div class="col-10">
+    <div class="col-10" v-if="employeeInfo.accountType == 4">
         <!-- 彈出式複雜搜尋 -->
         <div class="extra-menu"></div>
 
         <!-- 員工列表 -->
-        <div class="table-part">
+        <div class="table-part" >
             <table class="table">
                 <thead style="border-bottom: 2px solid #a33238;">
                     <tr>
@@ -85,7 +85,7 @@
     <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
 
         <!-- 新增用按鈕 -->
-        <div class="btm-div" style="display: flex;" @click="openModal('insert')">
+        <div class="btm-div" style="display: flex;" @click="openModal('insert')" v-if="employeeInfo.accountType == 4">
             <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;" />
             <el-button type='' link class="text-btm" style="color: #a33238;">新增員工</el-button>
         </div>
@@ -96,7 +96,7 @@
         <!-- 右下分頁控制區 -->
 
         <el-pagination style="margin: 10px 0px;" hide-on-single-page=true layout="total,prev, pager, next"
-            :total="total" :page-size="rows" v-model:current-page="current" @change="callQuery"></el-pagination>
+            :total="total" :page-size="rows" v-model:current-page="current" @change="callQuery" v-if="employeeInfo.accountType == 4"></el-pagination>
 
     </div>
     <div class="col-1"></div>
@@ -323,6 +323,7 @@
             </div>
         </template>
     </el-dialog>
+
 </template>
 
 <script setup>

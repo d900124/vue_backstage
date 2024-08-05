@@ -201,7 +201,7 @@
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
         <el-switch v-model="isModify" inline-prompt class="value5" size="large"
             active-text="&nbsp;&nbsp;開啟修改&nbsp;&nbsp;" inactive-text="&nbsp;&nbsp;資料鎖定&nbsp;&nbsp;"
-            style="--el-switch-on-color: #a33238; -webkit-margin-start: 18px ;" @click="openDoModify" />
+            style="--el-switch-on-color: #a33238; -webkit-margin-start: 18px ;" @click="openDoModify" v-if="employeeInfo.accountType == 4"/>
     </div>
     <div  class="col-1"></div>
 
