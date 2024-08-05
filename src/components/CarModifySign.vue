@@ -1,4 +1,7 @@
 <template>
+  <div class="col-12" style="margin-top: 50px;"></div>
+  <div class="col-1"></div>
+  <div class="col-5" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
   <!----------------搜尋欄位跟搜尋鍵並排 ---------------->
   
       <div style="display: flex; align-items: center;">
@@ -44,6 +47,15 @@
         </el-button>
       </div>
     </div>
+  </div>
+  <div class="col-5" style="padding: 0px 0px;display: flex; justify-content: flex-end;align-items: center;">
+    <h3 class="table-title" id="cars">車輛總覽</h3>
+  </div>
+  <div class="col-1"></div>
+  
+  <div class="col-1"></div>
+  <div class="col-10">
+  
   
   <!---------------------- 車輛列表 --------------------->
   
@@ -99,7 +111,8 @@
           :page-size="5"
           @current-change="handlePageChange"
         ></el-pagination> 
-          
+      </div> 
+      <div class="col-1"></div>      
   </template>
       
   <script setup >
@@ -264,5 +277,11 @@ const handlePageChange = (newPage) => {//查詢跟findAll的分頁
   </script>
       
   <style>
+  .table-title{
+    float: right;
+    color: #a33238;
+    font-weight: 900;
+    margin: 10px 0px;
+}
       
   </style>

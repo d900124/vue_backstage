@@ -1,4 +1,5 @@
 <template >
+  <div>
   <CarImage :imageByCarIdDatas=imageByCarIdDatas></CarImage>
   <!-- =======================圖片上傳區塊======================= -->
   <div v-for="imageData in imageDatas" :key="imageData.id" :imageData="imageData">
@@ -95,12 +96,18 @@
   
   <!-- =======================狀態======================= -->
     <label for="state">狀態</label>
-    <input type="text"  name="state" v-model="carData.state" @input="doInput('state',$event)" required />
+    <input type="text"  name="state" v-model="carData.state" @input="doInput('state',$event)" required /><!--注意這邊不要有可以下架的選項-->
+    <el-button type="primary" round @click="cancelVisible=true"  color="#a33238" :dark="isDark">
+            建立 "下架" 核單
+    </el-button>
   
   
   <!-- =======================售價======================= -->
         <label>價格</label>
-        <input type="text" name="price" v-model="carData.price" @input="doInput('price',$event)" required />
+        <!-- <input type="text" name="price" v-model="carData.price" @input="doInput('price',$event)" required /> -->
+        <el-button type="primary" round @click="pricsVisible=true"  color="#a33238" :dark="isDark">
+            建立 "價格變動" 簽核單
+        </el-button>
   
   
   <!-- =======================是否改裝======================= -->
@@ -122,14 +129,66 @@
 <button @click="handleClick()">完成修改</button> 
 <!-- <button @click="$emit('custom-modify',carData.value)">完成修改</button>  -->
 
+
+<!-- 確認"下架"用彈出視窗 -->
+<el-dialog
+        v-model="cancelVisible"
+        width="350"
+        :show-close="false"
+    >
+    <h5 class="msg-title" >確認 "下架" 車輛 No.{{ carData.id }}?</h5>
+        <template #footer> 
+        <div class="dialog-footer" style="display: flex;justify-content: center;">
+            <div>
+            <el-button @click="cancelVisible=false">否</el-button>
+            <el-button type="primary" @click="doCancelAdjust" style="background-color: #a33238;border: #a33238;">
+            是
+            </el-button>
+        </div>
+        </div>
+        </template>
+    </el-dialog>
+
+
+<!-- 確認"價格變動"用彈出視窗 -->
+<el-dialog
+        v-model="pricsVisible"
+        width="350"
+        :show-close="false"
+    >
+    <h5 class="msg-title" >確認 "價格變動" 車輛 No.{{ carData.id }}?</h5>
+        <template #footer> 
+        <div class="dialog-footer" >
+          <div>需批核之修改價格 : 
+            <el-input-number
+                    v-model="creatFloatingAmountValue"
+                    :min="0"
+                    :max="100000000000000000"
+                    style="margin: 20px 0;"
+                    controls-position="right"
+                    @change = "creatFindCard"
+                />
+          </div>
+            <div>
+            <el-button @click="pricsVisible=false">取消</el-button>
+            <el-button type="primary" @click="doPriceAdjust" style="background-color: #a33238;border: #a33238;">
+            確認
+            </el-button>
+        </div>
+        </div>
+        </template>
+    </el-dialog>
+  </div>
 </template>
     
 <script setup >
-import { ref,onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue';
 import axios from 'axios'
 import axiosapi from '@/plugins/axios';
 import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
+import { useStore } from "vuex";
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 const route = useRoute(); 
@@ -141,6 +200,13 @@ const carDatas=ref([]);
 const imageDatas=ref([]);
 const query =route.query
 const carData=ref({});
+
+//彈出視窗用屬性
+const cancelVisible =ref(false)
+const pricsVisible = ref(false)
+
+//新增簽核用屬性
+const creatFloatingAmountValue =ref(null)
 
 function doInput(key,event) {
   emits('updata:imageData',{
@@ -154,7 +220,21 @@ if(key in carData.value){
 
 }
 
-onMounted(function () {
+//登錄資訊用
+const store = useStore();
+const isAuthenticated = computed(() => store.state.isAuthenticated);
+const employeeInfo = computed(() => store.state.employeeInfo.data || {});
+
+//登錄資訊用 使用 async 和 await 來等待 Vuex action 完成並更新
+const fetchEmployeeData = async () => {
+const username = localStorage.getItem("username");
+    if (username) {
+        await store.dispatch("fetchEmployeeInfo", username);
+    }
+};
+
+onMounted(async () => {
+    await fetchEmployeeData();
     callCarinfoFind();
     callCarFind();
     callImageFind();
@@ -271,6 +351,103 @@ function callImageFindByCarId() {
       router.push({ name: 'car-list-link' });//完成修改跳轉
     }
 
+
+//新增簽核(下架)
+function doCancelAdjust() {
+  cancelVisible.value=false
+    Swal.fire({
+        text: "執行中......",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+    });
+    let request ={  
+        "employeeId":employeeInfo.value.id, 
+        "teamLeaderId":employeeInfo.value.teamLeaderId, 
+        "carId":carData.value.id,
+        "approvalStatus":0, 
+        "approvalType":3,
+        "floatingAmount":0
+    }
+    console.log("request", request);
+    axiosapi.post("/carAdjust", request).then(function(response) {
+        console.log("response", response);
+        if(response.data.success)  {
+            Swal.fire({
+                icon: "success",
+                text: "下架簽核建立成功",
+                showConfirmButton: false,
+                timer: 1000,
+            })
+        } else {
+            Swal.fire({
+                icon: "warning",
+                text: response.data.msg,
+            });
+        }
+    }).catch(function(error) {
+        console.log("error", error);
+        Swal.fire({
+            icon: "error",
+            text: "新增錯誤："+error.msg,
+        });
+    });
+    setTimeout(function () {
+                    Swal.close();  //視窗關閉 
+                }, 1000);
+}
+
+//新增簽核(改價)
+function doPriceAdjust() {
+  pricsVisible.value=false
+    Swal.fire({
+        text: "執行中......",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+    });
+    let approvalType =null;
+    if (creatFloatingAmountValue.value>=carData.value.price) {
+      approvalType=2;
+    }else{
+      approvalType=1;
+    }
+    
+    carData.price
+
+    let request ={  
+        "employeeId":employeeInfo.value.id, 
+        "teamLeaderId":employeeInfo.value.teamLeaderId, 
+        "carId":carData.value.id,
+        "approvalStatus":0, 
+        "approvalType":approvalType,
+        "floatingAmount":creatFloatingAmountValue.value
+    }
+    console.log("request", request);
+    axiosapi.post("/carAdjust", request).then(function(response) {
+        console.log("response", response);
+        if(response.data.success)  {
+            Swal.fire({
+                icon: "success",
+                text: "價格修改簽核建立成功",
+                showConfirmButton: false,
+                timer: 1000,
+            })
+        } else {
+            Swal.fire({
+                icon: "warning",
+                text: response.data.msg,
+            });
+        }
+    }).catch(function(error) {
+        console.log("error", error);
+        Swal.fire({
+            icon: "error",
+            text: "新增錯誤："+error.msg,
+        });
+    });
+    setTimeout(function () {
+                    Swal.close();  //視窗關閉 
+                }, 1000);
+}
 </script>
     
 <style>

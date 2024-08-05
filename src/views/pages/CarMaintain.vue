@@ -9,6 +9,7 @@
         <!-- 賞車清單 -->
         <ViewCarAssignedTable></ViewCarAssignedTable>
         <!-- 車輛總覽 -->
+        <CarModifySign ></CarModifySign>
         </div>
         </div>
 </section>  
@@ -17,6 +18,7 @@
 <script setup >
     import ViewCarAssignedTable from '@/components/ViewCarAssignedTable.vue';
     import Logout from '@/components/Logout.vue';
+    import CarModifySign from '@/components/CarModifySign.vue';
 
 </script>
 
