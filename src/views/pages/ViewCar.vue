@@ -6,16 +6,31 @@
                 <Logout style="margin-bottom: 50px;"></Logout>
 
 <!-- 賞車預約資訊 -->
-                <div class="col-2" style="display: flex;justify-content: flex-start;">
+                <div class="col-6" style="display: flex;justify-content: flex-start;">
                     
                     <font-awesome-icon 
                     :icon="['fas', 'circle-chevron-left']" 
                     style="margin-top :10px;"
                     size="2xl" 
                     class="backLogo" 
-                    @click="backToCarMaintain()"/></div>
+                    @click="backToCarMaintain()"/>
+                <div style="margin-top: 10px;margin-left: 20px;">
+                    <el-button type="primary" round @click="finishVKVisible=true" v-if="viewCarItem.viewCarStatus==1" style="background-color: #a33238;border: #a33238;">
+                        完成賞車
+                    </el-button>
+                    <el-button type="primary" round @click="cancelVKVisible=true" v-if="viewCarItem.viewCarStatus==1" style="background-color: #a33238;border: #a33238;">
+                        註銷賞車
+                    </el-button>
+                </div>
+                </div>
 
-                <div class="col-10" style="display: flex;justify-content: flex-end;"><h1>賞車詳情</h1></div>
+                <div class="col-6" style="display: flex;justify-content: flex-end;">
+                    <h5 style="margin-top: 15px;margin-right: 20px;" v-if="viewCarItem.viewCarStatus==0">(預約中)</h5>
+                    <h5 style="margin-top: 15px;margin-right: 20px;" v-if="viewCarItem.viewCarStatus==1">(時間確定)</h5>
+                    <h5 style="margin-top: 15px;margin-right: 20px;" v-if="viewCarItem.viewCarStatus==2">(完成賞車)</h5>
+                    <h5 style="margin-top: 15px;margin-right: 20px;" v-if="viewCarItem.viewCarStatus==3">(已註銷)</h5>
+                    <h1>賞車詳情</h1>
+                </div>
                 
             </div>
 
@@ -96,6 +111,44 @@
     </div>
 </div>
 </div>
+
+<!-- 確認刪除用彈出視窗 -->
+<el-dialog
+        v-model="finishVKVisible"
+        width="350"
+        :show-close="false"
+    >
+    <h5 class="msg-title" >確認 "完成" 賞車 No.{{ viewCarItem.id }}?</h5>
+        <template #footer> 
+        <div class="dialog-footer" style="display: flex;justify-content: center;">
+            <div>
+            <el-button @click="finishVKVisible=false">否</el-button>
+            <el-button type="primary" @click="finishVK" style="background-color: #a33238;border: #a33238;">
+            是
+            </el-button>
+        </div>
+        </div>
+        </template>
+    </el-dialog>
+
+<!-- 確認刪除用彈出視窗 -->
+<el-dialog
+        v-model="cancelVKVisible"
+        width="350"
+        :show-close="false"
+    >
+    <h5 class="msg-title" >確認 "註銷" 賞車 No.{{ viewCarItem.id }}?</h5>
+        <template #footer> 
+        <div class="dialog-footer" style="display: flex;justify-content: center;">
+            <div>
+            <el-button @click="cancelVKVisible=false">否</el-button>
+            <el-button type="primary" @click="cancelVK" style="background-color: #a33238;border: #a33238;">
+            是
+            </el-button>
+        </div>
+        </div>
+        </template>
+    </el-dialog>
     </section>
 </template>
     
@@ -124,10 +177,17 @@ const sex= ref()
 const path = import.meta.env.VITE_PHOTO;
 const imgUrl =ref([])
 
+//賞車排程事件id
+const oldAgandId = ref(null)
+
+//確認視窗屬性
+const finishVKVisible =ref(false)
+const cancelVKVisible =ref(false)
 
 const viewcarId = Number(route.query.viewcarId);  // 获取传递过来的viewcarId参数
 const employeeId = Number(route.query.employeeId);  // 获取传递过来的employeeId参数
 const assignedStatus = Number(route.query.assignedStatus);  // 获取传递过来的assignedStatus参数
+const viewCarAssignedId = Number(route.query.viewCarAssignedId); // 获取传递过来的viewCarAssignedId参数
 
 //登錄資訊用
 const store = useStore();
@@ -225,6 +285,9 @@ function callViewCarSelect() {
                 });
         })
 
+        //排程
+        getOldVHAgandaInfo(viewCarItem.value.viewCarDate,viewCarItem.value.viewTimeSection,employeeId);
+
     }).catch(function (error) {
         console.log("error",error);
         Swal.fire({
@@ -232,10 +295,171 @@ function callViewCarSelect() {
                 icon: "error"
             });
     }) 
-
-    
 }
+    
+function finishVK() {
+    //修改賞車狀態
+    let viewcarRQ ={
         
+        "viewCarStatus": 2, // 0:預約中，1:時間確定，2:完成賞車，3:註銷
+        "id": viewCarItem.value.id,
+        "carId": viewCarItem.value.car,
+        "salesScore":viewCarItem.value.salesScore,
+        "factoryScore":viewCarItem.value.factoryScore,
+        "carScore":viewCarItem.value.carScore,
+        "deal":viewCarItem.value.deal,
+        "customerId": viewCarItem.value.customer,
+        "viewCarDate": viewCarItem.value.viewCarDate,
+        "viewTimeSection": viewCarItem.value.viewTimeSectionNb 
+    }
+    console.log("viewCarItem.value",viewCarItem.value);
+    axiosapi.put(`/front/viewCar/update/${viewCarItem.value.id}`, viewcarRQ).then(function(VCupdate) {
+        console.log("VCupdate", VCupdate.data);
+        if (VCupdate.data.success) {
+            Swal.fire({
+					icon: 'success',
+					title: '賞車已完成',
+					showConfirmButton: false, // 隐藏确认按钮
+					timer: 1000, 
+					
+				})
+            //重新整理
+            finishVKVisible.value=false
+            callViewCarSelect();
+        }else{console.log("修改失敗");}
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+            text: `修改ViewCarId狀態-${viewCarItem.value.id}錯誤`+error.message,
+            icon: "error"
+        });
+    })
+}
+
+function cancelVK() {
+    //修改賞車狀態
+    let viewcarRQ ={
+        
+        "viewCarStatus": 3, // 0:預約中，1:時間確定，2:完成賞車，3:註銷
+        "id": viewCarItem.value.id,
+        "carId": viewCarItem.value.car,
+        "salesScore":viewCarItem.value.salesScore,
+        "factoryScore":viewCarItem.value.factoryScore,
+        "carScore":viewCarItem.value.carScore,
+        "deal":viewCarItem.value.deal,
+        "customerId": viewCarItem.value.customer,
+        "viewCarDate": viewCarItem.value.viewCarDate,
+        "viewTimeSection": viewCarItem.value.viewTimeSectionNb 
+    }
+    console.log("viewCarItem.value",viewCarItem.value);
+    axiosapi.put(`/front/viewCar/update/${viewCarItem.value.id}`, viewcarRQ).then(function(VCupdate) {
+        console.log("VCupdate", VCupdate.data);
+        if (VCupdate.data.success) {
+            // Swal.fire({
+			// 		icon: 'success',
+			// 		title: '賞車已註銷',
+			// 		showConfirmButton: false, // 隐藏确认按钮
+			// 		timer: 1000, 
+			// 	})
+            
+                //刪除原有賞車行程
+                axiosapi.delete(`/agenda/${oldAgandId.value}`).then(function(response1) {
+                    console.log("response1", response1);
+                    if(response1.data.success)  {
+
+                        //註銷原有指派單
+                        let requestVCA ={ 
+                            "id":viewCarAssignedId, 
+                            "assignedStatus":2
+                        }
+                        axiosapi.put(`/viewCarAssigned/${viewCarAssignedId}`, requestVCA).then(function(response2) {
+                            console.log("response2", response2);
+                            Swal.fire({
+                                icon: "success",
+                                title: '賞車行程已註銷',
+                                showConfirmButton: false,
+                                timer: 1000, 
+                            }); 
+                            cancelVKVisible.value=false
+
+                        }).catch(function(error) {
+                            console.log("error", error);
+                            ElMessage.error('指派錯誤'+error.message)
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "warning",
+                            text: response.data.msg,
+                            showConfirmButton: false,
+                        });
+                        setTimeout(function () {
+                                Swal.close();  //視窗關閉 
+                            }, 1000); 
+                    }
+                }).catch(function(error) {
+                    console.log("error", error);
+                    Swal.fire({
+                        icon: "error",
+                        text: "刪除錯誤："+error.message,
+                        showConfirmButton: false,
+                    });
+                    setTimeout(function () {
+                                Swal.close();  //視窗關閉 
+                            }, 1000); 
+                });
+
+            //重新整理
+            callViewCarSelect();
+        }else{console.log("修改失敗");}
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+            text: `修改ViewCarId狀態-${viewCarItem.value.id}錯誤`+error.message,
+            icon: "error"
+        });
+    })
+}
+
+//取得empID排程資料
+function getOldVHAgandaInfo(date,time,empId) {
+    const times = time.split('-');
+    let ckeckavailableTimeStr = `${date} ${times[0]}`;
+    let ckeckavailableTimeEnd = `${date} ${times[1]}`;
+    console.log("ckeckavailableTimeStr",ckeckavailableTimeStr);
+    console.log("ckeckavailableTimeEnd",ckeckavailableTimeEnd);
+
+    let oldAgandarequest={
+        "unavailableStatus":2,
+        "ckeckavailableTimeStr":ckeckavailableTimeStr,
+        "ckeckavailableTimeEnd":ckeckavailableTimeEnd,
+        "employeeId":empId,
+
+        "isPage":0,
+        "max":99999,
+        "dir":true,
+        "order":"id"
+    }
+    console.log("oldAgandarequest",oldAgandarequest);
+    axiosapi.post("/agenda/findByHQL",oldAgandarequest).then(function (rptime) {
+        console.log("oldAgand / totalElement",rptime.data.totalElement);
+        if (rptime.data.totalElement!=0) {
+            //要將舊的日程記錄下來
+            oldAgandId.value = rptime.data.data[0].id;
+            console.log("oldAgand",rptime.data.data);
+            console.log("oldAgandId有東西",oldAgandId.value);
+        }else{
+            oldAgandId.value =null;
+            console.log("oldAgandId沒東西",oldAgandId.value);
+        }
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+            text: "查詢oldAgand錯誤"+error.message,
+            icon: "error"
+        });
+        
+    }) 
+}
 </script>
     
 <style scoped>

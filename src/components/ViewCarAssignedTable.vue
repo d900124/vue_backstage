@@ -27,15 +27,15 @@
             </tr>
         </thead>
         <tbody class="table-group-divider">
-            <tr v-for="item in items" :key="item.id"  @click="changeToViewCar(item.id,item.employeeId,item.assignedStatus)">
+            <tr v-for="item in items" :key="item.id"  @click="changeToViewCar(item.id,item.employeeId,item.assignedStatus,item.viewCarStatus,item.viewCarAssignedId)">
             <th scope="row" class="table-td">{{item.id}}</th>
             <td class="table-td">{{item.viewCarStatusName}}</td>
             <td class="table-td">{{item.carinfoBrand}} - {{item.modelName}}</td>
             <td class="table-td">{{item.viewCarDate}}</td>
             <td class="table-td">{{item.viewTimeSection}}</td>
             <td class="table-td">{{item.customerName}}</td>
-            <td v-if="!isVKAModify" class="table-td">{{item.employeeName}}</td>
-            <td v-if="isVKAModify" class="table-td">
+            <td v-if="!isVKAModify || item.viewCarStatus==2 || item.viewCarStatus==3" class="table-td">{{item.employeeName}}</td>
+            <td v-if="isVKAModify && item.viewCarStatus!=2 && item.viewCarStatus!=3" class="table-td">
                 <el-select
                         v-model="item.employeeId"
                         placeholder="指派員工"
@@ -546,6 +546,7 @@ function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId,date,t
                     console.log("responseCreate", response);
                     if(response.data.success)  {
                         //新建排程Aganda(如果有舊排程則刪)
+                        console.log("oldAgandId", oldAgandId.value);
                         if (oldAgandId.value!=null) {
                             axiosapi.delete(`/agenda/${oldAgandId.value}`).then(function(responseDeleteOldAgandId) {
                                 console.log("responseDeleteOldAgandId", responseDeleteOldAgandId);
@@ -585,6 +586,54 @@ function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId,date,t
                                 ElMessage({
                                     message: '排程成功建立',
                                     type: 'success',
+                                })
+
+                                //取得單筆賞取得單筆賞車資料
+                                let viewCarInfo = [];
+                                axiosapi.get(`/front/viewCar/select/${ViewCarId}`).then(function (viewCarRES) {
+                                    console.log("viewCarRES",viewCarRES.data.list[0]);
+                                    viewCarInfo=viewCarRES.data.list[0]
+
+                                    //修改賞車狀態
+                                    let viewcarRQ ={
+                                        
+                                        "viewCarStatus": 1, // 0:預約中，1:時間確定，2:完成賞車，3:註銷
+                                        "id": ViewCarId,
+                                        "carId": viewCarInfo.car,
+                                        "salesScore":viewCarInfo.salesScore,
+                                        "factoryScore":viewCarInfo.factoryScore,
+                                        "carScore":viewCarInfo.carScore,
+                                        "deal":viewCarInfo.deal,
+                                        "customerId": viewCarInfo.customer,
+                                        "viewCarDate": viewCarInfo.viewCarDate,
+                                        "viewTimeSection": viewCarInfo.viewTimeSectionNb 
+                                    }
+                                    console.log("viewcarRQ",viewcarRQ);
+                                    axiosapi.put(`/front/viewCar/update/${ViewCarId}`, viewcarRQ).then(function(VCupdate) {
+                                        console.log("VCupdate", VCupdate.data);
+                                        if (VCupdate.data.success) {
+                                            console.log("成功修改");
+                                            ElMessage({
+                                                message: '賞車狀態成功修改',
+                                                type: 'success',
+                                            })
+                                            //重新整理
+                                            callViewCarSelect(false);
+                                        }else{console.log("修改失敗");}
+                                    }).catch(function (error) {
+                                        console.log("error",error);
+                                        Swal.fire({
+                                            text: `修改ViewCarId狀態-${ViewCarId}錯誤`+error.message,
+                                            icon: "error"
+                                        });
+                                    })
+                                }).catch(function (error) {
+                                    console.log("error",error);
+                                    Swal.fire({
+                                        text: `查詢ViewCarId-${ViewCarId}錯誤`+error.message,
+                                        icon: "error"
+                                    });
+                                    
                                 })
                             } else {
                                 ElMessage({
@@ -637,7 +686,6 @@ function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId,date,t
                     console.log("responseCreate", response);
                     if(response.data.success)  {
                         //新建排程Aganda
-                        if (oldAgandId.value==null) {
                             const times = time.split('-');
                             let unavailableTimeStr = `${date} ${times[0]}`;
                             let unavailableTimeEnd = `${date} ${times[1]}`;
@@ -657,6 +705,54 @@ function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId,date,t
                                         message: '排程成功建立',
                                         type: 'success',
                                     })
+                                    //取得單筆賞取得單筆賞車資料
+                                    let viewCarInfo = [];
+                                    axiosapi.get(`/front/viewCar/select/${ViewCarId}`).then(function (viewCarRES) {
+                                        console.log("viewCarRES",viewCarRES.data.list[0]);
+                                        viewCarInfo=viewCarRES.data.list[0]
+
+                                        //修改賞車狀態
+                                        let viewcarRQ ={
+                                            
+                                            "viewCarStatus": 1, // 0:預約中，1:時間確定，2:完成賞車，3:註銷
+                                            "id": ViewCarId,
+                                            "carId": viewCarInfo.car,
+                                            "salesScore":viewCarInfo.salesScore,
+                                            "factoryScore":viewCarInfo.factoryScore,
+                                            "carScore":viewCarInfo.carScore,
+                                            "deal":viewCarInfo.deal,
+                                            "customerId": viewCarInfo.customer,
+                                            "viewCarDate": viewCarInfo.viewCarDate,
+                                            "viewTimeSection": viewCarInfo.viewTimeSectionNb 
+                                        }
+                                        console.log("viewcarRQ",viewcarRQ);
+                                        axiosapi.put(`/front/viewCar/update/${ViewCarId}`, viewcarRQ).then(function(VCupdate) {
+                                            console.log("VCupdate", VCupdate.data);
+                                            if (VCupdate.data.success) {
+                                                console.log("成功修改");
+                                                ElMessage({
+                                                    message: '賞車狀態成功修改',
+                                                    type: 'success',
+                                                })
+                                                //重新整理
+                                                callViewCarSelect(false);
+                                            }else{console.log("修改失敗");}
+                                        }).catch(function (error) {
+                                            console.log("error",error);
+                                            Swal.fire({
+                                                text: `修改ViewCarId狀態-${ViewCarId}錯誤`+error.message,
+                                                icon: "error"
+                                            });
+                                        })
+                                    }).catch(function (error) {
+                                        console.log("error",error);
+                                        Swal.fire({
+                                            text: `查詢ViewCarId-${ViewCarId}錯誤`+error.message,
+                                            icon: "error"
+                                        });
+                                        
+                                    })
+                                    
                                 } else {
                                     ElMessage({
                                         message: response.data.msg,
@@ -667,7 +763,7 @@ function logoutAndCreateVCA(OldViewCarAssignedId,ViewCarSelseId,ViewCarId,date,t
                                 console.log("error", error);
                                 ElMessage.error('排程錯誤'+error.message)
                             });
-                        }
+                        
 
                         ElMessage({
                             message: '賞車指派成功',
@@ -729,8 +825,15 @@ function getOldAgandaInfo(date,time,empId) {
 }
 
 //跳轉導ViewCar頁面
-function changeToViewCar(viewcarId,employeeId,assignedStatus) {
-    router.push({ name: 'view-car-link', query: { viewcarId: viewcarId, employeeId:employeeId , assignedStatus:assignedStatus} });
+function changeToViewCar(viewcarId,employeeId,assignedStatus,viewCarStatus,viewCarAssignedId) {
+    if (viewCarStatus==0) {
+        ElMessage({
+            message: "尚未指派排單員工",
+            type: 'warning',
+        })
+    }else{
+        router.push({ name: 'view-car-link', query: { viewcarId: viewcarId, employeeId:employeeId , assignedStatus:assignedStatus , viewCarAssignedId:viewCarAssignedId} });
+    }
 }
 </script>
     
