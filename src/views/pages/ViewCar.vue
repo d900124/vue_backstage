@@ -274,8 +274,8 @@ function callViewCarSelect() {
         }
 
         //圖片
-        axiosapi.get(`image/isMainPic/${viewCarItem.value.car}`).then(function (responce) {
-            imgUrl.value = responce.data.isMainPic
+        axiosapi.get(`image/isListPic/${viewCarItem.value.car}`).then(function (responce) {
+            imgUrl.value = responce.data.isListPic[0].imageId
             console.log("imgUrl",imgUrl.value);
         }).catch(function (error) {
             console.log("error",error);
