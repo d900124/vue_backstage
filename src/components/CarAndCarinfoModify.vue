@@ -45,10 +45,11 @@
         <!-- <input type="text" name="customerId" v-model="carData.customerId" @input="doInput('customerId',$event)" required /> -->
 
         <!-- =======================管理銷售員======================= -->
-        <label for="employee">管理銷售員</label>
-        <input type="text" name="employeeId" v-model="carData.employeeId" @input="doInput('employeeId', $event)"
-          required />
-
+        <label for="employeeId">管理銷售員</label>
+        <select name="employeeId" v-model="carData.employeeId" @change="doInput('customerId', $event)" required>
+          <option v-for="employee in employees" :key="employee.id" :employee="employee" :value="`${employee.id}`">{{
+            employee.name }}</option>
+        </select>
         <!-- =======================議價空間======================= -->
         <label for="negotiable">議價空間</label>
         <select name="negotiable" v-model="carData.negotiable" @change="doInput('negotiable', $event)" required>
@@ -156,7 +157,6 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue';
-import axios from 'axios'
 import axiosapi from '@/plugins/axios';
 import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
@@ -176,6 +176,7 @@ const query = route.query
 const carData = ref({});
 const carId = query.id;
 const customers = ref([])
+const employees = ref([])
 
 //彈出視窗用屬性
 const cancelVisible = ref(false)
@@ -218,6 +219,7 @@ onMounted(async () => {
   showMainImage();
   showListImage();
   callFindCustomer();
+  callFindEmployee();
 });
 
 function callFindCustomer() {
@@ -244,6 +246,47 @@ function callFindCustomer() {
       });
     });
 }
+
+
+
+//員工選單
+function callFindEmployee() {
+  axiosapi.get(`${kajartaUrl}/employee/all`)
+    .then(function (response) {
+      if (response && response.data) {
+        console.log("employeeResponse", response);
+        employees.value = response.data.data
+        // carData.value={...carDatas.value[0]};
+        console.log("====================", employees.value);
+      } else {
+        console.error("Invalid response data structure:", response);
+      }
+
+      // setTimeout(function () {
+      //     Swal.close();
+      // }, 500);
+    })
+    .catch(function (error) {
+      console.error("Error fetching data:", error, response);
+      Swal.fire({
+        text: "查詢失敗：" + error.message,
+        icon: "error"
+      });
+    });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function callCarFind() {
   axiosapi.get(`${kajartaUrl}/car/find/${query.id}`)

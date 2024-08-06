@@ -116,7 +116,6 @@
 <script setup>
 import FileUpload from 'vue-upload-component'
 import { ref ,onMounted} from 'vue';
-import axios from 'axios';
 import axiosapi from '@/plugins/axios';
 import { faHouseMedicalCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { date } from 'quasar';

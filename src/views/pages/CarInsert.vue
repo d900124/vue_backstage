@@ -12,7 +12,6 @@
     
 <script setup>
 import { ref,onMounted } from 'vue'
-import axios from 'axios'
 import CarAndCarinfoModel from '@/components/CarAndCarinfoModel.vue';
 import axiosapi from '@/plugins/axios';
 

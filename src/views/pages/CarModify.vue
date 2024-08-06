@@ -14,7 +14,6 @@
 <script setup>
 import { ref,onMounted } from 'vue'
 import { useRoute,useRouter  } from 'vue-router';
-import axios from 'axios'
 import CarAndCarinfoModify from '@/components/CarAndCarinfoModify.vue';
 import axiosapi from '@/plugins/axios';
 

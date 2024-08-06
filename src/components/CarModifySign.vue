@@ -119,7 +119,6 @@
   import { computed,onMounted,ref } from 'vue';
   import axiosapi from '@/plugins/axios';
   import { useRouter } from 'vue-router' ;  
-  import axios from 'axios';  
   
   
   const router = useRouter()
@@ -157,7 +156,7 @@
   // 模糊查詢方法
   const performSearch = async () => {
   try {
-    const response = await axios.get('http://localhost:8080/kajarta/preference/searchMore', {
+    const response = await axiosapi.get('/preference/searchMore', {
       params: {
         brand: findBrand.value,
         modelName: input.value,
