@@ -175,7 +175,6 @@
 
 <script setup>
 import { ref, onMounted, reactive, watch } from 'vue'
-import axios from 'axios'
 import axiosapi from '@/plugins/axios';
 import FileUpload from 'vue-upload-component'
 import Swal from 'sweetalert2';
@@ -296,7 +295,7 @@ function handleClick() {
   dialogFormVisible.value = false;
   emits('customInsert');
   setTimeout(() => {
-    axios.get(`${kajartaUrl}/car/latest-car`)
+    axiosapi.get(`/car/latest-car`)
       .then((response) => {
         carId.value = response.data.id;
         newDialogVisible.value = true;
@@ -324,7 +323,7 @@ function handleUpload() {
   formData.append("isMainPic", isMainPic.value);
   formData.append("carId", carId.value);
 
-  axios.post(`${kajartaUrl}/image/create`, formData, {
+  axiosapi.post(`/image/create`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
@@ -353,7 +352,7 @@ function listUpload() {
   formData.append("isMainPic", isMainPic.value);
   formData.append("carId", carId.value);
 
-  axios.post(`${kajartaUrl}/image/create`, formData, {
+  axiosapi.post(`/image/create`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     }
