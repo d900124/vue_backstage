@@ -391,7 +391,8 @@ function callQuery() {
         "pageSize": rows.value,
         "leaveType": leaveType.value,
         "permisionStatus": permisionStatus.value,
-        "employeeId": employeeId.value
+        "employeeId": employeeId.value,
+        "teamLeaderId": employeeInfo.value.id,
     };
 
     axiosapi.post("/leave/query", request).then(function (response) {
@@ -441,7 +442,6 @@ async function doModify() {
         "employeeName": singleLeave.value.employeeName,
         "deputyId": singleLeave.value.deputyId,
         "deputyName": singleLeave.value.deputyName,
-        "teamLeaderId": singleLeave.value.teamLeaderId,
         "permisionRemarks": singleLeave.value.permisionRemarks,
         "permisionStatus": singleLeave.value.permisionStatus,
         "auditTime": singleLeave.value.auditTime,
