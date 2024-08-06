@@ -91,10 +91,12 @@
   
 <!-------------------- 新增車輛按鈕 --------------------------->
   
-          <div class="btm-div" style="display: flex;" @click="insertcar('insert')">
-              <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;"/>
-              <el-button type='' link class="text-btm" style="color: #a33238;">新增車輛</el-button>
-              </div>
+<div class="btm-div" style="display: flex;" @click="toggleCarInsert">
+      <font-awesome-icon icon="plus" size="xl" style="color: #a33238; padding: 13 5 0 5;" />
+      <el-button type="" link class="text-btm" style="color: #a33238;">新增車輛</el-button>
+    </div>
+
+    <car-insert v-if="showCarInsert"></car-insert>
  <!-------------------- 返回車輛資訊按鈕 --------------------------->
 
               <div class="btm-div" style="display: flex;" @click="goBack">
@@ -119,7 +121,7 @@
   import { computed,onMounted,ref } from 'vue';
   import axiosapi from '@/plugins/axios';
   import { useRouter } from 'vue-router' ;  
-  
+  import CarInsert from '@/views/pages/CarInsert.vue';
   
   const router = useRouter()
   const props=defineProps([]);
@@ -129,7 +131,10 @@
   const input = ref('')
   const total = ref(0);
   const currentPage = ref(1);
-  
+  const showCarInsert = ref(false);
+  const toggleCarInsert = () => {
+  showCarInsert.value = !showCarInsert.value;
+};
 
   //轉值 品牌
   const brandOptions = ref([

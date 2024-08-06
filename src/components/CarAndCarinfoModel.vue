@@ -92,6 +92,10 @@
             <el-input v-model="form.launchDate" autocomplete="off" required
               @input="value => doInput('launchDate', value)" />
           </el-form-item>
+          <el-form-item label="狀態" :label-width="formLabelWidth">
+            <el-input v-model="form.state" autocomplete="off" required
+              @input="value => doInput('state', value)" />
+          </el-form-item>
         </el-form>
       </div>
     </div>
@@ -216,7 +220,7 @@ const form = reactive({
   negotiable: '',
   conditionScore: '',
   branch: '',
-  state: 1,
+  state: '',
   price: '',
   remark: '',
   launchDate: '',

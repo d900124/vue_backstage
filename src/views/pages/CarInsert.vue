@@ -1,13 +1,9 @@
 <template>
-  <!-- ===============================拖曳上傳=============================== -->
-  <div>
-  <br><br><br><br>
   <CarAndCarinfoModel  
     ref="carAndCarinfoModel" 
     v-model="Datas" 
     @custom-insert="callCreate"
     ></CarAndCarinfoModel>
-</div>
 </template>
     
 <script setup>
