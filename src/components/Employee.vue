@@ -457,6 +457,8 @@ function doCreat() {
                 Swal.fire({
                     icon: "warning",
                     text: response.data.msg,
+                    timer: 1500, 
+                    showConfirmButton: false,
                 });
             }
         })
@@ -464,6 +466,8 @@ function doCreat() {
             Swal.fire({
                 icon: "error",
                 text: "新增錯誤：" + error.message,
+                timer: 1500, 
+                showConfirmButton: false,
             });
         });
 }
