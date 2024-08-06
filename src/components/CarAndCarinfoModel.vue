@@ -1,6 +1,4 @@
 <template>
-  
-
   <el-dialog v-model="dialogFormVisible" title="車輛資料" width="1000px">
     <div class="dialog-container">
       <!-- 左側區塊 -->
@@ -8,45 +6,80 @@
         <el-form :model="form">
           <!-- 車型 -->
           <el-form-item label="車型" :label-width="formLabelWidth">
-            <el-select v-model="form.carinfoId" @change="value => doInput('carinfoId', value)" placeholder="選擇你要的車型"
-              required>
+            <el-select
+              v-model="form.carinfoId"
+              @change="(value) => doInput('carinfoId', value)"
+              placeholder="選擇你要的車型"
+              required
+            >
               <el-option value="" disabled>選擇你要的車型</el-option>
-              <el-option v-for="carinfoData in carinfoDatas" :key="carinfoData.id" :label="carinfoData.modelName"
-                :value="carinfoData.id" />
+              <el-option
+                v-for="carinfoData in carinfoDatas"
+                :key="carinfoData.id"
+                :label="carinfoData.modelName"
+                :value="carinfoData.id"
+              />
             </el-select>
           </el-form-item>
 
           <!-- 里程數 -->
           <el-form-item label="里程數" :label-width="formLabelWidth">
-            <el-input v-model="form.milage" autocomplete="off" required @input="value => doInput('milage', value)" />
+            <el-input
+              v-model="form.milage"
+              autocomplete="off"
+              required
+              @input="(value) => doInput('milage', value)"
+            />
           </el-form-item>
 
           <!-- 年分 -->
           <el-form-item label="出廠年份" :label-width="formLabelWidth">
-            <el-input v-model="form.productionYear" autocomplete="off" required
-              @input="value => doInput('productionYear', value)" />
+            <el-input
+              v-model="form.productionYear"
+              autocomplete="off"
+              required
+              @input="(value) => doInput('productionYear', value)"
+            />
           </el-form-item>
 
-            <!-- 價格 -->
-            <el-form-item label="價格" :label-width="formLabelWidth">
-            <el-input v-model="form.price" autocomplete="off" required @input="value => doInput('price', value)" />
+          <!-- 價格 -->
+          <el-form-item label="價格" :label-width="formLabelWidth">
+            <el-input
+              v-model="form.price"
+              autocomplete="off"
+              required
+              @input="(value) => doInput('price', value)"
+            />
           </el-form-item>
 
           <!-- 顏色 -->
           <el-form-item label="顏色" :label-width="formLabelWidth">
-            <el-input v-model="form.color" autocomplete="off" required @input="value => doInput('color', value)" />
+            <el-input
+              v-model="form.color"
+              autocomplete="off"
+              required
+              @input="(value) => doInput('color', value)"
+            />
           </el-form-item>
 
           <!-- 賣家 -->
           <el-form-item label="賣家" :label-width="formLabelWidth">
-            <el-input v-model="form.customerId" autocomplete="off" required
-              @input="value => doInput('customerId', value)" />
+            <el-input
+              v-model="form.customerId"
+              autocomplete="off"
+              required
+              @input="(value) => doInput('customerId', value)"
+            />
           </el-form-item>
 
           <!-- 管理銷售員 -->
           <el-form-item label="管理銷售員" :label-width="formLabelWidth">
-            <el-input v-model="form.employeeId" autocomplete="off" required
-              @input="value => doInput('employeeId', value)" />
+            <el-input
+              v-model="form.employeeId"
+              autocomplete="off"
+              required
+              @input="(value) => doInput('employeeId', value)"
+            />
           </el-form-item>
         </el-form>
       </div>
@@ -56,45 +89,84 @@
         <el-form :model="form">
           <!-- 議價空間 -->
           <el-form-item label="議價空間" :label-width="formLabelWidth">
-            <el-select v-model="form.negotiable" @change="value => doInput('negotiable', value)" placeholder="選擇議價空間"
-              required>
+            <el-select
+              v-model="form.negotiable"
+              @change="(value) => doInput('negotiable', value)"
+              placeholder="選擇議價空間"
+              required
+            >
               <el-option value="" disabled>選擇議價空間</el-option>
-              <el-option v-for="option in negotiableOptions" :key="option.value" :label="option.label"
-                :value="option.value" />
+              <el-option
+                v-for="option in negotiableOptions"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
+              />
             </el-select>
           </el-form-item>
 
-           <!-- 停放分店 -->
-           <el-form-item label="停放分店" :label-width="formLabelWidth">
-            <el-select v-model="form.branch" @change="value => doInput('branch', value)" placeholder="選擇停放的分店" required>
+          <!-- 停放分店 -->
+          <el-form-item label="停放分店" :label-width="formLabelWidth">
+            <el-select
+              v-model="form.branch"
+              @change="(value) => doInput('branch', value)"
+              placeholder="選擇停放的分店"
+              required
+            >
               <el-option value="" disabled>選擇停放的分店</el-option>
-              <el-option v-for="branch in branches" :key="branch.value" :label="branch.label" :value="branch.value" />
+              <el-option
+                v-for="branch in branches"
+                :key="branch.value"
+                :label="branch.label"
+                :value="branch.value"
+              />
             </el-select>
           </el-form-item>
 
-           <!-- 是否改裝 -->
-           <el-form-item label="是否改裝" :label-width="formLabelWidth">
-            <el-select v-model="form.remark" @change="value => doInput('remark', value)" placeholder="是否有改裝" required>
+          <!-- 是否改裝 -->
+          <el-form-item label="是否改裝" :label-width="formLabelWidth">
+            <el-select
+              v-model="form.remark"
+              @change="(value) => doInput('remark', value)"
+              placeholder="是否有改裝"
+              required
+            >
               <el-option value="" disabled>是否有改裝</el-option>
-              <el-option v-for="option in remarkOptions" :key="option.value" :label="option.label"
-                :value="option.value" />
+              <el-option
+                v-for="option in remarkOptions"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
+              />
             </el-select>
           </el-form-item>
 
           <!-- 車況評分 -->
           <el-form-item label="車況評分" :label-width="formLabelWidth">
-            <el-input v-model="form.conditionScore" autocomplete="off" required
-              @input="value => doInput('conditionScore', value)" />
+            <el-input
+              v-model="form.conditionScore"
+              autocomplete="off"
+              required
+              @input="(value) => doInput('conditionScore', value)"
+            />
           </el-form-item>
 
           <!-- 上架日期 -->
           <el-form-item label="上架日期" :label-width="formLabelWidth">
-            <el-input v-model="form.launchDate" autocomplete="off" required
-              @input="value => doInput('launchDate', value)" />
+            <el-input
+              v-model="form.launchDate"
+              autocomplete="off"
+              required
+              @input="(value) => doInput('launchDate', value)"
+            />
           </el-form-item>
           <el-form-item label="狀態" :label-width="formLabelWidth">
-            <el-input v-model="form.state" autocomplete="off" required
-              @input="value => doInput('state', value)" />
+            <el-input
+              v-model="form.state"
+              autocomplete="off"
+              required
+              @input="(value) => doInput('state', value)"
+            />
           </el-form-item>
         </el-form>
       </div>
@@ -102,24 +174,33 @@
 
     <template #footer>
       <div class="dialog-footer">
+        <el-button @click="keyInOneClick()">一鍵新增</el-button>
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleClick()">
-          下一步
-        </el-button>
+        <el-button type="primary" @click="handleClick()"> 下一步 </el-button>
       </div>
     </template>
   </el-dialog>
 
-
-    <!-- 主圖 -->
+  <!-- 主圖 -->
   <div class="dialog-wrapper">
-    <el-dialog v-model="newDialogVisible" title="選擇主圖" width="600px" class="centered-dialog">
+    <el-dialog
+      v-model="newDialogVisible"
+      title="選擇主圖"
+      width="600px"
+      class="centered-dialog"
+    >
       <div class="dialog-content">
         <div class="upload-section">
           <div class="upload-header">
             <label for="images">檔案：</label>
-            <FileUpload class="btn btn-primary" accept=".jpg,.png,.jpeg" input-id="images" input-name="images"
-              v-model="images" :multiple="false">
+            <FileUpload
+              class="btn btn-primary"
+              accept=".jpg,.png,.jpeg"
+              input-id="images"
+              input-name="images"
+              v-model="images"
+              :multiple="false"
+            >
               選擇檔案
             </FileUpload>
           </div>
@@ -128,7 +209,11 @@
               <tbody>
                 <tr v-for="(image, index) in images" :key="image.id">
                   <td>{{ image.name }}</td>
-                  <td><el-button type="danger" @click="deleteFile(index)">刪除檔案</el-button></td>
+                  <td>
+                    <el-button type="danger" @click="deleteFile(index)"
+                      >刪除檔案</el-button
+                    >
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -142,13 +227,24 @@
     </el-dialog>
 
     <!-- 清單 -->
-    <el-dialog v-model="listDialogVisible" title="選擇清單圖" width="600px" class="centered-dialog">
+    <el-dialog
+      v-model="listDialogVisible"
+      title="選擇清單圖"
+      width="600px"
+      class="centered-dialog"
+    >
       <div class="dialog-content">
         <div class="upload-section">
           <div class="upload-header">
             <label for="images">檔案：</label>
-            <FileUpload class="btn btn-primary" accept=".jpg,.png,.jpeg" input-id="images" input-name="images"
-              v-model="images" :multiple="true">
+            <FileUpload
+              class="btn btn-primary"
+              accept=".jpg,.png,.jpeg"
+              input-id="images"
+              input-name="images"
+              v-model="images"
+              :multiple="true"
+            >
               選擇檔案
             </FileUpload>
           </div>
@@ -157,7 +253,11 @@
               <tbody>
                 <tr v-for="(image, index) in images" :key="image.id">
                   <td>{{ image.name }}</td>
-                  <td><el-button type="danger" @click="deleteFile(index)">刪除檔案</el-button></td>
+                  <td>
+                    <el-button type="danger" @click="deleteFile(index)"
+                      >刪除檔案</el-button
+                    >
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -170,19 +270,13 @@
       </span>
     </el-dialog>
   </div>
-
-
-
-
-
 </template>
 
 <script setup>
-import { ref, onMounted, reactive, watch } from 'vue'
-import axiosapi from '@/plugins/axios';
-import FileUpload from 'vue-upload-component'
-import Swal from 'sweetalert2';
-
+import { ref, onMounted, reactive, watch } from "vue";
+import axiosapi from "@/plugins/axios";
+import FileUpload from "vue-upload-component";
+import Swal from "sweetalert2";
 
 const props = defineProps(["modelValue", "carinfoData"]);
 const emits = defineEmits(["customInsert", "update:modelValue"]);
@@ -192,39 +286,55 @@ const carinfoDatas = ref([]);
 const dialogFormVisible = ref(true);
 const newDialogVisible = ref(false);
 const listDialogVisible = ref(false);
-const formLabelWidth = '140px';
+const formLabelWidth = "140px";
 
 const branches = [
-  { value: '1', label: '台北市' },
-  { value: '2', label: '台中市' },
-  { value: '3', label: '高雄市' }
+  { value: "1", label: "台北市" },
+  { value: "2", label: "台中市" },
+  { value: "3", label: "高雄市" },
 ];
 const negotiableOptions = [
-  { value: '1', label: '5%' },
-  { value: '2', label: '10%' },
-  { value: '3', label: '15%' },
-  { value: '4', label: '20%' }
+  { value: "1", label: "5%" },
+  { value: "2", label: "10%" },
+  { value: "3", label: "15%" },
+  { value: "4", label: "20%" },
 ];
 const remarkOptions = [
-  { value: '1', label: '有' },
-  { value: '0', label: '無' }
+  { value: "1", label: "有" },
+  { value: "0", label: "無" },
 ];
 
 const form = reactive({
-  carinfoId: '',
-  color: '',
-  milage: '',
-  productionYear: '',
-  customerId: '',
-  employeeId: '',
-  negotiable: '',
-  conditionScore: '',
-  branch: '',
-  state: '',
-  price: '',
-  remark: '',
-  launchDate: '',
+  carinfoId: "",
+  color: "",
+  milage: "",
+  productionYear: "",
+  customerId: "",
+  employeeId: "",
+  negotiable: "",
+  conditionScore: "",
+  branch: "",
+  state: "",
+  price: "",
+  remark: "",
+  launchDate: "",
 });
+
+function keyInOneClick() {
+  form.conditionScore = "90";
+  form.state = "1";
+  form.launchDate = "2024-08-13";
+  form.remark = "0";
+  form.branch = "2";
+  form.negotiable = "3";
+  form.employeeId = "5";
+  form.customerId = "10";
+  form.color = "white";
+  form.price = "2000000";
+  form.productionYear = "2022";
+  form.milage = "1000000";
+  form.carinfoId = carinfoDatas.value[2].modelName;
+}
 
 function doInput(key, event) {
   let value;
@@ -233,12 +343,15 @@ function doInput(key, event) {
   } else if (event !== undefined) {
     value = event;
   } else {
-    console.error(`Invalid event object passed to doInput for key: ${key}`, event);
+    console.error(
+      `Invalid event object passed to doInput for key: ${key}`,
+      event
+    );
     return;
   }
-  emits('update:modelValue', {
+  emits("update:modelValue", {
     ...props.modelValue,
-    [key]: value
+    [key]: value,
   });
 }
 
@@ -247,7 +360,8 @@ onMounted(function () {
 });
 
 function callCarinfoFind() {
-  axiosapi.get(`/carinfo/list`)
+  axiosapi
+    .get(`/carinfo/list`)
     .then(function (response) {
       if (response && response.data) {
         console.log("response", response);
@@ -260,19 +374,19 @@ function callCarinfoFind() {
       console.error("Error fetching data:", error, response);
       Swal.fire({
         text: "查詢失敗：" + error.message,
-        icon: "error"
+        icon: "error",
       });
     });
 }
 
 // 圖片上傳相關code
 const images = ref([]);
-const isListPic = ref('');
-const isMainPic = ref('');
-const carId = ref('');
+const isListPic = ref("");
+const isMainPic = ref("");
+const carId = ref("");
 
 function validate(selected) {
-  console.log("selected", selected)
+  console.log("selected", selected);
   if (selected.length == 0) {
     alert("請選擇檔案");
     return false;
@@ -291,32 +405,30 @@ function domultiple() {
     images.value = [];
     return;
   }
-
 }
-
 
 function handleClick() {
   dialogFormVisible.value = false;
-  emits('customInsert');
+  emits("customInsert");
   setTimeout(() => {
-    axiosapi.get(`/car/latest-car`)
+    axiosapi
+      .get(`/car/latest-car`)
       .then((response) => {
         carId.value = response.data.id;
         newDialogVisible.value = true;
-        isListPic.value = '0'
-        isMainPic.value = '1'
+        isListPic.value = "0";
+        isMainPic.value = "1";
       })
       .catch((error) => {
-        console.error('Failed to get the latest car ID:', error);
+        console.error("Failed to get the latest car ID:", error);
       });
   }, 0);
 }
 
 function handleUpload() {
-
   let formData = new FormData();
 
-  images.value.forEach(image => {
+  images.value.forEach((image) => {
     formData.append("images", image.file);
   });
   if (!validate(images.value)) {
@@ -329,23 +441,21 @@ function handleUpload() {
 
   axiosapi.post(`/image/create`, formData, {
     headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  })
+      "Content-Type": "multipart/form-data",
+    },
+  });
   images.value = [];
   newDialogVisible.value = false;
   setTimeout(() => {
     listDialogVisible.value = true;
-    isListPic.value = '1'
-    isMainPic.value = '0'
+    isListPic.value = "1";
+    isMainPic.value = "0";
   }, 0);
-
 }
 
 function listUpload() {
- 
   let formData = new FormData();
-  images.value.forEach(image => {
+  images.value.forEach((image) => {
     formData.append("images", image.file);
   });
   if (!validate(images.value)) {
@@ -358,16 +468,15 @@ function listUpload() {
 
   axiosapi.post(`/image/create`, formData, {
     headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  })
+      "Content-Type": "multipart/form-data",
+    },
+  });
   listDialogVisible.value = false;
   Swal.fire({
     icon: "success",
     text: "車輛新增成功",
-  })
+  });
 }
-
 
 function deleteFile(index) {
   images.value.splice(index, 1);
