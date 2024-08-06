@@ -115,7 +115,7 @@
           <div class="upload-header">
             <label for="images">檔案：</label>
             <FileUpload class="btn btn-primary" accept=".jpg,.png,.jpeg" input-id="images" input-name="images"
-              v-model="images" :multiple="true">
+              v-model="images" :multiple="false">
               選擇檔案
             </FileUpload>
           </div>
