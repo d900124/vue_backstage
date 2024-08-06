@@ -397,6 +397,7 @@ function doCreate() {
                 Swal.fire({
                     icon: "success",
                     text: response.data.msg,
+                    timer: 1500, 
                     showConfirmButton: false,
                 }).then(function () {
                     openCreate.value = false;
@@ -405,6 +406,8 @@ function doCreate() {
                 Swal.fire({
                     icon: "warning",
                     text: response.data.msg,
+                    timer: 1500, 
+                    showConfirmButton: false,
                 });
             }
         })
@@ -412,7 +415,9 @@ function doCreate() {
             Swal.close();
             Swal.fire({
                 icon: "error",
-                text: "新增错误：" + (error.response?.data?.msg || '未知错误'),
+                text: "新增錯誤：" + (error.response?.data?.msg || '未知錯誤'),
+                timer: 1500, 
+                showConfirmButton: false,
             });
         });
 }

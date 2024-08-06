@@ -171,6 +171,8 @@ function doModify() {
         Swal.fire({
             icon: "warning",
             text: "原密碼不可為空",
+            timer: 1500, 
+            showConfirmButton: false
         });
         return;
     }
@@ -178,6 +180,8 @@ function doModify() {
         Swal.fire({
             icon: "warning",
             text: "新密碼不可為空",
+            timer: 1500, 
+            showConfirmButton: false
         });
         return;
     }
@@ -185,7 +189,6 @@ function doModify() {
     Swal.fire({
         text: "執行中......",
         allowOutsideClick: false,
-        showConfirmButton: false,
     });
 
     let request = {
@@ -201,7 +204,9 @@ function doModify() {
             Swal.fire({
                 icon: "success",
                 text: response.data.message,
+                timer: 1500, 
                 showConfirmButton: false,
+                text: "修改密碼成功",
             },700).then(() => {
                 setTimeout(() => {
                     window.location.reload();  // 自动刷新页面
@@ -218,6 +223,8 @@ function doModify() {
         Swal.fire({
             icon: "error",
             text: "修改錯誤：" + error.message,
+            timer: 1500, 
+            showConfirmButton: false,
         });
     }).finally(() => {
         setTimeout(() => {
