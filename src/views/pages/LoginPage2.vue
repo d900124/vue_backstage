@@ -72,8 +72,9 @@ const handleSubmit = () => {
 			if (data.success && data.code === 200) {
 				Swal.fire({
 					icon: 'success',
-					title: '登入成功',
-					text: '您已成功登入！'
+				title: '登入成功',
+				timer: 1500, 
+				showConfirmButton: false
 				}).then(async () => {
 					const username = data.data.username;
 
@@ -85,7 +86,9 @@ const handleSubmit = () => {
 				Swal.fire({
 					icon: 'error',
 					title: '登入失敗',
-					text: data.msg || '帳號或密碼錯誤'
+					text: data.msg || '帳號或密碼錯誤',
+          timer: 1500, 
+				showConfirmButton: false
 				});
 			}
 		})

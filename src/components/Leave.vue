@@ -391,7 +391,8 @@ function callQuery() {
         "pageSize": rows.value,
         "leaveType": leaveType.value,
         "permisionStatus": permisionStatus.value,
-        "employeeId": employeeId.value
+        "employeeId": employeeId.value,
+        "teamLeaderId": employeeInfo.value.id,
     };
 
     axiosapi.post("/leave/query", request).then(function (response) {
@@ -441,7 +442,6 @@ async function doModify() {
         "employeeName": singleLeave.value.employeeName,
         "deputyId": singleLeave.value.deputyId,
         "deputyName": singleLeave.value.deputyName,
-        "teamLeaderId": singleLeave.value.teamLeaderId,
         "permisionRemarks": singleLeave.value.permisionRemarks,
         "permisionStatus": singleLeave.value.permisionStatus,
         "auditTime": singleLeave.value.auditTime,
@@ -497,7 +497,8 @@ async function doModify() {
                     Swal.fire({
                         icon: "success",
                         text: '審核與員工排程建立成功',
-                        showConfirmButton: true
+                        timer: 1500, 
+                        showConfirmButton: false,
                     });
                 } else {
                     throw new Error(modifyResponse.data.message);
@@ -510,7 +511,8 @@ async function doModify() {
                     Swal.fire({
                         icon: "success",
                         text: '修改審核成功',
-                        showConfirmButton: true
+                        timer: 1500, 
+                        showConfirmButton: false,
                     });
                 } else {
                     throw new Error(modifyResponse.data.message);
@@ -523,8 +525,9 @@ async function doModify() {
             console.log("error", error);
             Swal.fire({
                 icon: "error",
-                text: "操作錯誤：" + error.message,
-                showConfirmButton: true
+                text: "錯誤：" + error.message,
+                timer: 1500, 
+                showConfirmButton: false,
             });
         }
     } else {
@@ -532,7 +535,8 @@ async function doModify() {
         Swal.fire({
             icon: "error",
             text: "時段錯誤",
-            showConfirmButton: true
+            timer: 1500, 
+            showConfirmButton: false,
         });
     }
     await leaveInfo(singleLeave.value.id);

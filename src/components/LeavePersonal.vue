@@ -506,7 +506,9 @@ function findAllEmployee() {
             console.log('error', error);
             Swal.fire({
                 text: '获取员工列表错误：' + error.message,
-                icon: 'error'
+                icon: 'error',
+                timer: 1500, 
+				showConfirmButton: false
             });
         });
 }
@@ -539,7 +541,8 @@ function doCreate() {
         Swal.fire({
             icon: "error",
             text: "請假時數必須大於0",
-            showConfirmButton: true
+            timer: 1500, 
+            showConfirmButton: false
         });
         return;
     }
@@ -624,7 +627,8 @@ function doCreate() {
             Swal.fire({
                 icon: "error",
                 text: "無此假別",
-                showConfirmButton: true
+                timer: 1500, 
+				showConfirmButton: false
             });
             return;
     }
@@ -633,7 +637,8 @@ function doCreate() {
         Swal.fire({
             icon: "error",
             text: errorMessage,
-            showConfirmButton: true
+            timer: 1500, 
+            showConfirmButton: false
         }).then(() => {
             // 关闭对话框
             creatDdialogVisible.value = false;
