@@ -1179,6 +1179,7 @@ function removeAgangaEvent() {
             }, 1000); 
             if (removeEventStatus.value == 1) {
                 changeleaveStatus();
+                location.reload();
             }
         } else {
             Swal.fire({
