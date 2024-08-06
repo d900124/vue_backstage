@@ -1,4 +1,5 @@
 <template>
+        <div class="col-12" style="height: 50px;"></div>
     <div class="col-1"></div>
     <!-- 多選下拉選單(簡易搜尋) -->
     <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
@@ -64,14 +65,9 @@
 
     </div>
     <div class="col-1"></div>
-
     <div class="col-1"></div>
     <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-start;">
-        <!-- 新增用按鈕 ，此功能不須新增-->
-        <div class="btm-div" style="display: flex;" @click="openModal('insert')">
-        </div>
     </div>
-
     <div class="col-5" style="padding: 0px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
         <!-- 分頁區塊 -->
         <el-pagination style="margin: 10px 0px;" hide-on-single-page=true layout="total,prev, pager, next"
@@ -89,100 +85,125 @@
         </el-divider>
     </div>
     <div v-if="openZon" class="col-1"></div>
-    <!-- 下方詳細資料區 / 第一欄-->
-    <div v-if="openZon" class="col-1"></div>
-    <div v-if="openZon" class="col-10" style="height: 250px; background-color:rgb(245, 250, 250)  ;">
-        <div class="table-responsive" style="padding:20px ;height: 250px; ">
-            <table class="table" style="width: 1000px; ">
-                <thead style="border-bottom: 2px solid #a33238;">
-                    <tr>
-                        <th scope="col" class="table-th">註冊時間</th>
-                        <th scope="col" class="table-th">帳號類別</th>
-                        <th scope="col" class="table-th">帳號</th>
-                        <th scope="col" class="table-th">姓名</th>
-                        <th scope="col" class="table-th">手機</th>
-                    </tr>
-                </thead>
-                <tbody class="table-group-divider">
-                    <tr v-if="!isModify">
-                        <th scope="row" class="table-td" name="id">{{ singleCustomer.createTime }}</th>
-                        <td class="table-td">{{ singleCustomer.accountTypeName }}</td>
-                        <td class="table-td">{{ singleCustomer.account }}</td>
-                        <td class="table-td">{{ singleCustomer.name }} </td>
-                        <td class="table-td">{{ singleCustomer.phone }}</td>
-                    </tr>
-                    <tr v-if="isModify">
-                        <th scope="row" class="table-td" name="id" :value="singleCustomer.id">
-                            {{ singleCustomer.createTime }}
-                        </th>
-                        <td class="table-td">{{ singleCustomer.accountTypeName }}</td>
-                        <td class="table-td">{{ singleCustomer.account }}</td>
-                        <td class="table-td">
-                            <el-input v-model="singleCustomer.name" placeholder="姓名"></el-input>
-                        </td>
-                        <td class="table-td">
-                            <el-input v-model="singleCustomer.phone" placeholder="電話"></el-input>
-                        </td>
-                    </tr>
-                </tbody>
-                <div style="height: 20px;"></div>
-                <!-- 下方詳細資料區 / 第二欄-->
-                <thead style="border-bottom: 2px solid #a33238;">
-                    <tr>
-                        <th scope="col" class="table-th">性別</th>
-                        <th scope="col" class="table-th">縣市</th>
-                        <th scope="col" class="table-th">地址</th>
-                        <th scope="col" class="table-th">身分證號</th>
-                        <th scope="col" class="table-th">備註</th>
-                    </tr>
-                </thead>
-                <tbody class="table-group-divider">
-                    <tr v-if="!isModify">
-                        <th scope="row" class="table-td" name="id">{{ singleCustomer.sex }}</th>
-                        <td class="table-td">{{ singleCustomer.cityName }}</td>
-                        <td class="table-td">{{ singleCustomer.address }}</td>
-                        <td class="table-td">{{ singleCustomer.idNumber }}</td>
-                        <td class="table-td">{{ singleCustomer.remarks }}</td>
-                    </tr>
-                    <tr v-if="isModify">
-                        <td class="table-td">
-                            <el-select v-model="singleCustomer.sex" placeholder="請選擇性別">
-                                <el-option label="M" value="M"></el-option>
-                                <el-option label="F" value="F"></el-option>
-                            </el-select>
-                        </td>
-                        <td class="table-td">{{ singleCustomer.cityName }}</td>
-                        <td class="table-td">
-                            <el-input v-model="singleCustomer.address" placeholder="地址"></el-input>
-                        </td>
-                        <td class="table-td">
-                            <el-input v-model="singleCustomer.idNumber" placeholder="身分證號"></el-input>
-                        </td>
-                        <td class="table-td">
-                            <el-input v-model="singleCustomer.remarks" placeholder="備註"></el-input>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+    <div class="row" style="margin-top: 3%; height:550px" v-if="openZon">
+        <form class="col-md-8 customer-form" style="margin-bottom:300px" v-if="!isModify" >
+            <div class="form-item">
+                <label for="createTime">註冊時間&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleCustomer.createTime }}</span>
+            </div>
+            <div class="form-item" >
+                <label for="accountTypeName">帳號類別&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleCustomer.accountTypeName }}</span>
+            </div>
+            <div class="form-item">
+                <label for="account">帳號&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleCustomer.account }}</span>
+            </div>
+            <div class="form-item">
+                <label for="name">姓名&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <span class="infoText" >{{ singleCustomer.name }}</span>
+            </div>
+            <div class="form-item" > 
+                <label for="sex">性別&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleCustomer.sex }}</span>
+            </div>
+            <div class="form-item">
+                <label for="phone">電話&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleCustomer.phone }}</span>
+            </div>
+            <div class="form-item">
+                <label for="idNumber">身分證號&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleCustomer.idNumber }}</span>
+            </div>
+            <div class="form-item">
+                <label for="email">E-mail&emsp;&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleCustomer.email }}</span>
+            </div>
+            <div class="form-item">
+  <label for="city">縣市&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+  <span class="infoText">{{ cityName }}</span>
+</div>
+            <div class="form-item">
+                <label for="address">地址&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleCustomer.address }}</span>
+            </div>
+            <div class="form-item">
+                <label for="remarks">備註&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleCustomer.remarks }}</span>
+            </div>
+        </form>
+        <div v-if="!isModify" class="col-md-4 d-flex flex-column align-items-center">
+            <img src="/member_info_01.jpg" alt="Register" class="card-image mb-3" style="height:550px; width:430px"/>
         </div>
-
-
-
+        <form v-if="isModify" class="col-md-8 customer-form" style="height:550px">
+            <div class="form-item">
+                <label for="createTime">註冊時間&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleCustomer.createTime }}</span>
+            </div>
+            <div class="form-item">
+                <label for="accountTypeName">帳號類別&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleCustomer.accountTypeName }}</span>
+            </div>
+            <div class="form-item">
+                <label for="account">帳號&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <span class="infoText">{{ singleCustomer.account }}</span>
+            </div>
+            <div class="form-item">
+                <label for="name" >姓名&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <el-input v-model="singleCustomer.name" placeholder="姓名" class="custom-el-input" size="small"></el-input>
+            </div>
+            <div class="form-item">
+                <label for="sex">性別&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <el-select v-model="singleCustomer.sex" placeholder="請選擇性別" class="custom-el-input" size="small">
+                    <el-option label="M" value="M"></el-option>
+                    <el-option label="F" value="F"></el-option>
+                </el-select>
+            </div>
+            <div class="form-item">
+                <label for="phone">電話&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <el-input v-model="singleCustomer.phone" placeholder="姓名" class="custom-el-input" size="small"></el-input>
+            </div>
+            <div class="form-item">
+                <label for="idNumber">身分證號&emsp;&emsp;&emsp;：</label>
+                <el-input v-model="singleCustomer.idNumber" placeholder="身分證號" class="custom-el-input" size="small"></el-input>
+            </div>
+            <div class="form-item">
+                <label for="email">E-mail&emsp;&emsp;&emsp;&emsp;：</label>
+                <el-input v-model="singleCustomer.email" placeholder="姓名" class="custom-el-input" size="small"></el-input>
+            </div>
+            <div class="form-item">
+                <label for="city">縣市&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <el-select v-model="singleCustomer.city" clearable placeholder="縣市" size="small" class="custom-el-input">
+            <el-option v-for="Option in cityOptions" :key="Option.value" :label="Option.label"
+                :value="Option.value" />
+        </el-select>
+            </div>
+            <div class="form-item">
+                <label for="address">地址&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <el-input v-model="singleCustomer.address" placeholder="請輸入地址" class="custom-el-input" size="small"></el-input>
+            </div>
+            <div class="form-item">
+                <label for="remarks">備註&emsp;&emsp;&emsp;&emsp;&emsp;：</label>
+                <el-input v-model="singleCustomer.remarks" placeholder="請輸入備註" class="custom-el-input" size="small"></el-input>
+            </div>
+        </form>
+        <div v-if="isModify" class="col-md-4 d-flex flex-column align-items-center">
+            <img src="/member_info_01.jpg" alt="Register" class="card-image mb-3" style="height:550px; width:430px"/>
+        </div>
     </div>
-    <div v-if="openZon" class="col-1"></div>
-
+   <div v-if="openZon" class="col-1"></div>
+<br>
     <!-- 下方詳細資料區 / 修改按鈕-->
     <div v-if="openZon" class="col-1"></div>
-    <div v-if="openZon" class="col-5"
+    <div v-if="openZon" class="col-4"
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-start;"></div>
     <div v-if="openZon" class="col-5"
         style="padding: 10px 0px;background-color: unset;  display: flex; justify-content: flex-end; ">
-        <el-switch v-if="employeeInfo !== null && employeeInfo.accountType == 4" v-model="isModify" inline-prompt
-            class="value5" size="large" active-text="&nbsp;&nbsp;開啟修改&nbsp;&nbsp;"
-            inactive-text="&nbsp;&nbsp;資料鎖定&nbsp;&nbsp;"
-            style="--el-switch-on-color: #a33238; -webkit-margin-start: 18px ;" @click="openDoModify" />
+        <el-switch v-model="isModify" inline-prompt class="value5" size="large"
+            active-text="&nbsp;&nbsp;開啟修改&nbsp;&nbsp;" inactive-text="&nbsp;&nbsp;資料鎖定&nbsp;&nbsp;"
+            style="--el-switch-on-color: #a33238; -webkit-margin-start: 18px ;" @click="openDoModify" v-if="employeeInfo.accountType == 4"/>
     </div>
-    <div v-if="openZon" class="col-1"></div>
+    <div  class="col-1"></div>
 
     <!-- 確認修改用彈出視窗 -->
     <el-dialog v-model="dialogVisible" width="300" :show-close="false">
@@ -196,7 +217,6 @@
             </div>
         </template>
     </el-dialog>
-
 </template>
 
 <script setup>
@@ -209,6 +229,28 @@ import { useRouter } from 'vue-router';
 // 串接登入員工
 let employeeInfo = ref({});
 const store = useStore();
+const cityOptions = [
+  { value: 1, label: "台北市" },
+  { value: 2, label: "新北市" },
+  { value: 3, label: "桃園市" },
+  { value: 4, label: "台中市" },
+  { value: 5, label: "台南市" },
+  { value: 6, label: "高雄市" },
+  { value: 7, label: "基隆市" },
+  { value: 8, label: "新竹市" },
+  { value: 9, label: "新竹縣" },
+  { value: 10, label: "嘉義市" },
+  { value: 11, label: "嘉義縣" },
+  { value: 12, label: "苗栗縣" },
+  { value: 13, label: "彰化縣" },
+  { value: 14, label: "南投縣" },
+  { value: 15, label: "雲林縣" },
+  { value: 16, label: "屏東縣" },
+  { value: 17, label: "宜蘭縣" },
+  { value: 18, label: "花蓮縣" },
+  { value: 19, label: "台東縣" },
+];
+
 
 onMounted(() => {
     const username = localStorage.getItem('username');
@@ -234,7 +276,13 @@ const openZon = ref(false)
 
 //產品顯示customer元件用的參數
 const customers = ref([]);
-const singleCustomer = ref([])
+const singleCustomer = ref({
+  city: null
+});
+const cityName = computed(() => {
+      const selectedCity = cityOptions.find(city => city.value === singleCustomer.value.city);
+      return selectedCity ? selectedCity.label : '未選擇';
+    });
 
 // 是否可以修改
 const isModify = ref(false);
@@ -345,9 +393,11 @@ function doModify() {
         "name": singleCustomer.value.name,
         "phone": singleCustomer.value.phone,
         "sex": singleCustomer.value.sex,
+        "city": singleCustomer.value.city,
         "address": singleCustomer.value.address,
         "idNumber": singleCustomer.value.idNumber,
-        "remarks": singleCustomer.value.remarks
+        "remarks": singleCustomer.value.remarks,
+        "cityName": singleCustomer.value.cityName,
     };
 
     axiosapi.put(`/customer/modify/${singleCustomer.value.id}`, request).then(function (response) {
@@ -358,9 +408,8 @@ function doModify() {
                 text: response.data.message,
                 showConfirmButton: false,
             }).then(function (result) {
-                callQuery();
-
-                openZon.value = true;
+                    callQuery();
+                    openZon.value = true;
 
             });
         } else {
@@ -385,7 +434,38 @@ function doModify() {
 
 </script>
 
+
 <style scoped>
+.custom-el-input {
+    width: 300px; 
+}
+.form-item {
+  text-align: left;
+  margin-left: 40px;
+  margin-top: 20px;
+  position: relative; /* 需要相对定位以定位伪元素 */
+ 
+}
+
+
+.form-item::after {
+    content: "";
+    position: absolute;
+  bottom: 0; /* 固定在底部 */
+  left: 0; /* 固定在左边 */
+  width: 90%; /* 自定义宽度，例如 50% */
+  border-bottom: #a33238 1px solid; /* 使用相同的颜色和粗细 */
+}
+.customer-form {
+    background-color: #fff5eb;
+    width: 675px;
+    margin-left: 110px;
+    color: #a33238;
+    font-weight: bold;
+    padding-bottom: 45px;
+    padding-top: 20px;
+}
+
 .custom-input-icon {
     background: transparent;
     border: none;

@@ -4,44 +4,23 @@
     <div class="col-1"></div>
     <!-- 多選下拉選單(簡易搜尋) -->
     <div class="col-8" style="padding: 0px 0px;display: flex; justify-content: flex-start;align-items: center;">
-        <el-select
-                    v-model="employeeId"
-                    clearable
-                    placeholder="員工"
-                    size="small"
-                    style="width: 130px;margin-right: 20px;"
-                    @change="handleChange"
-                    @click="leaveFindAllEmployee();"
-                    >
-                    <el-option
-                        v-for="Option in employeeIdOptions"
-                        :key="Option.value"
-                        :label="Option.label"
-                        :value="Option.value"
-                    />
-                </el-select>
-        <el-select
-                    v-model="leaveType"
-                    clearable
-                    placeholder="假別"
-                    size="small"
-                    style="width: 130px;margin-right: 20px;"
-                    @change="handleChange"
-                    >
-                    <el-option
-                        v-for="Option in leaveTypeOptions"
-                        :key="Option.value"
-                        :label="Option.label"
-                        :value="Option.value"
-                    />
-                </el-select>
+        <el-select v-model="employeeId" clearable placeholder="員工" size="small" style="width: 130px;margin-right: 20px;"
+            @change="handleChange" @click="leaveFindAllEmployee();">
+            <el-option v-for="Option in employeeIdOptions" :key="Option.value" :label="Option.label"
+                :value="Option.value" />
+        </el-select>
+        <el-select v-model="leaveType" clearable placeholder="假別" size="small" style="width: 130px;margin-right: 20px;"
+            @change="handleChange">
+            <el-option v-for="Option in leaveTypeOptions" :key="Option.value" :label="Option.label"
+                :value="Option.value" />
+        </el-select>
 
-<!-- 清除查詢 -->
-                <div class="btm-div" style="display: flex;margin-right: 20px;" @click="clearSelection">
-                    <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;"/>
-                    <el-button type='' link  style="color: #a33238; font-weight: 900;">清除查詢</el-button>
-                </div>
+        <!-- 清除查詢 -->
+        <div class="btm-div" style="display: flex;margin-right: 20px;" @click="clearSelection">
+            <font-awesome-icon icon="fa-regular fa-circle-xmark" size="" style="color: #a33238; padding: 0;" />
+            <el-button type='' link style="color: #a33238; font-weight: 900;">清除查詢</el-button>
         </div>
+    </div>
 
     <!-- 抬頭 -->
     <div class="col-2" style="padding: 0px 0px;">
@@ -118,21 +97,11 @@
 
         <el-form :model="form" label-width="auto" style="width: 95%; padding: 25px;">
             <el-form-item label="員工 :&nbsp;">
-                <el-select
-            v-if="employeeInfo != null"
-            v-model="findEmployeeId"
-            placeholder="Select"
-            clearable
-            size="small"
-            style="width: 200px;"
-        >
-            <el-option
-                v-for="option in allEmployees"
-                :key="option.value"
-                :label="option.label"
-                :value="option.value"
-            />
-        </el-select>
+                <el-select v-if="employeeInfo != null" v-model="findEmployeeId" placeholder="Select" clearable
+                    size="small" style="width: 200px;">
+                    <el-option v-for="option in allEmployees" :key="option.value" :label="option.label"
+                        :value="option.value" />
+                </el-select>
             </el-form-item>
             <el-divider border-style="dashed" style="margin: 0;" />
             <el-form-item label="假別 :&nbsp;">
@@ -165,7 +134,7 @@
 
             <el-form-item label="結束時間 :&nbsp;">
                 <input id="validity-period-end" type="datetime-local" class="form-control" v-model="validityPeriodEnd"
-                style="height:25px" />
+                    style="height:25px" />
             </el-form-item>
 
             <el-divider border-style="dashed" style="margin: 0;" />
@@ -258,57 +227,58 @@ const employeeId = ref('');
 
 
 //查找所有員工
-const employeeIdOptions=ref([])
+const employeeIdOptions = ref([])
 
 
 
 const leaveTypeOptions = [
-  { value: 1, label: "特休-年資半年", hours: 24 }, 
-  { value: 2, label: "特休-年資1年", hours: 56 }, 
-  { value: 3, label: "特休-年資2年", hours: 80 }, 
-  { value: 4, label: "特休-年資3、4年", hours: 112 },
-  { value: 13, label: "特休-其他", hours: 0 },  
-  { value: 5, label: "事假", hours: 112 }, 
-  { value: 6, label: "半薪病假", hours: 240 }, 
-  { value: 7, label: "婚假", hours: 64 }, 
-  { value: 8, label: "生理假", hours: 8 }, 
-  { value: 10, label: "喪假-父母、養父母、繼父母、配偶喪亡者", hours: 64 }, 
-  { value: 11, label: "喪假-祖父母、子女、配偶之父母、配偶之養父母或繼父母喪亡者", hours: 48 }, 
-  { value: 12, label: "喪假-曾祖父母、兄弟姊妹、配偶之祖父母喪亡者", hours: 24 }, 
+    { value: 1, label: "特休-年資半年", hours: 24 },
+    { value: 2, label: "特休-年資1年", hours: 56 },
+    { value: 3, label: "特休-年資2年", hours: 80 },
+    { value: 4, label: "特休-年資3、4年", hours: 112 },
+    { value: 13, label: "特休-其他", hours: 0 },
+    { value: 5, label: "事假", hours: 112 },
+    { value: 6, label: "半薪病假", hours: 240 },
+    { value: 7, label: "婚假", hours: 64 },
+    { value: 8, label: "生理假", hours: 8 },
+    { value: 10, label: "喪假-父母、養父母、繼父母、配偶喪亡者", hours: 64 },
+    { value: 11, label: "喪假-祖父母、子女、配偶之父母、配偶之養父母或繼父母喪亡者", hours: 48 },
+    { value: 12, label: "喪假-曾祖父母、兄弟姊妹、配偶之祖父母喪亡者", hours: 24 },
 ];
 
 watch(leaveType, (newValue) => {
-  const selectedLeave = leaveTypeOptions.find(option => option.value === newValue);
-  if (selectedLeave) {
-    actualLeaveHours.value = selectedLeave.hours;
-  } else {
-    actualLeaveHours.value = ''; // 如果选择的假别不存在，清空时数
-  }
+    const selectedLeave = leaveTypeOptions.find(option => option.value === newValue);
+    if (selectedLeave) {
+        actualLeaveHours.value = selectedLeave.hours;
+    } else {
+        actualLeaveHours.value = ''; // 如果选择的假别不存在，清空时数
+    }
 });
 
 function leaveFindAllEmployee() {
     let empcount = 0;
-    axiosapi.get("employee/count").then(function (response){
-        empcount=response.data.data;
-        console.log("empcount",empcount);
+    axiosapi.get("employee/count").then(function (response) {
+        empcount = response.data.data;
+        console.log("empcount", empcount);
     })
 
     axiosapi.get("employee/all").then(function (response) {  //(AJAX前端程式)單筆查詢的Post功能()
-        console.log("employee/all response",response.data);
-        employeeIdOptions.value=[];
-        for(let i = 0;i<empcount;i++){
+        console.log("employee/all response", response.data);
+        employeeIdOptions.value = [];
+        for (let i = 0; i < empcount; i++) {
             employeeIdOptions.value.push({
-                        value:response.data.data[i].id,
-                        label: response.data.data[i].name})
+                value: response.data.data[i].id,
+                label: response.data.data[i].name
+            })
         }
     }).catch(function (error) {
-        console.log("error",error);
+        console.log("error", error);
         Swal.fire({
-                text: "員工查詢錯誤"+error.message,
-                icon: "error"
-            });
+            text: "員工查詢錯誤" + error.message,
+            icon: "error"
+        });
         // router.push("/")
-    }) 
+    })
 }
 
 // 在组件挂载时或 employeeInfo 变化时调用 findAllEmployee
@@ -347,7 +317,7 @@ setTimeout(() => {
 }, 1000);
 
 //查詢全部員工
-const allEmployees=ref([]);
+const allEmployees = ref([]);
 const findEmployeeId = ref('');
 
 
@@ -415,7 +385,7 @@ function doCreate() {
         "validityPeriodEnd": endDateString,
         "permisionRemarks": permisionRemarks.value,
         "leaveStatus": 1,
-        "teamLeaderId": 1,
+        "teamLeaderId": employeeInfo.value.id,
         "reason": ""
     };
 
@@ -448,25 +418,6 @@ function doCreate() {
 }
 
 
-//單筆查詢
-function leaveInfo(leaveId) {
-    console.log(leaveId)
-    axiosapi.get("/leave/info/" + leaveId).then(function (responce) {  //(AJAX前端程式)單筆查詢的Post功能()
-        console.log("responce", responce.data);
-        singleLeave.value = responce.data.data;
-        // console.log("singleLeave.value.id", singleLeave.leave.id);
-        openZon.value = true
-        isModify.value = false
-
-    }).catch(function (error) {
-        console.log("error", error);
-        Swal.fire({
-            text: "查詢錯誤" + error.message,
-            icon: "error"
-        });
-        // router.push("/")
-    })
-}
 
 const handleChange = () => {
     current.value = 1;
@@ -491,6 +442,7 @@ function callQuery() {
         "createTime": singleLeave.value.createTime,
         "employeeId": employeeId.value,
         "leaveType": leaveType.value,
+        "teamLeaderId": employeeInfo.value.id,
     };
 
     axiosapi.post("/leave/query", request).then(function (response) {
