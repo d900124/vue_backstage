@@ -40,7 +40,7 @@
             <el-select v-model="form.customerId" @change="(value) => doInput('customerId', value)" placeholder="選擇賣家"
               required>
               <el-option value="" disabled>選擇賣家</el-option>
-              <el-option v-for="carData in carDatas" :key="carData.id" :label="carData.customerName"
+              <el-option v-for="carData in uniqueCarDatas" :key="carData.id" :label="carData.customerName"
                 :value="carData.customerId" />
             </el-select>
           </el-form-item>
@@ -111,10 +111,13 @@
           </el-form-item>
 
 
-          
+
           <el-form-item label="狀態" :label-width="formLabelWidth">
             <el-input v-model="form.state" autocomplete="off" required @input="(value) => doInput('state', value)" />
           </el-form-item>
+
+
+
         </el-form>
 
 
@@ -330,7 +333,7 @@ function callFind() {
         console.log("CarResponse======", carDatas.value);
         total.value = response.data.totalElements;
         pages.value = response.data.totalPages;
-      
+
       } else {
         console.error("Invalid response data structure:", response);
       }
@@ -340,7 +343,7 @@ function callFind() {
       // }, 500);
     })
     .catch(function (error) {
-      console.error("Error fetching data:", error,response);
+      console.error("Error fetching data:", error, response);
       Swal.fire({
         text: "查詢失敗：" + error.message,
         icon: "error",
