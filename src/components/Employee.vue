@@ -628,6 +628,45 @@ function doModify() {
 }
 
 
+//註冊時新增KPI
+function creat2KPI(employeeId) {
+
+    let request04 ={ 
+    "seasonStrDay":"2024-04-01",
+    "employeeId": employeeId
+    }
+
+    let request07 ={ 
+    "seasonStrDay":"2024-07-01",
+    "employeeId": employeeId
+    }
+
+    console.log("ceeat KPI 04",request04);
+    console.log("ceeat KPI 07",request07);
+
+    axiosapi.post("/kpi",request04).then(function (responce04) {  //新增4月KPI
+        console.log("KPI responce04",responce04.data);
+
+        axiosapi.post("/kpi",request07).then(function (responce07) {  //新增7月KPI
+        console.log("KPI responce07",responce07.data);
+        }).catch(function (error) {
+            console.log("error",error);
+            Swal.fire({
+                    text: "新建KPI錯誤"+error.message,
+                    icon: "error"
+                });
+        }) 
+
+    }).catch(function (error) {
+        console.log("error",error);
+        Swal.fire({
+                text: "新建KPI錯誤"+error.message,
+                icon: "error"
+            });
+    }) 
+    
+}
+
 </script>
 
 
