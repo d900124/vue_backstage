@@ -88,6 +88,7 @@
                   </tbody>
               </table>
           </div>
+          <br>
   
 <!-------------------- 新增車輛按鈕 --------------------------->
   
@@ -97,22 +98,26 @@
     </div>
 
     <car-insert v-if="showCarInsert"></car-insert>
- <!-------------------- 返回車輛資訊按鈕 --------------------------->
 
-              <div class="btm-div" style="display: flex;" @click="goBack">
+    <!-- 返回車輛總攬 -->
+
+    <div class="btm-div" style="display: flex;" @click="goback">
               <font-awesome-icon icon="arrow-left" size="xl" style="color: #a33238; padding: 13 5 0 5;" />
-              <el-button type='' link class="text-btm" style="color: #a33238;">返回車輛資訊列表</el-button>
+              <el-button type='' link class="text-btm" style="color: #a33238;">重置車輛列表</el-button>
           </div>
           <p></p>
+
 <!--------------------- 分頁組件 ----------------------->
+    <div class="pagination-container">
           <el-pagination
-          background
+          style="margin: 10px 0px;"
           layout="prev, pager, next"
           :total="total"
           :current-page.sync="currentPage"
           :page-size="5"
           @current-change="handlePageChange"
         ></el-pagination> 
+    </div>
       </div> 
       <div class="col-1"></div>      
   </template>
@@ -277,10 +282,20 @@ const handlePageChange = (newPage) => {//查詢跟findAll的分頁
   }
 };
 
+const goback = () => {
+    callFindAll();
+};
+
   
   </script>
       
-  <style>
+  <style scoped>
+
+.pagination-container {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 0;
+}
        
   .table-title{
     float: right;
@@ -288,4 +303,22 @@ const handlePageChange = (newPage) => {//查詢跟findAll的分頁
     font-weight: 900;
     margin: 10px 0px;
 }
+
+.table-part {
+  background-color: #fff5eb; /* 背景底色 */
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 陰影效果 */
+}
+
+.table-th {
+  background-color: #fff5eb; /*欄位頭底色 */
+  color: #a33238;
+
+}
+
+.table-td {
+  background-color: #fff5eb; /* 表格抓到值的底色 */
+}
+
+
   </style>
