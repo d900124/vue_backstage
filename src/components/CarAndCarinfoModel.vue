@@ -64,13 +64,30 @@
 
           <!-- 賣家 -->
           <el-form-item label="賣家" :label-width="formLabelWidth">
+            <el-select
+              v-model="form.customerId"
+              @change="(value) => doInput('customerId', value)"
+              placeholder="選擇賣家"
+              required
+            >
+              <el-option value="" disabled>選擇賣家</el-option>
+              <el-option
+                v-for="carData in carDatas"
+                :key="carData.value"
+                :label="carData.salesCustomerName"
+                :value="carData.value"
+              />
+            </el-select>
+          </el-form-item>
+
+          <!-- <el-form-item label="賣家" :label-width="formLabelWidth">
             <el-input
               v-model="form.customerId"
               autocomplete="off"
               required
               @input="(value) => doInput('customerId', value)"
             />
-          </el-form-item>
+          </el-form-item> -->
 
           <!-- 管理銷售員 -->
           <el-form-item label="管理銷售員" :label-width="formLabelWidth">
@@ -357,6 +374,7 @@ function doInput(key, event) {
 
 onMounted(function () {
   callCarinfoFind();
+  callFind();
 });
 
 function callCarinfoFind() {
@@ -369,6 +387,40 @@ function callCarinfoFind() {
       } else {
         console.error("Invalid response data structure:", response);
       }
+    })
+    .catch(function (error) {
+      console.error("Error fetching data:", error, response);
+      Swal.fire({
+        text: "查詢失敗：" + error.message,
+        icon: "error",
+      });
+    });
+}
+
+const carDatas = ref([]);
+function callFind() {
+  let request = {
+    pageNumber: 1,
+    sortOrder: "asc",
+    max: 100,
+  };
+
+  //搜尋所有car資訊
+  axiosapi
+    .get(`/car/findAll`, { params: request })
+    .then(function (response) {
+      if (response && response.data) {
+        console.log("CarResponse======", response.data);
+        carDatas.value = response.data.list;
+        total.value = response.data.totalElements;
+        pages.value = response.data.totalPages;
+      } else {
+        console.error("Invalid response data structure:", response);
+      }
+
+      // setTimeout(function () {
+      //     Swal.close();
+      // }, 500);
     })
     .catch(function (error) {
       console.error("Error fetching data:", error, response);
