@@ -27,56 +27,68 @@
         />
 
         <!-- =======================車型======================= -->
-        <label>車型</label>
-        <select
-          name="carinfoId"
-          v-model="carData.carinfoId"
-          @change="doInput('carinfoId', $event)"
-          required
-        >
-          <option
-            v-for="carinfoData in carinfoDatas"
-            :key="carinfoData.id"
-            :carinfoData="carinfoData"
-            :value="`${carinfoData.id}`"
-          >
-            {{ carinfoData.modelName }}
-          </option>
-        </select>
+        <div class="form-container">
+          <div class="form-carlist">
+            <label>車型</label>
+            <select
+              name="carinfoId"
+              v-model="carData.carinfoId"
+              @change="doInput('carinfoId', $event)"
+              class="custom-car"
+              required
+            >
+              <option
+                v-for="carinfoData in carinfoDatas"
+                :key="carinfoData.id"
+                :carinfoData="carinfoData"
+                :value="`${carinfoData.id}`"
+              >
+                {{ carinfoData.modelName }}
+              </option>
+            </select>
+          </div>
 
-        <!-- =======================顏色======================= -->
-        <label>顏色</label>
-        <input
-          type="text"
-          name="color"
-          v-model="carData.color"
-          @input="doInput('color', $event)"
-          required
-        />
+          <!-- =======================顏色======================= -->
+          <div class="form-carlist">
+            <label>顏色</label>
+            <input
+              type="text"
+              name="color"
+              v-model="carData.color"
+              @input="doInput('color', $event)"
+              class="custom-car"
+              required
+            />
+          </div>
 
-        <!-- =======================里程數======================= -->
-        <label>里程數</label>
-        <input
-          type="text"
-          name="milage"
-          v-model="carData.milage"
-          @input="doInput('milage', $event)"
-          required
-        />
+          <!-- =======================里程數======================= -->
+          <div class="form-carlist">
+            <label>里程數</label>
+            <input
+              type="text"
+              name="milage"
+              v-model="carData.milage"
+              @input="doInput('milage', $event)"
+              class="custom-car"
+              required
+            />
+          </div>
 
-        <!-- =======================出廠年份======================= -->
-        <label>年分</label>
-        <input
-          type="text"
-          name="productionrYear"
-          v-model="carData.productionYear"
-          @input="doInput('productionYear', $event)"
-          required
-        />
+          <!-- =======================出廠年份======================= -->
+          <div class="form-carlist">
+            <label>年分</label>
+            <input
+              type="text"
+              name="productionrYear"
+              v-model="carData.productionYear"
+              @input="doInput('productionYear', $event)"
+              class="custom-car"
+              required
+            />
+          </div>
+        </div>
       </div>
-    </div>
 
-    <div class="p-2">
       <div
         class="d-flex flex-column"
         v-for="carData in carDatas"
@@ -84,151 +96,188 @@
         :carData="carData"
       >
         <!-- =======================賣家======================= -->
-        <label for="customerId">賣家</label>
-        <select
-          name="customerId"
-          v-model="carData.customerId"
-          @change="doInput('customerId', $event)"
-          required
-        >
-          <option
-            v-for="customer in customers"
-            :key="customer.id"
-            :customer="customer"
-            :value="`${customer.id}`"
-          >
-            {{ customer.name }}
-          </option>
-        </select>
-        <!-- <input type="text" name="customerId" v-model="carData.customerId" @input="doInput('customerId',$event)" required /> -->
 
-        <!-- =======================管理銷售員======================= -->
-        <label for="employeeId">管理銷售員</label>
-        <select
-          name="employeeId"
-          v-model="carData.employeeId"
-          @change="doInput('customerId', $event)"
-          required
-        >
-          <option
-            v-for="employee in employees"
-            :key="employee.id"
-            :employee="employee"
-            :value="`${employee.id}`"
-          >
-            {{ employee.name }}
-          </option>
-        </select>
-        <!-- =======================議價空間======================= -->
-        <label for="negotiable">議價空間</label>
-        <select
-          name="negotiable"
-          v-model="carData.negotiable"
-          @change="doInput('negotiable', $event)"
-          required
-        >
-          <option value="" disabled>選擇能容納的乘客數</option>
-          <option value="1">5%</option>
-          <option value="2">10%</option>
-          <option value="3">15%</option>
-          <option value="4">20%</option>
-        </select>
+        <div class="form-container">
+          <div class="form-carlist">
+            <label for="customerId">賣家</label>
+            <select
+              name="customerId"
+              v-model="carData.customerId"
+              @change="doInput('customerId', $event)"
+              class="custom-car"
+              required
+            >
+              <option
+                v-for="customer in customers"
+                :key="customer.id"
+                :customer="customer"
+                :value="`${customer.id}`"
+              >
+                {{ customer.name }}
+              </option>
+            </select>
+          </div>
 
-        <!-- =======================車況評分======================= -->
-        <label for="conditionScore">車況評分</label>
-        <input
+          <!-- <input type="text" name="customerId" v-model="carData.customerId" @input="doInput('customerId',$event)" required /> -->
+
+          <!-- =======================管理銷售員======================= -->
+          <div class="form-carlist">
+            <label for="employeeId">管理銷售員</label>
+            <select
+              name="employeeId"
+              v-model="carData.employeeId"
+              @change="doInput('customerId', $event)"
+              class="custom-car"
+              required
+            >
+              <option
+                v-for="employee in employees"
+                :key="employee.id"
+                :employee="employee"
+                :value="`${employee.id}`"
+              >
+                {{ employee.name }}
+              </option>
+            </select>
+          </div>
+          <!-- =======================議價空間======================= -->
+          <div class="form-carlist">
+            <label for="negotiable">議價空間</label>
+            <select
+              name="negotiable"
+              v-model="carData.negotiable"
+              @change="doInput('negotiable', $event)"
+              class="custom-car"
+              required
+            >
+              <option value="" disabled>選擇能容納的乘客數</option>
+              <option value="1">5%</option>
+              <option value="2">10%</option>
+              <option value="3">15%</option>
+              <option value="4">20%</option>
+            </select>
+          </div>
+
+          <!-- =======================車況評分======================= -->
+          <div class="form-carlist">
+            <label for="conditionScore">車況評分</label>
+            <input
+              type="text"
+              name="conditionScore"
+              v-model="carData.conditionScore"
+              @input="doInput('conditionScore', $event)"
+              class="custom-car"
+              required
+            />
+          </div>
+
+          <!-- =======================停放分店======================= -->
+          <div class="form-carlist">
+            <label for="branch">停放分店</label>
+            <select
+              name="branch"
+              v-model="carData.branch"
+              @change="doInput('branch', $event)"
+              class="custom-car"
+              required
+            >
+              <option value="" disabled>選擇停放的分店</option>
+              <option value="1">台北市</option>
+              <option value="2">台中市</option>
+              <option value="3">高雄市</option>
+            </select>
+          </div>
+
+          <!-- =======================狀態======================= -->
+          <div class="form-carlist">
+            <label for="state">狀態</label>
+            <select
+              name="state"
+              v-model="carData.state"
+              @change="doInput('state', $event)"
+              class="custom-car"
+              required
+            >
+              <option value="" disabled>選擇停放的分店</option>
+              <option value="1">草稿</option>
+              <option value="2">上架</option>
+              <!-- <option value="3">下架</option> -->
+              <option value="4">暫時下架</option>
+            </select>
+          </div>
+
+          <!-- <input
           type="text"
-          name="conditionScore"
-          v-model="carData.conditionScore"
-          @input="doInput('conditionScore', $event)"
-          required
-        />
-
-        <!-- =======================停放分店======================= -->
-        <label for="branch">停放分店</label>
-        <select
-          name="branch"
-          v-model="carData.branch"
-          @change="doInput('branch', $event)"
-          required
-        >
-          <option value="" disabled>選擇停放的分店</option>
-          <option value="1">台北市</option>
-          <option value="2">台中市</option>
-          <option value="3">高雄市</option>
-        </select>
-
-        <!-- =======================狀態======================= -->
-        <label for="state">狀態</label>
-        <select
           name="state"
           v-model="carData.state"
-          @change="doInput('state', $event)"
+          @input="doInput('state', $event)" class="custom-car"
           required
-        >
-          <option value="" disabled>選擇停放的分店</option>
-          <option value="1">草稿</option>
-          <option value="2">上架</option>
-          <!-- <option value="3">下架</option> -->
-          <option value="4">暫時下架</option>
-        </select>
-        <input
-          type="text"
-          name="state"
-          v-model="carData.state"
-          @input="doInput('state', $event)"
-          required
-        /><!--注意這邊不要有可以下架的選項-->
-        <el-button
-          type="primary"
-          round
-          @click="cancelVisible = true"
-          color="#a33238"
-          :dark="isDark"
-        >
-          建立 "下架" 核單
-        </el-button>
+        /> -->
+          <!--注意這邊不要有可以下架的選項 這她媽是坨大便-->
 
-        <!-- =======================售價======================= -->
-        <label>價格</label>
-        <!-- <input type="text" name="price" v-model="carData.price" @input="doInput('price',$event)" required /> -->
-        <el-button
-          type="primary"
-          round
-          @click="pricsVisible = true"
-          color="#a33238"
-          :dark="isDark"
-        >
-          建立 "價格變動" 簽核單
-        </el-button>
+          <!-- =======================售價======================= -->
+          <div class="form-carlist">
+            <label>價格</label>
+            <!-- <input type="text" name="price" v-model="carData.price" @input="doInput('price',$event)" required /> -->
+            <el-button
+              type="primary"
+              round
+              @click="pricsVisible = true"
+              class="custom-car"
+              color="#a33238"
+              :dark="isDark"
+            >
+              建立 "價格變動" 簽核單
+            </el-button>
+          </div>
 
-        <!-- =======================是否改裝======================= -->
-        <label>是否改裝</label>
-        <select
-          name="remark"
-          v-model="carData.remark"
-          @change="doInput('remark', $event)"
-          required
-        >
-          <option value="" disabled>是否有改裝</option>
-          <option value="1">有</option>
-          <option value="2">無</option>
-        </select>
+          <!-- =======================是否改裝======================= -->
+          <div class="form-carlist">
+            <label>是否改裝</label>
+            <select
+              name="remark"
+              v-model="carData.remark"
+              @change="doInput('remark', $event)"
+              class="custom-car"
+              required
+            >
+              <option value="" disabled>是否有改裝</option>
+              <option value="1">有</option>
+              <option value="2">無</option>
+            </select>
+          </div>
 
-        <label>上架日期</label>
-        <input
-          type="date"
-          name="launchDate"
-          v-model="carData.launchDate"
-          @input="doInput('launchDate', $event)"
-          required
-        />
+          <div class="form-carlist">
+            <label>上架日期</label>
+            <input
+              type="date"
+              name="launchDate"
+              v-model="carData.launchDate"
+              @input="doInput('launchDate', $event)"
+              class="custom-car"
+              required
+            />
+          </div>
+        </div>
       </div>
     </div>
   </div>
+  <div class="button-container">
+    <el-button type="primary" round color="#a33238" @click="handleClick()"
+      >完成修改</el-button
+    >
+    <el-button
+      type="primary"
+      round
+      @click="cancelVisible = true"
+      color="#a33238"
+      :dark="isDark"
+    >
+      建立 "下架" 核單</el-button
+    >
+  </div>
 
-  <button @click="handleClick()">完成修改</button>
-  <!-- <button @click="$emit('custom-modify',carData.value)">完成修改</button>  -->
+  <!-- <button @click="handleClick()">完成修改</button> 原本的垃圾-->
 
   <!-- 確認"下架"用彈出視窗 -->
   <el-dialog v-model="cancelVisible" width="350" :show-close="false">
@@ -664,4 +713,69 @@ function doPriceAdjust() {
 }
 </script>
 
-<style></style>
+<style scoped>
+.form-carlist {
+  border-bottom: 1px solid #a33238; /* 添加底部边框 */
+  padding-bottom: 10px; /* 调整内边距 */
+  margin-bottom: 10px; /* 调整间距 */
+}
+
+.custom-car {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f9f9f9;
+  font-size: 16px;
+  color: #333;
+  appearance: none; /* 去掉原本的下拉箭頭 */
+  -webkit-appearance: none; /* 支援 Safari */
+  -moz-appearance: none; /* 支援 Firefox */
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.custom-car:focus {
+  border-color: #a33238; /* 聚焦時的邊框顏色 */
+  outline: none; /* 去掉聚焦的藍色輪廓 */
+}
+
+.custom-car:after {
+  content: "▼"; /* 自定義下拉箭頭 */
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* 不阻擋選擇操作 */
+  color: #333;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #a33238;
+}
+
+.form-container {
+  display: grid;
+  grid-template-columns: repeat(4, 2fr);
+  gap: 10px; /* 每个元素之间的间距 */
+}
+
+.form-carlist {
+  flex: 0 0 25%; /* 每个元素占据五分之一的宽度 */
+  box-sizing: border-box; /* 包含内边距和边框在内的宽度计算 */
+}
+
+.custom-car {
+  width: 100%; /* 确保 select 和 input 元素填满父容器的宽度 */
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end; /* 将按钮对齐到右边 */
+  gap: 10px; /* 按钮之间的间距 */
+  padding-right: 980px;
+}
+</style>
