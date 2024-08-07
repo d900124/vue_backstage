@@ -169,7 +169,7 @@
           <option value="" disabled>選擇停放的分店</option>
           <option value="1">草稿</option>
           <option value="2">上架</option>
-          <option value="3">下架</option>
+          <!-- <option value="3">下架</option> -->
           <option value="4">暫時下架</option>
         </select>
         <input
