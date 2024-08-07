@@ -111,10 +111,16 @@
           </el-form-item>
 
 
-
           <el-form-item label="狀態" :label-width="formLabelWidth">
-            <el-input v-model="form.state" autocomplete="off" required @input="(value) => doInput('state', value)" />
+            <el-select v-model="form.state" @change="(value) => doInput('state', value)" placeholder="狀態" required>
+              <el-option value="" disabled>狀態</el-option>
+              <el-option v-for="state in stateOptions" :key="state.value" :label="state.label" :value="state.value" />
+            </el-select>
           </el-form-item>
+
+          <!-- <el-form-item label="狀態" :label-width="formLabelWidth">
+            <el-input v-model="form.state" autocomplete="off" required @input="(value) => doInput('state', value)" />
+          </el-form-item> -->
 
 
 
@@ -229,6 +235,14 @@ const remarkOptions = [
   { value: "1", label: "有" },
   { value: "0", label: "無" },
 ];
+const stateOptions = [
+  { value: "1", label: "草稿" },
+  { value: "2", label: "上架" },
+  { value: "3", label: "下架" },
+  { value: "4", label: "暫時下架" },
+];
+
+
 
 const form = reactive({
   carinfoId: "",
@@ -253,13 +267,28 @@ function keyInOneClick() {
   form.remark = "0";
   form.branch = "2";
   form.negotiable = "3";
-  form.employeeId = "5";
-  form.customerId = "10";
+  form.employeeId = uniqueCarDatas.value[0].employeeId;
+  form.customerId = uniqueCarDatas.value[3].customerId;
   form.color = "white";
   form.price = "2000000";
   form.productionYear = "2022";
   form.milage = "1000000";
   form.carinfoId = carinfoDatas.value[2].modelName;
+
+  doInput('state', "1");
+  setTimeout(() => doInput('carinfoId', "3"), 0);
+  setTimeout(() => doInput('milage', "1000000"), 0);
+  setTimeout(() => doInput('launchDate', "2024-08-13"), 0);
+  setTimeout(() => doInput('conditionScore', "90"), 0);
+  setTimeout(() => doInput('productionYear', "2022"), 0);
+  setTimeout(() => doInput('price', "2000000"), 0);
+  setTimeout(() => doInput('color', "white"), 0);
+  setTimeout(() => doInput('customerId', "10"), 0);
+  setTimeout(() => doInput('employeeId', "5"), 0);
+  setTimeout(() => doInput('negotiable', "3"), 0);
+  setTimeout(() => doInput('branch', "2"), 0);
+  setTimeout(() => doInput('remark', "0"), 0);
+
 }
 
 function doInput(key, event) {
