@@ -445,6 +445,7 @@ function doCreat() {
     axiosapi.post("/employee/add", form.value)
         .then(response => {
             if (response.data.success) {
+                creat2KPI(response.data.data.id);
                 Swal.fire({
                     icon: "success",
                     text: response.data.msg,
