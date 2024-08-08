@@ -361,31 +361,53 @@ function cancelVK() {
 			// 		showConfirmButton: false, // 隐藏确认按钮
 			// 		timer: 1000, 
 			// 	})
-            
+            var vCAId;
                 //刪除原有賞車行程
                 axiosapi.delete(`/agenda/${oldAgandId.value}`).then(function(response1) {
                     console.log("response1", response1);
                     if(response1.data.success)  {
 
-                        //註銷原有指派單
-                        let requestVCA ={ 
-                            "id":viewCarAssignedId, 
-                            "assignedStatus":2
+                        
+                        //查詢要註銷的指派單
+                        let requestfind ={
+                            "viewCarId":viewCarItem.value.id,
+                            "isPage":0,
+                            "max":999,
+                            "dir":false,
+                            "order":"updateTime"  
                         }
-                        axiosapi.put(`/viewCarAssigned/${viewCarAssignedId}`, requestVCA).then(function(response2) {
-                            console.log("response2", response2);
-                            Swal.fire({
-                                icon: "success",
-                                title: '賞車行程已註銷',
-                                showConfirmButton: false,
-                                timer: 1000, 
-                            }); 
-                            cancelVKVisible.value=false
+                        axiosapi.post("/viewCarAssigned/findByHQL",requestfind).then(function (responcefind) {
+                            console.log("vCAId",responcefind.data.data[0].id);
+                            vCAId = responcefind.data.data[0].id;
+                            //註銷原有指派單
+                                let requestVCA ={ 
+                                    "id":vCAId, 
+                                    "assignedStatus":2
+                                }
+                                axiosapi.put(`/viewCarAssigned/${vCAId}`, requestVCA).then(function(response2) {
+                                    console.log("response2", response2);
+                                    Swal.fire({
+                                        icon: "success",
+                                        title: '賞車行程已註銷',
+                                        showConfirmButton: false,
+                                        timer: 1000, 
+                                    }); 
+                                    cancelVKVisible.value=false
 
-                        }).catch(function(error) {
-                            console.log("error", error);
-                            ElMessage.error('指派錯誤'+error.message)
-                        });
+                                }).catch(function(error) {
+                                    console.log("error", error);
+                                    ElMessage.error('指派錯誤'+error.message)
+                                });
+                        }).catch(function (error) {
+                            console.log("error",error);
+                            Swal.fire({
+                                    text: "查詢錯誤"+error.message,
+                                    icon: "error"
+                                });
+                        })
+
+
+                        
                     } else {
                         Swal.fire({
                             icon: "warning",
