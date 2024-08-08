@@ -606,7 +606,7 @@ function showListImage() {
 function handleClick() {
   console.log("carDatas before submit:", carData.value);
   emits("customModify", carData.value);
-  router.push({ name: "car-list-link" }); //完成修改跳轉
+  router.push({ name: "car-maintain-link" }); //完成修改跳轉
 }
 
 //新增簽核(下架)
