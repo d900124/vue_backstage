@@ -126,7 +126,7 @@
             <select
               name="employeeId"
               v-model="carData.employeeId"
-              @change="doInput('customerId', $event)"
+              @change="doInput('employeeId', $event)"
               class="custom-car"
               required
             >
