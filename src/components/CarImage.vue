@@ -63,6 +63,7 @@
           </div>
         </div>
       </div>
+      <br />
       <span slot="footer" class="dialog-footer">
         <el-button @click="newDialogVisible = false">取消</el-button>
         <el-button type="primary" @click="Commit(mainImageUrl)"
@@ -109,6 +110,7 @@
           </div>
         </div>
       </div>
+      <br />
       <span slot="footer" class="dialog-footer">
         <el-button @click="listDialogVisible = false">取消</el-button>
         <el-button type="primary" @click="listPicCommit(listImageId)"
