@@ -551,6 +551,7 @@ function handleClick() {
       .get(`/car/latest-car`)
       .then((response) => {
         carId.value = response.data.id;
+        console.log('carId===============',carId.value)
         newDialogVisible.value = true;
         isListPic.value = "0";
         isMainPic.value = "1";
@@ -558,7 +559,7 @@ function handleClick() {
       .catch((error) => {
         console.error("Failed to get the latest car ID:", error);
       });
-  }, 0);
+  }, 1000);
 }
 
 function handleUpload() {
