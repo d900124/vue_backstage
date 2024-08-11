@@ -1,25 +1,49 @@
 <template>
-<h2>主圖</h2>
-<img :src="`${path}${mainImageUrl}`" type="button" @click="mainPicClick()">
+  <h2 class="styled-heading">主圖</h2>
+  <img
+    :src="`${path}${mainImageUrl}`"
+    type="button"
+    @click="mainPicClick()"
+    class="main-image"
+  />
 
+  <h2 class="styled-heading">清單圖</h2>
+  <div class="image-gallery">
+    <div
+      v-for="listImageId in listImageUrl"
+      :key="listImageId.id"
+      class="image-wrapper"
+    >
+      <img
+        :src="`${path}${listImageId.imageId}`"
+        alt=""
+        class="uniform-image"
+        @click="listPicClick(listImageId.imageId)"
+        type="button"
+      />
+    </div>
+  </div>
 
-<h2>清單圖</h2>
-<div class="image-gallery">
-<div v-for="listImageId in listImageUrl" :key="listImageId.id" class="image-wrapper">
-<img :src="`${path}${listImageId.imageId}`" alt="" class="uniform-image" @click="listPicClick(listImageId.imageId)" type="button">
-</div>
-</div>
-
-
- <!-- 主圖 -->
- <div class="dialog-wrapper">
-    <el-dialog v-model="newDialogVisible" title="選擇主圖" width="600px" class="centered-dialog">
+  <!-- 主圖 -->
+  <div class="dialog-wrapper">
+    <el-dialog
+      v-model="newDialogVisible"
+      title="選擇主圖"
+      width="600px"
+      class="centered-dialog"
+    >
       <div class="dialog-content">
         <div class="upload-section">
           <div class="upload-header">
             <label for="images">檔案：</label>
-            <FileUpload class="btn btn-primary" accept=".jpg,.png,.jpeg" input-id="images" input-name="images"
-              v-model="images" :multiple="false">
+            <FileUpload
+              class="btn btn-primary"
+              accept=".jpg,.png,.jpeg"
+              input-id="images"
+              input-name="images"
+              v-model="images"
+              :multiple="false"
+            >
               選擇檔案
             </FileUpload>
           </div>
@@ -28,27 +52,45 @@
               <tbody>
                 <tr v-for="(image, index) in images" :key="image.id">
                   <td>{{ image.name }}</td>
-                  <td><el-button type="danger" @click="deleteFile(index)">刪除檔案</el-button></td>
+                  <td>
+                    <el-button type="danger" @click="deleteFile(index)"
+                      >刪除檔案</el-button
+                    >
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
       </div>
+      <br />
       <span slot="footer" class="dialog-footer">
         <el-button @click="newDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="Commit(mainImageUrl)">確認修改</el-button>
+        <el-button type="primary" @click="Commit(mainImageUrl)"
+          >確認修改</el-button
+        >
       </span>
     </el-dialog>
 
     <!-- 清單 -->
-    <el-dialog v-model="listDialogVisible" title="選擇清單圖" width="600px" class="centered-dialog">
+    <el-dialog
+      v-model="listDialogVisible"
+      title="選擇清單圖"
+      width="600px"
+      class="centered-dialog"
+    >
       <div class="dialog-content">
         <div class="upload-section">
           <div class="upload-header">
             <label for="images">檔案：</label>
-            <FileUpload class="btn btn-primary" accept=".jpg,.png,.jpeg" input-id="images" input-name="images"
-              v-model="images" :multiple="true">
+            <FileUpload
+              class="btn btn-primary"
+              accept=".jpg,.png,.jpeg"
+              input-id="images"
+              input-name="images"
+              v-model="images"
+              :multiple="true"
+            >
               選擇檔案
             </FileUpload>
           </div>
@@ -57,188 +99,231 @@
               <tbody>
                 <tr v-for="(image, index) in images" :key="image.id">
                   <td>{{ image.name }}</td>
-                  <td><el-button type="danger" @click="deleteFile(image.id)">刪除檔案</el-button></td>
+                  <td>
+                    <el-button type="danger" @click="deleteFile(image.id)"
+                      >刪除檔案</el-button
+                    >
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
       </div>
+      <br />
       <span slot="footer" class="dialog-footer">
         <el-button @click="listDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="listPicCommit(listImageId)">執行修改</el-button>
+        <el-button type="primary" @click="listPicCommit(listImageId)"
+          >執行修改</el-button
+        >
       </span>
     </el-dialog>
   </div>
 
-    <!-- =========Modal=========== -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div>
-        <table>
-            <tr>
+  <!-- =========Modal=========== -->
+  <div
+    class="modal fade"
+    id="staticBackdrop"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    tabindex="-1"
+    aria-labelledby="staticBackdropLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <table>
+              <tr>
                 <td>檔案：</td>
                 <td>
-                    <FileUpload class="btn btn-primary"	accept=".jpg,.png,.jpeg"
-                                input-id="images" input-name="images" v-model="images"
-                                :multiple="true">
-                        選擇檔案
-                    </FileUpload>
+                  <FileUpload
+                    class="btn btn-primary"
+                    accept=".jpg,.png,.jpeg"
+                    input-id="images"
+                    input-name="images"
+                    v-model="images"
+                    :multiple="true"
+                  >
+                    選擇檔案
+                  </FileUpload>
                 </td>
-                <td>
-                </td>
-            </tr>
+                <td></td>
+              </tr>
 
-            <tr v-for="(image, index) in images" :key="image.id">
+              <tr v-for="(image, index) in images" :key="image.id">
                 <td></td>
                 <td>{{ image.name }}</td>
-                <td><input type="button" value="刪除檔案" @click="deleteFile(image.id)"></td>
-            </tr>
-        </table>
+                <td>
+                  <input
+                    type="button"
+                    value="刪除檔案"
+                    @click="deleteFile(image.id)"
+                  />
+                </td>
+              </tr>
+            </table>
+          </div>
         </div>
-
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" @click="domultiple()" data-bs-dismiss="modal">確認上傳</button>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            @click="domultiple()"
+            data-bs-dismiss="modal"
+          >
+            確認上傳
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 </template>
-    
+
 <script setup>
-import FileUpload from 'vue-upload-component'
-import { ref ,onMounted} from 'vue';
-import axiosapi from '@/plugins/axios';
-import { faHouseMedicalCircleExclamation } from '@fortawesome/free-solid-svg-icons';
-import { date } from 'quasar';
+import FileUpload from "vue-upload-component";
+import { ref, onMounted } from "vue";
+import axiosapi from "@/plugins/axios";
+import { faHouseMedicalCircleExclamation } from "@fortawesome/free-solid-svg-icons";
+import { date } from "quasar";
 const kajartaUrl = import.meta.env.VITE_API_URL;
-    const path = import.meta.env.VITE_PHOTO;
-    const props=defineProps(["imageByCarIdDatas","mainImageUrl","listImageUrl","carId"])
-const emits=defineEmits(["uploadImage"]);
+const path = import.meta.env.VITE_PHOTO;
+const props = defineProps([
+  "imageByCarIdDatas",
+  "mainImageUrl",
+  "listImageUrl",
+  "carId",
+]);
+const emits = defineEmits(["uploadImage"]);
 const newDialogVisible = ref(false);
 const listDialogVisible = ref(false);
 
-
-const selectImageId=ref(null);
+const selectImageId = ref(null);
 function handleClick(imageId) {
-  console.log("imageId="+imageId);
-  selectImageId.value=imageId;
-  console.log("selectImageId="+selectImageId.value);
+  console.log("imageId=" + imageId);
+  selectImageId.value = imageId;
+  console.log("selectImageId=" + selectImageId.value);
 }
-  
+
 //圖片上傳code
 
-    const images = ref([])
+const images = ref([]);
 
-    function validate(selected) {
-        console.log("selected", selected)
-        if (selected.length == 0) {
-            alert("請選擇檔案");
-            return false;
-        }
-        for (let i = 0; i < selected.length; i++) {
-            let uploadFile = selected[0];
-            if (uploadFile.size > 10000000) {
-                alert("檔案大小超出限制(10M)");
-                return false;
-            }
-        }
-        return true;
+function validate(selected) {
+  console.log("selected", selected);
+  if (selected.length == 0) {
+    alert("請選擇檔案");
+    return false;
+  }
+  for (let i = 0; i < selected.length; i++) {
+    let uploadFile = selected[0];
+    if (uploadFile.size > 10000000) {
+      alert("檔案大小超出限制(10M)");
+      return false;
     }
-
-    function domultiple(id,isListPic,isMainPic,carId) {
-        if (!validate(images.value)) {
-          images.value = [];
-            return;
-        }
-        // 利用File物件產生上傳用的HTML Form資料
-        let formData = new FormData();
-        for(let i = 0; i < images.value.length; i++) {
-            formData.append("image", images.value[i].file);
-            formData.append("isListPic", isListPic.value);
-            formData.append("isMainPic", isMainPic.value);
-            formData.append("carId", carId);
-        }
-        console.log("formData", formData);
-
-        for (const [key, value] of formData.entries()) {
-    console.log(`${key}: ${value}`);
+  }
+  return true;
 }
-console.log(`File name: ${images.value[0].name}`);
-    console.log(`File size: ${images.value[0].size} bytes`);
-    console.log(`File type: ${images.value[0].type}`);
-        //使用Axios上傳檔案
-        axiosapi.put(`/image/modify/${id}`,formData)
-        .then(function (response) {
-            if (response && response.data) {
-                console.log("response", response);
-                location.reload();
-            } else {
-                console.error("Invalid response data structure:", response);
-            }
 
-            // setTimeout(function () {
-            //     Swal.close();
-            // }, 500);
-        })
-        .catch(function (error) {
-            console.error("Error fetching data:", error, response);
-            Swal.fire({
-                text: "新增失敗" + error.message,
-                icon: "error"
-            });
-        });
+function domultiple(id, isListPic, isMainPic, carId) {
+  if (!validate(images.value)) {
+    images.value = [];
+    return;
+  }
+  // 利用File物件產生上傳用的HTML Form資料
+  let formData = new FormData();
+  for (let i = 0; i < images.value.length; i++) {
+    formData.append("image", images.value[i].file);
+    formData.append("isListPic", isListPic.value);
+    formData.append("isMainPic", isMainPic.value);
+    formData.append("carId", carId);
+  }
+  console.log("formData", formData);
+
+  for (const [key, value] of formData.entries()) {
+    console.log(`${key}: ${value}`);
+  }
+  console.log(`File name: ${images.value[0].name}`);
+  console.log(`File size: ${images.value[0].size} bytes`);
+  console.log(`File type: ${images.value[0].type}`);
+  //使用Axios上傳檔案
+  axiosapi
+    .put(`/image/modify/${id}`, formData)
+    .then(function (response) {
+      if (response && response.data) {
+        console.log("response", response);
+        location.reload();
+      } else {
+        console.error("Invalid response data structure:", response);
+      }
+
+      // setTimeout(function () {
+      //     Swal.close();
+      // }, 500);
+    })
+    .catch(function (error) {
+      console.error("Error fetching data:", error, response);
+      Swal.fire({
+        text: "新增失敗" + error.message,
+        icon: "error",
+      });
+    });
+}
+
+function deleteFile(id) {
+  for (let i = 0; i < images.value.length; i++) {
+    if (images.value[i].id === id) {
+      images.value.splice(i, 1);
+      break;
     }
+  }
+  console.log("images.value", images.value);
+}
 
-    function deleteFile(id) {
-        for (let i = 0; i < images.value.length; i++) {
-            if (images.value[i].id === id) {
-              images.value.splice(i, 1);
-                break;
-            }
-        }
-        console.log("images.value", images.value);
-    }
-
-
-    const isListPic=ref(null);
-    const isMainPic=ref(null);
-    const carId=props.carId;
-    function mainPicClick() {
-        newDialogVisible.value = true;
-    }
+const isListPic = ref(null);
+const isMainPic = ref(null);
+const carId = props.carId;
+function mainPicClick() {
+  newDialogVisible.value = true;
+}
 
 function Commit(id) {
-        isListPic.value = 0
-        isMainPic.value = 1
-    domultiple(id,isListPic,isMainPic,carId)
+  isListPic.value = 0;
+  isMainPic.value = 1;
+  domultiple(id, isListPic, isMainPic, carId);
 }
 
-const listImageId=ref(null);
-function listPicClick(id){
-    listDialogVisible.value = true;
-    listImageId.value=id;
+const listImageId = ref(null);
+function listPicClick(id) {
+  listDialogVisible.value = true;
+  listImageId.value = id;
 }
 
 function listPicCommit(listImageId) {
-        isListPic.value = 1
-        isMainPic.value = 0
-    domultiple(listImageId,isListPic,isMainPic,carId)
+  isListPic.value = 1;
+  isMainPic.value = 0;
+  domultiple(listImageId, isListPic, isMainPic, carId);
 }
 </script>
-    
-<style>
-    
-</style>
 
+<style></style>
 
 <!-- 
 
@@ -326,8 +411,6 @@ function listPicCommit(listImageId) {
 </div>
 </div>
 </div> -->
-
-
 
 <!-- 
 
@@ -432,8 +515,41 @@ console.log(`File name: ${images.value[0].name}`);
         console.log("images.value", images.value);
     }
 
-</script>
-    
-<style>
-    
-</style> -->
+</script>--->
+
+<style scoped>
+.main-image {
+  max-height: 600px; /* 主图最大高度为 400px，可根据需要调整 */
+  object-fit: cover; /* 确保图片保持比例，并填充容器 */
+}
+
+.image-gallery {
+  grid-template-columns: repeat(4, 1fr); /* 每行4列 */
+}
+
+.image-gallery .image-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-gallery .uniform-image {
+  width: 100%; /* 每个图像占据其父容器的宽度 */
+  height: auto; /* 高度自动调整以保持比例 */
+  max-height: 150px; /* 限制最大高度 */
+  object-fit: contain; /* 保持比例，避免裁剪 */
+}
+
+.styled-heading {
+  color: #a33238; /* 文字颜色 */
+  font-weight: bold; /* 字体粗度 */
+  font-size: 24px; /* 字体大小 */
+  text-transform: uppercase; /* 字母全大写 */
+  background: linear-gradient(to right, #a33238, #d44d4d); /* 渐变背景 */
+  -webkit-background-clip: text; /* 背景剪裁为文本 */
+  color: transparent; /* 文字颜色透明 */
+  border-bottom: 2px solid #a33238; /* 底部边框 */
+  padding-bottom: 5px; /* 底部内边距 */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 文字阴影 */
+}
+</style>
