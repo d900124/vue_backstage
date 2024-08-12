@@ -581,10 +581,10 @@ function doCreate() {
     creatDdialogVisible.value = false;
     // 验证假别小时数
     switch (leaveType) {
-        case '1': // 年假
+        case '1': // 特休
             if (actualLeaveHours > annualLeaveHours) {
                 insufficientLeave = true;
-                errorMessage = "可用年假剩餘時數不足。";
+                errorMessage = "可用特休剩餘時數不足。";
             }
             break;
         case '5': // 事假
